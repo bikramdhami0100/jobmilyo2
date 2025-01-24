@@ -41,13 +41,11 @@ import { IconNotebook, IconNotes } from '@tabler/icons-react'
 import CheckUserType from '@/app/components/CheckUserType'
 import { MyPopUpContext } from '../context/PopUpClose'
 import axios from 'axios'
-import { MyEmployerLogInContext } from '../../../context/EmployerLogInContext'
 
 function Navbar() {
     const router = useRouter();
     const path = usePathname()
     const { OpenPopUp, setOpenPopUp }: any = useContext(MyPopUpContext);
-    const {setEmployerData}: any = useContext(MyEmployerLogInContext);
     const { setTheme, theme } = useTheme();
     const [mounted, setMounted] = useState(false);
     console.log(CheckUserType)
@@ -91,7 +89,7 @@ function Navbar() {
     const [validUser, setValidUser] = useState<any>();
     const [token, settoken] = useState<any>();
     // const session = useSession();
-
+    
 
     const checkuserVerify = async () => {
         const data = await fetch("/api/checkvaliduser/", {
@@ -113,7 +111,6 @@ function Navbar() {
         }
     }
     useEffect(() => {
-
         checkuserVerify();
     }, [selector]);
 
@@ -150,7 +147,7 @@ function Navbar() {
                 'https://www.googleapis.com/oauth2/v3/userinfo',
                 { headers: { Authorization: 'Bearer ' + tokenResponse?.access_token } },
             );
-            
+
 
             const data = (await axios.post("/api/employer", userInfo.data)).data;
             console.log(data, "This is data")
@@ -158,11 +155,41 @@ function Navbar() {
                 console.log(data)
                 if (data?.message == "User Already Exists") {
                     localStorage.setItem("employerId", data?.results._id);
-                    setEmployerData(JSON.stringify(data?.results));
+
                     router.push("/employer");
                 }
                 localStorage.setItem("employerId", data?.results._id);
-                setEmployerData(JSON.stringify(data?.results));
+
+                router.push("/employer");
+            }
+
+            // console.log(userInfo?.data,"user Info");
+
+        },
+        onError: errorResponse => console.log(errorResponse),
+    });
+
+    // Seeker Login from google
+    const seekerGoogleLogin= useGoogleLogin({
+        onSuccess: async (tokenResponse) => {
+            // console.log(tokenResponse);
+            const userInfo = await axios.get(
+                'https://www.googleapis.com/oauth2/v3/userinfo',
+                { headers: { Authorization: 'Bearer ' + tokenResponse?.access_token } },
+            );
+
+
+            const data = (await axios.post("/api/google", userInfo.data)).data;
+            console.log(data, "This is data")
+            if (typeof window !== undefined) {
+                console.log(data)
+                if (data?.message == "User Already Exists") {
+                    localStorage.setItem("userId", data?.results._id);
+
+                    router.push("/employer");
+                }
+                localStorage.setItem("userId", data?.results._id);
+
                 router.push("/employer");
             }
 
@@ -286,7 +313,14 @@ function Navbar() {
                                     <AlertDialogHeader>
                                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                                         <AlertDialogDescription>
-                                            <div className=' flex  gap-1'>
+
+                                            <div className=' flex  gap-1  w-full'>
+                                                <Button onClick={() => {
+                                                    seekerGoogleLogin();
+                                                }} className=' '>
+                                                    <Image src="/images/social/google.png" height={30} width={30} alt={"images"} className=' m-1 p-1 cursor-pointer '></Image>
+
+                                                </Button>
                                                 <Button className='bg-blue-600' onClick={() => {
                                                     router.push("/user/login")
                                                 }}>Log in</Button>

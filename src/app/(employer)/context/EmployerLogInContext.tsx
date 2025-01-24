@@ -11,9 +11,7 @@ import { createContext, useEffect, useState  } from "react";
           id:id,
         }
       })).data;
-      setEmployerData(data?.results)
-      console.log(data)
-      
+      setEmployerData(data?.results) 
     }
      useEffect(()=>{
     if(typeof window !==undefined){
@@ -23,7 +21,7 @@ import { createContext, useEffect, useState  } from "react";
      },[]);
 
    return (
-      <MyEmployerLogInContext.Provider value={{employerDate,setEmployerData,message:"Hello Employer"}}>
+      <MyEmployerLogInContext.Provider value={{employerDate,setEmployerData}}>
            {children}
       </MyEmployerLogInContext.Provider>
    )

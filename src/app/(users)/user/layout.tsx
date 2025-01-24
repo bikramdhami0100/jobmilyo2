@@ -3,7 +3,7 @@ import Footer from "@/app/(users)/user/components/Footer";
 import Navbar from "@/app/(users)/user/components/Navbar";
 import { Toaster } from "@/components/ui/toaster";
 import PopUpClose from "./context/PopUpClose";
-import EmployerLogInContext from "../../context/EmployerLogInContext";
+import EmployerLogInContext from "../../(employer)/context/EmployerLogInContext";
 
 export default async function UserLayout({
   children,

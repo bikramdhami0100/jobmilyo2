@@ -3,8 +3,7 @@ import type { Metadata } from "next";
 
 import EDashboardSideBar from "./components/EDashboardSideBar";
 import EmployerNavbar from "./components/EmployerNavbar";
-import EmployerContext from "@/app/context/EmployerLogInContext";
-
+import EmployerContext from "../context/EmployerLogInContext";
 
 export const metadata: Metadata = {
   title: "Job मिल्यो Admin",
@@ -20,15 +19,15 @@ export default async function AdminLayout({
 
   return (
     <>
-
+      
       <div id="employer" className="w-full h-full">
+      <EmployerContext>
         {/* Navbar */}
-        <div className="  backdrop-blur-lg fixed  z-30  flex justify-end items-end w-[80%] right-0">
+        <div className="  backdrop-blur-lg fixed  z-30  flex justify-end items-end lg:w-[80%] w-full md:w-[80%]  right-0">
           <div className="  w-full ">
             <EmployerNavbar/>
           </div>
         </div>
-
         {/* Main Content */}
         <div className="flex  flex-grow flex-row justify-between w-full h-full ">
           {/* Sidebar (hidden on small screens) */}
@@ -40,7 +39,9 @@ export default async function AdminLayout({
             {children}
           </div>
         </div>
+        </EmployerContext>
       </div>
+     
     </>
   );
 }

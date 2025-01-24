@@ -7,7 +7,7 @@ var jwt = require('jsonwebtoken');
 
 
 // Secret key should be stored in environment variable
-const SECRET_KEY = process.env.TOKEN_SECRETKEY || 'secretkeybikramdhami';
+const SECRET_KEY = process.env.NEXT_PUBLIC_TOKEN_SECRETKEY! || 'secretkeybikramdhami';
 
 export async function GET(req:any) {
     await mongodbconn;
@@ -55,8 +55,8 @@ export async function POST(req:any) {
             secure:false, // false for 587, false for other ports
           //   requireTLS: true,
             auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
+                user: process.env.NEXT_PUBLIC_EMAIL_PASS!,
+                pass: process.env.NEXT_PUBLIC_EMAIL_USER!,
             }
         });
     

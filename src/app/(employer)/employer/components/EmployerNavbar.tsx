@@ -247,23 +247,21 @@ import { PersonIcon } from '@radix-ui/react-icons'
 import CheckUserType from '@/app/components/CheckUserType'
 
 import axios from 'axios'
+import { MyEmployerLogInContext } from '@/app/(employer)/context/EmployerLogInContext'
 
 function EmployerNavbar() {
     const router = useRouter();
     const path = usePathname()
-    const [employerData,setEmployerData]=useState<any>();
+    const [resultData, setResultData] = useState<any>();
     const [token, settoken] = useState<any>();
     const { setTheme, theme } = useTheme();
     const [mounted, setMounted] = useState(false);
+    const {employerData,setEmployerData}=useContext<any>(MyEmployerLogInContext);
+
     console.log(CheckUserType)
     useEffect(() => {
         setMounted(true);
     }, []);
-
-    // console.log(selector);
-
-
-
 
     const HandleLogOut = async () => {
         // console.log("log out c")
@@ -283,15 +281,14 @@ function EmployerNavbar() {
     }
 
 
-        const handlerGetEmployerDetails = async (id: any) => {
+    const handlerGetEmployerDetails = async (id: any) => {
         const data = (await axios.get("/api/employer", {
             params: {
                 id: id,
             }
         })).data;
-
-        console.log(data?.results)
-setEmployerData(data?.results)
+         setEmployerData(data);
+        setResultData(data?.results)
 
     }
 
@@ -323,7 +320,7 @@ setEmployerData(data?.results)
                         <DropdownMenuTrigger className=' outline-none' ><div>
 
                             <div className='relative group w-[40px] h-[35px] rounded-full  border '>
-                                <Image src={employerData?.color} alt={"profile image"} width={100} height={100} className=' object-fill h-[40px] w-[40px] rounded-[20px] ' />
+                                <Image src={resultData?.color} alt={"profile image"} width={100} height={100} className=' object-fill h-[40px] w-[40px] rounded-[20px] ' />
 
 
                             </div>

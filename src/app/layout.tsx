@@ -12,7 +12,6 @@ import NextSessionProvider from "./Provider";
 import { getServerSession } from "next-auth";
 import { MyProviders } from "../Redux/Provider";
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import EmployerContext from "./context/EmployerLogInContext";
 
 const lora = Lora({ subsets: ["latin"] });
 
@@ -29,7 +28,6 @@ export default async function RootLayout({
 
   const session = await getServerSession();
   return (
-    <EmployerContext>
     <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
     <html lang="en">
       <body className={lora.className} id="defaultHome" >
@@ -51,7 +49,7 @@ export default async function RootLayout({
         
           routerConfig={extractRouterConfig(ourFileRouter)}
         />
-                {children}
+           {children}
             </div>
 
           </ThemeProvider>
@@ -62,6 +60,6 @@ export default async function RootLayout({
       
     </html>
     </GoogleOAuthProvider>
-      </EmployerContext>
+    
   );
 }

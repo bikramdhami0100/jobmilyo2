@@ -149,7 +149,6 @@ function Login() {
 
   return (
     <div className='flex  flex-col justify-around items-center md:flex-row md:justify-around lg:justify-around lg:flex-row p-2'>
-
       <div className=' grid-cols-2 justify-center items-center'>
         <div className=' flex flex-col justify-center '>
           <p className='text-3xl mt-6'><strong>Make your dream career a <span className=' text-blue-600'> reality</span></strong></p>
@@ -184,19 +183,6 @@ function Login() {
           <Link href={"/user/forgotpassword"} className=' text-blue-600 underline'> Forgot Password ? </Link>
           <p>You agree to create account for <span className=' text-blue-600'>job</span> <span className=' text-red-600'>मिल्यो?</span> </p>
           <Button onClick={handlelogIn} className=' bg-blue-600'> {loginLoader && <Loader className=' animate-spin' />}Continue </Button>
-          <p className=' text-center'>or Continue with</p>
-          <div className=' flex gap-3 w-full cursor-pointer self-center'>
-            {/* {
-              socialItem.map((item:any,index)=>(
-                <> */}
-            <Button onClick={() => {
-              googleLogin();
-            }} className=' w-full  bg-blue-600 '>
-              <Image src={socialItem[2].image} height={30} width={30} alt={socialItem[2].name} className=' m-1 p-1 cursor-pointer ' ></Image>
-
-            </Button>
-           
-          </div>
           <p className=' text-center'>Don't have an account ? <Link href={"./signup"} className=' underline text-blue-600'> Signup</Link></p>
         </div>
       </div>
