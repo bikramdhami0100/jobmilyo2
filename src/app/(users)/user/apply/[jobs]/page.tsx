@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { IconCalendarTime, IconMail, IconMailCheck } from '@tabler/icons-react';
 import { Bookmark, CalendarDays, Clock10, Clock7, DollarSign, Loader, Locate, Mail, MapPin, MessageSquare, PlusSquare, Rocket } from 'lucide-react';
 import Image from 'next/image'
-import React, { use, useEffect, useState } from 'react'
+import React, { use, useContext, useEffect, useState } from 'react'
 import axios from "axios"
 interface USERPOSTEDJOB {
   _id: string;
@@ -50,15 +50,16 @@ import { CldUploadButton } from 'next-cloudinary';
 import { toast } from '@/components/ui/use-toast';
 import { Toast } from '@/components/ui/toast';
 import CountDownTimer from '../../components/CountDownTimer';
+import { MyPopUpContext } from '../../context/PopUpClose';
 function ApplyForJob({ params }: any) {
 
   const [jobdetails, setJobDetails] = useState<USERPOSTEDJOBDETAILS | undefined>()
   const [applyloader,setApplyLoader] = useState<any>()
-  
+  const {seekerId} =useContext<any>(MyPopUpContext);
   const [resume, setResume] = useState<any>();
   const [loadresume, setloadresume] = useState<boolean>(false)
   const fetchJobDetailsData = () => {
-    const send = axios.post(`/api/postjob/jobdetails`, { id: params.jobs }).then(({ data }: any) => {
+    const send = axios.post(`/api/user/jobdetails`, { id: params.jobs,seekerId }).then(({ data }: any) => {
       setJobDetails(data.respondata)
     }).catch((error: any) => {
       console.log(error.message)
@@ -67,8 +68,8 @@ function ApplyForJob({ params }: any) {
 
 
   useEffect(() => {
-    fetchJobDetailsData();
-  }, [])
+    seekerId&&fetchJobDetailsData();
+  }, [seekerId])
   const createdAt: any = jobdetails?.createdAt; // Assuming this is your createdAt time in UTC
   const createdAtDate = new Date(createdAt);
   const now = Date.now(); // Current timestamp in milliseconds
@@ -112,7 +113,7 @@ function ApplyForJob({ params }: any) {
   const timeAgoMessage = formatTimeDifference(differenceMs);
   const handlerJobApply=async()=>{
     setApplyLoader(true)
- const send=(await axios.post("/api/apply",{jobId:params.jobs,resume:resume})).data
+ const send=(await axios.post("/api/user/apply",{jobId:params.jobs,resume:resume,seekerId})).data
   console.log(send);
   setApplyLoader(false);
   if(send.status===200){
@@ -181,7 +182,7 @@ function ApplyForJob({ params }: any) {
             </div>
           </div>
           <Button onClick={()=>{
-            handlerJobApply()
+            seekerId&&handlerJobApply()
           }} className=' bg-blue-600 w-full  mt-4'>
           {applyloader&&<Loader className=' mr-2 animate-spin'/>}   Apply Now
           </Button>

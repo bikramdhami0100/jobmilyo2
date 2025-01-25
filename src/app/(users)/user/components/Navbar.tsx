@@ -241,19 +241,22 @@ function Navbar() {
                                     }}><PersonIcon className=' size-[20px] cursor-pointer' />Profile</DropdownMenuItem>
                                     <DropdownMenuItem className=' flex  gap-1 text-sm' onClick={() => {
                                         router.push("/user/apply")
-                                    }}><BriefcaseBusinessIcon className=' size-[20px] cursor-pointer' />apply list</DropdownMenuItem>
+                                    }}><BriefcaseBusinessIcon className=' size-[20px] cursor-pointer' />apply list
+                                    </DropdownMenuItem>
                                     <DropdownMenuItem
                                         className=' text-sm flex gap-1 cursor-pointer'
                                         onClick={() => {
                                             router.push("/user/setting")
                                         }}
                                     ><Settings size={20} /> Setting</DropdownMenuItem>
-                                    <DropdownMenuItem className=' cursor-pointer flex gap-1' onClick={() => {
+                                    {/* <DropdownMenuItem className=' cursor-pointer flex gap-1' onClick={() => {
                                         router.push(`/user/post/`)
-                                    }} ><IconNotebook />Post Job</DropdownMenuItem>
+                                    }} ><IconNotebook />Post Job
+                                    </DropdownMenuItem>
                                     <DropdownMenuItem className=' cursor-pointer flex gap-1' onClick={() => {
                                         router.push(`/user/userpostjobs/`)
-                                    }} ><IconNotes /> post list</DropdownMenuItem>
+                                    }} ><IconNotes /> post list
+                                    </DropdownMenuItem> */}
                                     <DropdownMenuItem className=' cursor-pointer flex gap-1' onClick={() => {
                                         HandleLogOut();
                                     }} ><LogOut size={20} />log out</DropdownMenuItem>

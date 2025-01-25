@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Search } from 'lucide-react'
 import { useTheme } from 'next-themes'
+import { useDispatch} from 'react-redux'
 import axios from "axios"
 import { useRouter } from 'next/navigation'
 function SearchSection({search,setSearch}:any) {
@@ -19,15 +20,19 @@ function SearchSection({search,setSearch}:any) {
     const CompanyItems = ["Select Company", ...Array.from(new Set(searchdata?.map((data:any) => {return data.company})))];
     // const LocationItems = ["Select Location", ...(datas.map(data => data.location.split(', ')[0]))];
    const router=useRouter()
-   const { theme } = useTheme();
- 
+
+
+    const { theme } = useTheme();
+    const dispatch = useDispatch();
+    
+    // const SearchItems = ["Select Field", ...new Set(datas.map(data => data.category))];
     const HandleMyFun = (e: any) => {
         const { name, value } = e.target;
         setSearch({ ...search, [name]: value })
 
     };
     const TreandingHomeJobs = async () => {
-        const received = (await axios.get("/api/user")).data;
+        const received = (await axios.get("/api/trendinghome")).data;
         setSearchData(received.data)
         //   if(received.state==200){
         //     setJobs(received.data)

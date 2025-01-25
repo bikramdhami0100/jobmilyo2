@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { IconCalendarTime, IconMail, IconMailCheck } from '@tabler/icons-react';
 import { Bookmark, CalendarDays, Clock10, Clock7, DollarSign, Locate, Mail, MapPin, MessageSquare, Rocket } from 'lucide-react';
 import Image from 'next/image'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import axios from "axios"
 interface USERPOSTEDJOB {
   _id: string;
@@ -47,13 +47,15 @@ interface USERPOSTEDJOBDETAILS {
 import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
 import CountDownTimer from '../../components/CountDownTimer';
+import { MyPopUpContext } from '../../context/PopUpClose';
 function SingleJobDetails({ params }: any) {
   
   const [jobdetails, setJobDetails] = useState<USERPOSTEDJOBDETAILS | undefined>()
-  const [OtherJobs, setOtherJobs] = useState<any>()
+  const [OtherJobs, setOtherJobs] = useState<any>();
+  const {seekerId}=useContext<any>(MyPopUpContext);
   const router=useRouter();
   const fetchJobDetailsData = () => {
-    const send = axios.post(`/api/postjob/jobdetails`, { id: params.details }).then(({ data }: any) => {
+    const send = axios.post(`/api/user/jobdetails`, { id: params.details,seekerId }).then(({ data }: any) => {
       setJobDetails(data.respondata)
       setTimeout(() => {
         fetchOtherJobOpening(data.respondata.jobtitle)
@@ -63,17 +65,20 @@ function SingleJobDetails({ params }: any) {
     })
   }
   const fetchOtherJobOpening = (jobtitle: string) => {
-    const send = axios.post(`/api/postjob/jobdetails/similarjobs`, { jobtitle: jobtitle ,id: params.details }).then(({ data }: any) => {
+   if(seekerId){
+    const send = axios.put(`/api/user/jobdetails`, { seekerId ,id: params.details,jobtitle }).then(({ data }: any) => {
       setOtherJobs(data.respondata)
 
     }).catch((error: any) => {
       console.log(error.message)
     })
+   }
   }
 
   useEffect(() => {
-    fetchJobDetailsData();
-  }, [])
+   seekerId&& fetchJobDetailsData();
+
+  }, [seekerId])
   const createdAt: any = jobdetails?.createdAt; // Assuming this is your createdAt time in UTC
   const createdAtDate = new Date(createdAt);
   const now = Date.now(); // Current timestamp in milliseconds
@@ -148,7 +153,7 @@ function SingleJobDetails({ params }: any) {
             {/* item 1 and i have to setup for using map further backend working */}
             <div className=' flex flex-col flex-wrap  gap-4 mt-4'>
               {
-              OtherJobs&&  OtherJobs?.map((item: USERPOSTEDJOBDETAILS, index: number) => {
+              OtherJobs?  OtherJobs?.map((item: USERPOSTEDJOBDETAILS, index: number) => {
                   const createdAt: any = item?.createdAt; // Assuming this is your createdAt time in UTC
                   const createdAtDate = new Date(createdAt);
                   const now = Date.now(); // Current timestamp in milliseconds
@@ -189,7 +194,7 @@ function SingleJobDetails({ params }: any) {
                       </div>
                     </div>
                   )
-                })
+                }):`No any data !!!`
               }
             </div>
 

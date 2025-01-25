@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 // import { Rating } from '@smastrom/react-rating'
@@ -11,13 +11,14 @@ import { useTheme } from 'next-themes';
 import { Textarea } from '@/components/ui/textarea';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import { MyPopUpContext } from '../context/PopUpClose';
 function PostAJob() {
   const { theme } = useTheme();
   const router=useRouter()
   const [rating, setRating] = useState(0)
   const [companyLogo, setCompanyLogo] = useState(false);
   const [mounted, setMounted] = useState(false);
-
+  const {seekerId}=useContext<any>(MyPopUpContext);
   useEffect(() => {
       setMounted(true);
   }, []);
@@ -75,37 +76,38 @@ function PostAJob() {
   const handleSubmit = async (event: any) => {
 
     event.preventDefault();
-
-
-   
-    try {
-      const response = await fetch('/api/postjob', {
-        method: 'POST',
-        body: JSON.stringify(form),
-      });
-
-      if (response.ok) {
-         
-        toast({
-          title: "Job added successfully",
-          className:" text-black bg-white border-green-600 ",
-          description: "Your job posting has been added.",
+    if(seekerId){
+      try {
+        const response = await fetch('/api/user/post', {
+          method: 'POST',
+          body: JSON.stringify({form,seekerId}),
         });
-        router.push("/user/Jobs")
-        
-      } else {
+  
+        if (response.ok) {
+           
+          toast({
+            title: "Job added successfully",
+            className:" text-black bg-white border-green-600 ",
+            description: "Your job posting has been added.",
+          });
+          router.push("/user/Jobs")
+          
+        } else {
+          toast({
+            title: "Failed to add job",
+            description: "An error occurred while adding the job.",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
         toast({
-          title: "Failed to add job",
+          title: "An error occurred",
           description: "An error occurred while adding the job.",
           variant: "destructive",
         });
       }
-    } catch (error) {
-      toast({
-        title: "An error occurred",
-        description: "An error occurred while adding the job.",
-        variant: "destructive",
-      });
+    }else{
+      alert("No user login")
     }
   };
 useEffect(()=>{
@@ -135,7 +137,7 @@ if (!mounted) return null;
   return (
     <div className=" w-full mx-auto p-8 shadow-lg rounded-lg">
       <h1 className="text-center text-4xl font-extrabold underline underline-offset-2 italic  mb-8">Details of Company</h1>
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6 ">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium ">Job Title</label>

@@ -123,17 +123,10 @@ const jobSchema = new mongoose.Schema({
   jobupload: {
     type: Date,
     default: Date.now
-  },
-  source:{
-    type:String
-  },
- organization:{
-  type: mongoose.Schema.Types.ObjectId,
-  ref: 'organizations',
- }
+  }
 }, {
   timestamps: true
 });
-const UserPostedJob = mongoose.models.postajobs || mongoose.model('postajobs', jobSchema);
-export default UserPostedJob
+const EmployerPostJob = mongoose.models.employe_post_job || mongoose.model('employe_post_job', jobSchema);
+export default EmployerPostJob
 

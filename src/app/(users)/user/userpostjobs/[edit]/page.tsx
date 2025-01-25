@@ -37,7 +37,6 @@ interface JobsType {
 
 const EditJobPage = ({ params}:any) => {
   const id=params.edit;
-  console.log(id);
   const [formData, setFormData] = useState<any>("");
   const router=useRouter()
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -53,7 +52,7 @@ const EditJobPage = ({ params}:any) => {
     e.preventDefault();
     try {
       // Assuming you have an API route to update the job information
-      const response = await fetch(`/api/userpostjobs?id=${formData._id}`, {
+      const response = await fetch(`/api/user/userJobs?id=${formData._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -5,9 +5,10 @@ import axios from 'axios'
 import { BookmarkIcon, Calendar, Delete, DeleteIcon, Edit, MapPin } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { useRouter } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import CountDownTimer from '../components/CountDownTimer'
 import Image from 'next/image'
+import { MyPopUpContext } from '../context/PopUpClose'
 
 function UserPostJobLists() {
  
@@ -43,25 +44,25 @@ function UserPostJobLists() {
     _id: String,
   
   }
+  const {seekerId}=useContext<any>(MyPopUpContext);
   const {theme}=useTheme();
   const router=useRouter();
   const [userPost,setUserPost]=useState<any>();
   const [jobslist, setJobList] = useState<any>();
   const HandlerUserPostedJob = async () => {
-    const userposted = (await axios.get("/api/userpostjobs")).data;
+    const userposted = (await axios.get("/api/user/userJobs",{params:{id:seekerId}})).data;
     setJobList(userposted.data);
     setUserPost(userposted.user);
   }
-  console.log(userPost, "joblist data is here")
+ 
   useEffect(() => {
-    HandlerUserPostedJob();
-  }, [])
+    seekerId&&HandlerUserPostedJob();
+  }, [seekerId])
   const handlerDeletePostedJobbyUser=async(itemId:any)=>{
-    // alert("delete item successfully !!");
-    // e.preventDefault();
+
     try {
       // Assuming you have an API route to update the job information
-      const response = await fetch(`/api/userpostjobs?id=${itemId}`, {
+      const response = await fetch(`/api/user/userJobs?id=${itemId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

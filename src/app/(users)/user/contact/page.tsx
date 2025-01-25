@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import Image from 'next/image'
@@ -8,9 +8,11 @@ import { useTheme } from 'next-themes'
 import axios from 'axios'
 import { toast } from '@/components/ui/use-toast'
 import { Loader } from 'lucide-react'
+import { MyPopUpContext } from '../context/PopUpClose'
 function Contact() {
 
   const { theme } = useTheme();
+  const {seekerId}=useContext<any>(MyPopUpContext);
   const [loader,setLoader]=useState<any>(false)
   const [contactError, setContactError] = useState({
     name: "",
@@ -50,33 +52,40 @@ function Contact() {
   }
 
   const UserDetail = async () => {
-    try {
-      const user = (await axios.get("/api/contact/")).data;
-      console.log("this is clg",user)
-      setContact({
-        name: user?.data?.fullName || '',
-        email: user?.data?.email || '',
-        message: ''
-      });
-    } catch (error) {
-      console.error("Error fetching user details:", error);
-    }
+     if(seekerId){
+
+      try {
+        const user = (await axios.get("/api/user/contact",{params:{id:seekerId}})).data;
+        setContact({
+          name: user?.data?.fullName || '',
+          email: user?.data?.email || '',
+          message: ''
+        });
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      }
+     }
+
   }
 
   useEffect(() => {
     UserDetail()
-  }, []);
+  }, [seekerId]);
+
   const handleSubmit=async()=>{
     setLoader(true)
-    const send =(await axios.post("/api/contact/",contact)).data
-    console.log("send data",send)
-    if(send){
-      setLoader(false)
-          toast({
-          title: "Data submit successfully ",
+     if(seekerId){
+      const send =(await axios.post("/api/user/contact",{contact,id:seekerId})).data
+      console.log("send data",send)
+      if(send){
+        setLoader(false)
+            toast({
+            title: "Data submit successfully ",
+  
+          })
+      }
 
-        })
-    }
+     }
   }
   // console.log("clg contact " ,contact)
   return (

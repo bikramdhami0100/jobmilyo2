@@ -20,12 +20,10 @@ function TreandingJob() {
         SelectItem: "",
     });
     const TreandingHomeJobs = async () => {
-        const received = (await axios.get("/api/trendinghome")).data;
+        const received = (await axios.get("/api/user")).data;
         setTreandingJobs(received.data)
 
     }
-    // console.log(treandingJobs)
-    // 
     useEffect(() => {
         TreandingHomeJobs()
     }, [])
@@ -53,9 +51,6 @@ function TreandingJob() {
 
     });
 
-    useEffect(() => {
-
-    }, []);
     return (
         <div>
             <SearchSection search={search} setSearch={setSearch} />

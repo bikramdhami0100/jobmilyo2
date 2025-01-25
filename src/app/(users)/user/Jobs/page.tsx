@@ -1,9 +1,9 @@
 "use client"
 import Image from 'next/image'
 import React from 'react'
-import JobsTopSearchCategory from '../usercomponents/JobsTopSearchCategory'
-import LatestJobOpenings from '../usercomponents/LatestJobOpenings'
 import { useTheme } from 'next-themes'
+import JobsTopSearchCategory from './_components/JobsTopSearchCategory';
+import LatestJobOpenings from './_components/LatestJobOpenings';
 
 function Jobs() {
   const {theme}=useTheme();

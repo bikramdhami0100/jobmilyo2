@@ -16,7 +16,7 @@ function userInformation() {
     
     const { theme } = useTheme();
     const [mounted, setMounted] = useState(false);
-     const {setSeekerId}=useContext<any>(MyPopUpContext);
+     const {setSeekerId,seekerId}=useContext<any>(MyPopUpContext);
     useEffect(() => {
         setMounted(true);
     }, []);
@@ -154,8 +154,11 @@ function userInformation() {
        HandlerCheckUserDetails(id);
         setSeekerId(id);
        }
-     
     },[])
+
+    useEffect(()=>{
+      seekerId&&HandlerCheckUserDetails(seekerId)
+    },[seekerId]);
     console.log(formData?.userId)
     if (!mounted) return null;
     return (

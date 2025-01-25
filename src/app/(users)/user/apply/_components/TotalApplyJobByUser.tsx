@@ -1,9 +1,10 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { MyPopUpContext } from '../../context/PopUpClose';
 
 function TotalApplyJobByUser() {
   interface Job {
@@ -29,27 +30,33 @@ function TotalApplyJobByUser() {
   }
 
   const [applyjobList, setApplyJobList] = useState<JobApplication[]>([]);
-
+  const {seekerId}=useContext<any>(MyPopUpContext);
   const totalJobApply = async () => {
-    const send = (await axios.get("/api/apply/user")).data;
-    console.log(send)
-    if (send.status == 200) {
-      setApplyJobList(send.data)
-    }
-  }
+      if(seekerId){
+        // console.log(seekerId,"inside")
+        const send = (await axios.get("/api/user/apply",{params:{id:seekerId}})).data;
+        // console.log(send)
+        if (send.status == 200) {
+          setApplyJobList(send.data)
+        }
+      }
 
+  }
+ 
   useEffect(() => {
-    totalJobApply();
-  }, [])
+   seekerId&& totalJobApply();
+  }, [seekerId])
 
   // console.log(applyjobList)
  const HandlerCancelApplyJob=async(id:any)=>{
-  const send = (await axios.post("/api/apply/user/delete",{id})).data;
-      if(send.status==200){
-        setTimeout(() => {
-          totalJobApply();
-        }, 100);
-      }
+  if(seekerId){
+    const send = (await axios.delete("/api/user/apply",{params:{id,seekerId}})).data;
+    if(send.status==200){
+      setTimeout(() => {
+        totalJobApply();
+      }, 100);
+    }
+  }
  }
   return (
     <div className="container mx-auto p-4 mt-10">

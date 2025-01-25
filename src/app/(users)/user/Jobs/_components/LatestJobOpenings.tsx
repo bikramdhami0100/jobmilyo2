@@ -5,10 +5,11 @@ import { IconCalculatorFilled, IconTimeDuration60 } from '@tabler/icons-react';
 import { Calendar, MapPin, Star } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
-import React, { use, useEffect, useState } from 'react';
+import React, { use, useContext, useEffect, useState } from 'react';
 import axios from "axios"
 import { useRouter } from 'next/navigation';
-import CountDownTimer from '../components/CountDownTimer';
+import CountDownTimer from '../../components/CountDownTimer';
+import { MyPopUpContext } from '../../context/PopUpClose';
 
 export interface USERPOSTEDJOB {
     _id: string;
@@ -53,22 +54,25 @@ function LatestJobOpenings() {
     const { theme } = useTheme();
     const [jobs, setJobs] = useState<USERPOSTEDJOBDETAILS[]>([]);
     const [page, setPage] = useState(1);
+    const {seekerId}=useContext<any>(MyPopUpContext);
     const router = useRouter();
 
     const handlerShowMore = async () => {
+       if(seekerId){
         setPage(prevPage => prevPage + 1);
-        const received = (await axios.post("/api/postjob/latestjobopenings", { page: page + 1, limit: 3 })).data;
+        const received = (await axios.post("/api/user/jobs", { page: page + 1, limit: 3,id: seekerId})).data;
         setJobs(prevJobs => [...prevJobs, ...received.search]);
+       }
     }
 
-    const jobPostedByUser = async () => {
-        const received = (await axios.get("/api/postjob")).data;
+    const jobPostedByUser = async (id:any) => {
+        const received = (await axios.get("/api/user/jobs",{params:{id}})).data;
         setJobs(received.data);
     }
 
     useEffect(() => {
-        jobPostedByUser();
-    }, []);
+         seekerId&&jobPostedByUser(seekerId);
+    }, [seekerId]);
 
   
     return (
