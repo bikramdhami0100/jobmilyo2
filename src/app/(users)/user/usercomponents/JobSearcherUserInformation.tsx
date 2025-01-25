@@ -151,7 +151,7 @@ function userInformation() {
             ...prevState,
             userId: id
         }))
-       id&& HandlerCheckUserDetails(id);
+       HandlerCheckUserDetails(id);
         setSeekerId(id);
        }
      

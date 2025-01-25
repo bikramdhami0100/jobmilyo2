@@ -38,17 +38,17 @@ import {
 import { useSelector } from 'react-redux'
 import { PersonIcon } from '@radix-ui/react-icons'
 import { IconNotebook, IconNotes } from '@tabler/icons-react'
-import CheckUserType from '@/app/components/CheckUserType'
 import { MyPopUpContext } from '../context/PopUpClose'
 import axios from 'axios'
 
 function Navbar() {
     const router = useRouter();
     const path = usePathname()
-    const { OpenPopUp, setOpenPopUp }: any = useContext(MyPopUpContext);
+    const { OpenPopUp, setOpenPopUp,seekerId,validUser, setValidUser }: any = useContext(MyPopUpContext);
+    console.log(seekerId,"This is seekers")
     const { setTheme, theme } = useTheme();
     const [mounted, setMounted] = useState(false);
-    console.log(CheckUserType)
+   
     useEffect(() => {
         setMounted(true);
     }, []);
@@ -80,59 +80,22 @@ function Navbar() {
 
     ]
 
-    const selector = useSelector((usertoken: any) => {
-
-        return usertoken?.signupinfo?.validUserToken
-    })
-    // console.log(selector);
-    const [usersignup, setusersignup] = useState(false);
-    const [validUser, setValidUser] = useState<any>();
-    const [token, settoken] = useState<any>();
-    // const session = useSession();
-    
-
     const checkuserVerify = async () => {
-        const data = await fetch("/api/checkvaliduser/", {
-            method: "get",
-
-        })
-
-        if (data.ok) {
-            const result = await data?.json()
-
-            if (result?.user) {
-
-                setValidUser(result.user)
-                settoken(result.token);
-                setusersignup(true);
-
-            }
-
-        }
+        const data = await (await axios.get("/api/user/user_type",{params:{id:seekerId}})).data
+        setValidUser(data?.validuser)
     }
     useEffect(() => {
-        checkuserVerify();
-    }, [selector]);
+    
+       seekerId&& checkuserVerify();
+    }, [seekerId]);
 
 
     const HandleLogOut = async () => {
         // console.log("log out c")
-        const data = await fetch(`/api/login/logout?token=${token}`, {
-            method: "get",
-
-        })
-
-        if (data.ok) {
-            const result = await data.json()
-            if (result) {
-
-                setValidUser("");
-                settoken("");
-                setusersignup(false);
-                router.push("/user/login/")
-
-            }
-
+        if(typeof window!==undefined){
+            localStorage.removeItem("userId");
+            setValidUser("")
+            router.push("/user");
         }
     }
     const pathHandler = (path: any) => {
@@ -198,7 +161,7 @@ function Navbar() {
         },
         onError: errorResponse => console.log(errorResponse),
     });
-
+ 
     // If the theme is not mounted yet, do not render the navbar
     if (!mounted) return null;
 
@@ -251,7 +214,7 @@ function Navbar() {
                 }</div>
             <div className=' flex  gap-[6px]'>
                 {
-                    usersignup ?
+                     validUser?
                         <div>
                             <DropdownMenu >
                                 <DropdownMenuTrigger className=' outline-none' ><div>
@@ -266,8 +229,6 @@ function Navbar() {
                                         ) : (
                                             <div className='relative group w-[40px] h-[35px] rounded-full  border '>
                                                 <Image src={validUser?.color} alt={"profile image"} width={100} height={100} className=' object-fill h-[40px] w-[40px] rounded-[20px] ' />
-
-
                                             </div>
                                         )
                                     }
@@ -303,11 +264,11 @@ function Navbar() {
                             <Button onClick={() => {
                                 // setOpenPopUp(!OpenPopUp)
                                 seekerGoogleLogin();
-                            }} className=' bg-blue-600'>JOB SEEKER</Button>
+                            }} className=' bg-blue-600'>Job Seeker</Button>
                             <Button onClick={() => {
 
                                 googleLogin()
-                            }} className=' bg-blue-600'>EMPLOYER</Button>
+                            }} className=' bg-blue-600'>Employer</Button>
 
                             {/* <AlertDialog open={OpenPopUp} >
                                 <AlertDialogContent className=' bg-gray-400'>

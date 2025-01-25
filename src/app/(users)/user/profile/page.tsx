@@ -1,10 +1,9 @@
 "use client"
 import { Button } from '@/components/ui/button';
 import { IconCircleCheckFilled, IconStarFilled } from '@tabler/icons-react';
-import { ArrowLeft, ArrowRightLeft, Bookmark, Download, Loader, PencilLine, Phone, PhoneCall, Plus, Rocket, SendHorizonal, Share, Star } from 'lucide-react';
+import { ArrowLeft, ArrowRightLeft, Bookmark, Download, Eye, Loader, PencilLine, Phone, PhoneCall, Plus, Rocket, SendHorizonal, Share, Star, View } from 'lucide-react';
 import Image from 'next/image'
-import React, { use, useEffect, useState } from 'react'
-// import { ScrollArea } from "@/components/ui/scroll-area"
+import React, { use, useContext, useEffect, useState } from 'react'
 import {
     Card,
     CardContent,
@@ -48,9 +47,10 @@ import { useRouter } from 'next/navigation';
 import { Rating } from '@smastrom/react-rating'
 
 import '@smastrom/react-rating/style.css'
-import { BackpackIcon, Share1Icon } from '@radix-ui/react-icons';
+import { BackpackIcon, ResumeIcon, Share1Icon } from '@radix-ui/react-icons';
 import SimilarProfile from '../usercomponents/userprofile/SimilarProfile';
 import Link from 'next/link';
+import { MyPopUpContext } from '../context/PopUpClose';
 
 function UserProfile() {
     const [skillrating, setSkillRating] = useState<number>(0)
@@ -61,19 +61,18 @@ function UserProfile() {
     const [shareUrl, setShareUrl] = useState<any>()
     const [signup, setSignUp] = useState<any>();
     const [userInformation, setuserInformation] = useState<any>([]);
-    var [allSkill, setAllSkill] = useState<any>("");
+    const { seekerId ,validUser, setValidUser} = useContext<any>(MyPopUpContext);
+    console.log(seekerId, "Seeker")
 
-    const [showUploadButton, setShowUploadButton] = useState(false);
     const session = useSession()
     const router = useRouter();
     interface ADDSKILLLISTTYPE {
         name: string,
-        rating: number
+        rating: number,
     }
     const [AddSkillList, setAddSkillList] = useState<ADDSKILLLISTTYPE[]>([{ name: "", rating: 0 }])
 
     const handleChange = (index: any, name: any, value: any) => {
-
         const updatedSkills: any = [...AddSkillList];
         updatedSkills[index][name] = value;
         setAddSkillList(updatedSkills)
@@ -87,26 +86,17 @@ function UserProfile() {
         setAddSkillList((skillList: any) => skillList.slice(0, -1))
     }
 
-    const handleIconEditClick = () => {
-        setShowUploadButton(!showUploadButton);
 
-    };
-
-
-    const dataFromDatabase = async (id:any) => {
-        const result = (await axios.get("/api/user/profile",{params:{id}})).data;
-
+    const dataFromDatabase = async (id: any) => {
+        const result = (await axios.get("/api/user/profile", { params: { id } })).data;
+        console.log(result)
         if (result) {
-            setuserInformation(result.data.userInfos);
-            setSignUp(result.data.user);
+            setuserInformation(result?.data?.userInfos);
+            setSignUp(result?.data?.user);
+             setValidUser(result?.data?.user)
         }
     }
-    useEffect(() => {
-        if(typeof window!==undefined){
-            const id=localStorage.getItem("userId");
-            dataFromDatabase(id);
-        }
-    }, [allSkill]);
+
 
     const downloadCV = async (imageURL: any, username: any) => {
         setIsDownloading(true);
@@ -159,13 +149,12 @@ function UserProfile() {
     const skillUpdate = async () => {
         setSkillLoader(true)
 
-        axios.post('/api/profiledata/skillupdate', AddSkillList)
+        axios.post('/api/user/profile/skillupdate', {AddSkillList,id:seekerId})
             .then(function (response) {
 
                 // setSkillLoader(false)
                 setTimeout(() => {
-                    setAllSkill("Again Show Data")
-
+                     dataFromDatabase(seekerId)
                 }, 100);
                 router.push("/user/profile")
             })
@@ -188,11 +177,9 @@ function UserProfile() {
         return age;
 
     }
-    const HandlerOtherUser = (item: any) => {
-        const userId = 1
-        router.push(`/user/profile/${userId}`);
-    }
-
+    useEffect(() => {
+        seekerId && dataFromDatabase(seekerId);
+    }, [seekerId]);
 
     return (
         <div>
@@ -260,23 +247,10 @@ function UserProfile() {
                                     <div className='flex flex-col justify-center items-center gap-2  p-4 w-[100%] md:w-[19%] lg:w-[19%]'>
                                         <div className='flex flex-col justify-center items-center'>
                                             {
-                                                signup?.color.startsWith("#") ? (
-                                                    <div className='w-[100px] flex justify-center items-center -mb-4 relative group'>
-                                                        <div style={{ backgroundColor: signup?.color }} className='flex justify-center items-center w-[100px] h-[100px] rounded-full'>
-                                                            <div className='text-center'>{signup.fullName.charAt(0).toUpperCase()}</div>
-                                                        </div>
-                                                    </div>
-                                                ) : (
-                                                    <div className='relative group  m-auto w-[120px] h-[120px] p-3 overflow-hidden rounded-full   '>
-                                                        <Image src={signup?.color} alt={"profile image"} width={100} height={100} className='rounded-full absolute left-1 right-1 top-1  p-2 m-auto  object-fill  cursor-pointer h-full w-full' />
-
-                                                    </div>
-                                                )
-
-
+                                                <div className='relative group  m-auto w-[120px] h-[120px] p-3 overflow-hidden rounded-full   '>
+                                                    <Image src={signup?.color} alt={"profile image"} width={100} height={100} className='rounded-full absolute left-1 right-1 top-1  p-2 m-auto  object-fill  cursor-pointer h-full w-full' />
+                                                </div>
                                             }
-
-
                                         </div>
                                     </div>
                                 }
@@ -291,7 +265,7 @@ function UserProfile() {
                                     {/* <p>{signup?.email}</p> */}
                                     <div className='flex gap-3 text-sm text-green-600 cursor-pointer'>
 
-                                        <p>{"$ " + Math.floor(parseInt(`${userInformation[0]?.previouscompany[0]?.ctc}`) / 12) + "/month"}</p>
+                                    {/* {userInformation&&<p>{"$ " + Math.floor(parseInt(`${ userInformation[0]?.ctc}`) / 12) + "/month"}</p>} */}
                                     </div>
                                 </div>
 
@@ -359,6 +333,7 @@ function UserProfile() {
                             </div>
                         </div>
                     ) : (
+                        // loading
                         <div className='flex flex-col justify-center items-center gap-2 shadow-md border m-2 p-4 w-[100%] md:w-[19%] lg:w-[19%] animate-pulse'>
                             <div className='flex flex-col justify-center items-center'>
                                 <div className='w-[200px] h-[200px] rounded-full bg-gray-300'></div>
@@ -398,53 +373,38 @@ function UserProfile() {
                             <h1>Basic Information</h1>
                             <div className=' flex flex-wrap w-full h-full '>
                                 {
-                                    userInformation && userInformation.map((item: any, index: any) => {
+                                    userInformation && userInformation?.map((item: any, index: any) => {
 
                                         return (<div key={index} className=' grid grid-cols-2  w-full h-full  md:grid-cols-3 lg:grid-cols-3'>
                                             <div>
                                                 <h1>Age</h1>
-                                                <p>{userAge(item.dateofBirth)}</p>
+                                                <p>{userAge(item?.dateofBirth)}</p>
 
                                             </div>
-                                            <div>
-                                                <h1>Years of Excellence</h1>
-                                                {
-                                                    item.previouscompany.map((item: any, index: any) => {
-
-                                                        return (<div key={index}>{item.yearofexcellence}</div>)
-                                                    })
-                                                }
-
-                                            </div>
+                                           
                                             <div>
                                                 <h1>Phone</h1>
-                                                <p>{item.phone}</p>
+                                                <p>{item?.phone}</p>
 
                                             </div>
-                                            <div>
-                                                <h1>CTC</h1>
-                                                <p>{item.previouscompany.map((item: any, index: any) => {
-                                                    return (<div key={index}>{item.ctc}</div>)
-                                                })}</p>
-
-                                            </div>
+                                          
                                             <div>
                                                 <h1>Location</h1>
-                                                <p>{item.CurrentAddress}</p>
+                                                <p>{item?.CurrentAddress}</p>
 
                                             </div>
                                             <div>
                                                 <h1>Mail</h1>
-                                                <p>{signup.email}</p>
+                                                <p>{signup?.email}</p>
 
                                             </div>
 
                                             <Button onClick={() => {
-                                                downloadCV(item.uploadCV, item.fname);
+                                                downloadCV(item?.uploadCV, item?.fname);
                                             }} className=' mt-2 font-bold w-[50%]  p-4 bg-blue-600'> {isDownloading && <Loader className=' animate-spin' />}Download CV</Button>
-                                            <Button onClick={() => {
-                                                CallingToUser(item.phone);
-                                            }} className=' font-bold mt-2  p-4 w-[50%] flex  transition-colors duration-500 bg-green-500'><Phone className=' rotate-90  mx-2  p-1' /> Call</Button>
+                                            <Link  href={item?.uploadCV} target="_blank" className=' font-bold mt-2 w-[50%] flex  transition-colors rounded-md duration-500 bg-green-500 items-center justify-center'><ResumeIcon className='  mx-2   size-6' /> CV
+                                            
+                                            </Link>
 
                                         </div>
                                         )
@@ -606,8 +566,6 @@ function UserProfile() {
 
                         </div>
                     </div>) : (<div className=' flex flex-col  justify-between  items-start mt-2 gap-4 w-[100%] md:w-[60%] lg:w-[60%] shadow-md border  p-2'>
-                        {/* Skeleton loading for Basic Information */}
-
                         <div className='border shadow-md p-4 mb-4  w-full'>
                             <div className='animate-pulse flex flex-col space-y-4'>
 
@@ -618,8 +576,6 @@ function UserProfile() {
                                 <div className='h-6 bg-gray-300 rounded'></div>
                             </div>
                         </div>
-
-                        {/* Skeleton loading for TabsContent */}
                         <div className='shadow-xl border p-4 w-full '>
                             <div className='animate-pulse space-y-4'>
                                 <div className='flex items-center justify-between'>
@@ -636,7 +592,7 @@ function UserProfile() {
                 }
                 {/* last part */}
                 {
-                    signup ? (<SimilarProfile interestedFiels={userInformation[0]?.interestedFiels} />) : (<div className="mt-2 flex flex-col flex-wrap w-[100%] shadow-md border m-auto md:w-[19%] lg:w-[19%] justify-center items-start p-2">
+                    signup ? (<SimilarProfile interestedFiels={userInformation[0]?.interestedFiels} seekerId={seekerId} />) : (<div className="mt-2 flex flex-col flex-wrap w-[100%] shadow-md border m-auto md:w-[19%] lg:w-[19%] justify-center items-start p-2">
                         <div className="flex justify-center items-center h-[200px] shadow-lg border p-6 w-full animate-pulse">
                             <div className="h-8 w-32 bg-gray-300 rounded"></div>
                         </div>

@@ -14,9 +14,7 @@ import axios from 'axios';
 function PostAJob() {
   const { theme } = useTheme();
   const router=useRouter()
-  // const interestedEmploymentTypes = 
   const [rating, setRating] = useState(0)
-  const [showPost,setShowPost]=useState(false);
   const [companyLogo, setCompanyLogo] = useState(false);
   const [mounted, setMounted] = useState(false);
 

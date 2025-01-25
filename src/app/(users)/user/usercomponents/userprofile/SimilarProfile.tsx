@@ -7,35 +7,23 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { OtherUserInfo } from '../../profile/[otherprofile]/page';
 
-function SimilarProfile({ interestedFiels }: any) {
+function SimilarProfile({ interestedFiels,seekerId }: any) {
     // console.log(interestedFiels)
     const [allUserData, setAllUserData] = useState<OtherUserInfo []>([]);
 
-    interface OtherUserType {
-        name: string,
-        image: string,
-        work: string,
-        yearofexperience: string,
-
-    }
     const router = useRouter()
     
     const HandlerOtherUser = (item: any) => {
-        const userId = 1
         router.push(`/user/profile/${item}`);
     }
     const AllUserDataFetch = async () => {
-        const send = (await axios.post("/api/profilesimilaruser/", { interestedFiels: interestedFiels })).data;
+        const send = (await axios.post("/api/user/profile/similar_profile", { interestedFiels: interestedFiels,seekerId })).data;
         setAllUserData(send.data);
-        // console.log(send)
+        console.log(send)
     }
-    // console.log(allUserData)
     useEffect(() => {
         AllUserDataFetch();
     }, [])
-    // allUserData.map((item: any, index: number) => {
-    //     console.log("item ", item.previouscompany[0].yearofexcellence)
-    // })
     return allUserData && (
         
 
@@ -48,8 +36,6 @@ function SimilarProfile({ interestedFiels }: any) {
                 <h1>Similar Profiles</h1>
                 <hr />
                 <ScrollArea className="h-full  w-full rounded-md border">
-
-
                     {allUserData?.map((item: any, index: any) => (
                         <div onClick={() => {
                             HandlerOtherUser(item?.userId?._id)
@@ -77,12 +63,7 @@ function SimilarProfile({ interestedFiels }: any) {
 
                             <div className='flex flex-col justify-center items-start ml-4  '>
                                 <h1>{item?.userId?.fullName}</h1>
-
-                                <p>{item.interestedFiels}</p>
-                                <p>{item?.previouscompany[0]?.yearofexcellence} Years of Experience</p>
-                                {/* <p>{item.previouscompany?.map((item: any, index: any) => {
-                                    <p>{item}</p>
-                                })}</p> */}
+                                <p>{item.interestedFiels}</p> 
                             </div>
                         </div>
                     ))}

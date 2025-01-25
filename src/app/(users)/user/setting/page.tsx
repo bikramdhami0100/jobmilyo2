@@ -1,7 +1,7 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import { CldUploadButton } from "next-cloudinary";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import axios from "axios";
 
@@ -9,11 +9,13 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { MyPopUpContext } from "../context/PopUpClose";
 
 
 
 const UserProfileSetting: React.FC = () => {
   const [user, setUser] = useState<any>();
+  const {seekerId}:any=useContext(MyPopUpContext);
   // const [editProfile,setEditProfile]=useState();
   const router=useRouter()
   const [editName,setEditName]=useState<any>()
@@ -34,8 +36,8 @@ const UserProfileSetting: React.FC = () => {
     // Handle successful upload, e.g., save the URL to state
 };
 
-  const fetchUser = async () => {
-    const send = (await axios.get("/api/profiledata/signup")).data;
+  const fetchUser = async (id:any) => {
+    const send = (await axios.get("/api/user/profile/setting",{params:{id}})).data;
     setUser(send.data.user);
     setEditName(send.data.user.fullName);
       seteditImage(send.data.user.color);
@@ -43,13 +45,15 @@ const UserProfileSetting: React.FC = () => {
   };
   console.log(editImage)
   useEffect(() => {
-    fetchUser();
-  }, []);
+    seekerId&&fetchUser(seekerId);
+  }, [seekerId]);
  const HandlerEditProfile=async()=>{
-  const send=(await axios.post("/api/profiledata/signup",{fullName:editName,color:editImage})).data;
-  console.log(send)
-  if(send.status==200){
-    router.push("/user/profile")
+  if(seekerId){
+    const send=(await axios.post("/api/user/profile/setting",{fullName:editName,color:editImage,id:seekerId})).data;
+    // console.log(send)
+    if(send?.status==200){
+      router.push("/user/profile")
+    }
   }
  }
 

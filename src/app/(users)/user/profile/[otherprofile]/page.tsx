@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { IconArrowBack, IconArrowBackUp, IconCalendarTime, IconCircleCheckFilled, IconEdit, IconEditCircle, IconEyeStar, IconPhoneCall, IconPhotoEdit, IconSignRightFilled, IconStar, IconStarFilled, IconStarOff, IconUpload } from '@tabler/icons-react';
 import { ArrowLeft, ArrowRightLeft, Bookmark, Download, Loader, PencilLine, Phone, PhoneCall, Plus, Rocket, SendHorizonal, Share, Star } from 'lucide-react';
 import Image from 'next/image'
-import React, { use, useEffect, useState } from 'react'
+import React, { use, useContext, useEffect, useState } from 'react'
 // import { ScrollArea } from "@/components/ui/scroll-area"
 import axios from "axios"
 import {
@@ -13,21 +13,43 @@ import {
   CardDescription,
 
 } from "@/components/ui/card"
+
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
 } from "@/components/ui/tabs"
+import {
+    EmailShareButton,
+    FacebookIcon,
+    FacebookShareButton,
+
+    LinkedinIcon,
+    LinkedinShareButton,
+
+    TwitterShareButton,
+
+} from "react-share";
 
 import { Input } from '@/components/ui/input';
-import { useSession } from 'next-auth/react';
-
-import { useRouter } from 'next/navigation';
 
 import '@smastrom/react-rating/style.css'
+import { BackpackIcon, ResumeIcon, Share1Icon } from '@radix-ui/react-icons';
 
-import Link from 'next/link';
+import { MyPopUpContext } from '../../context/PopUpClose';
+
+import '@smastrom/react-rating/style.css'
+import { useRouter } from 'next/navigation';
+
 export interface PreviousCompany {
   companyname: string | null;
   ctc: number;
@@ -67,29 +89,18 @@ export interface OtherUserInfo {
 }
 
 function OtherUserProfile({ params }: any) {
-  const id = params.otherprofile;
-  const [rating, setRating] = useState(4);
-
-  // const [otherprofile, setSignUp] = useState<any>();
-  const [userInformation, setuserInformation] = useState<any>([]);
+      const [shareUrl, setShareUrl] = useState<any>()
+      const router=useRouter();
+  const otherInfoId = params?.otherprofile;
+  const {seekerId}:any=useContext(MyPopUpContext);
   const [otherProfile, setOtherProfile] = useState<OtherUserInfo>();
-  const session = useSession()
-  const router = useRouter();
-
   const dataFromDatabase = async () => {
-    const send = (await axios.post("/api/profilesimilaruser/otherprofile", { id: id })).data
-    setOtherProfile(send.data)
+    const send = (await axios.post("/api/user/profile/other_profile", { otherInfoId,seekerId })).data
+    setOtherProfile(send?.data)
   }
   useEffect(() => {
     dataFromDatabase();
-
-
   }, []);
-
-
-
-
-
 
   const userAge = (dob: any) => {
     const birthdateinyear = new Date(dob).getFullYear();
@@ -99,14 +110,73 @@ function OtherUserProfile({ params }: any) {
 
   }
 
+  const shareProfile = async () => {
+    const data = await navigator.clipboard.writeText(window.location.href);
+    const readdata = await navigator.clipboard.readText();
+    console.log(readdata)
+    setShareUrl(readdata)
+}
   // console.log(otherProfile)
   return (
     <>
       {
        otherProfile &&otherProfile ? (<div>
-
+           
           {/* main part */}
           <div className=' flex flex-wrap justify-center items-start  w-full h-full '>
+            {/* header */}
+            <div className=' flex items-center justify-between m-auto p-4 w-full'>
+                <span onClick={() => {
+                    router.back()
+                }} className='  cursor-pointer flex justify-center items-center gap-1 text-sm'>  <ArrowLeft /> back</span>
+                <Dialog>
+                    <DialogTrigger onClick={shareProfile}>
+                        <span
+                            // onClick={shareProfile}
+                            className="cursor-pointer flex font-semibold justify-center items-center gap-1 text-sm"
+                        >
+                            <Share1Icon /> share
+                        </span>
+                    </DialogTrigger>
+                    <DialogContent className="text-black bg-gray-300">
+                        <DialogHeader>
+                            <DialogTitle>share in your post</DialogTitle>
+                            <DialogDescription className=' text-black '>
+                                <div className=' text-start font-bold gap-2 m-1 '>
+                                    share
+                                </div>
+                                <div className="flex flex-col items-center gap-2">
+                                    <Input
+                                        type="text"
+                                        defaultValue={shareUrl}
+                                        // readOnly
+                                        placeholder={shareUrl}
+                                        className="p-2 border  text-black rounded w-full"
+                                    />
+                                    <div className=' flex gap-2 items-center justify-center'>
+                                        {
+                                            shareUrl && <FacebookShareButton url={`${shareUrl}`}>
+                                                <FacebookIcon size={40} round={true}></FacebookIcon>
+                                            </FacebookShareButton>
+                                        }
+                                        {
+                                            shareUrl && <LinkedinShareButton url={`${shareUrl}`}>
+                                                <LinkedinIcon size={40} round={true} />
+                                            </LinkedinShareButton>
+                                        }
+                                        {
+                                            shareUrl && <TwitterShareButton url={`${shareUrl}`}>
+                                                <Image alt='image' src={"/images/social/twitter.png"} width={40} height={4} className=' rounded-full'></Image>
+                                            </TwitterShareButton>
+                                        }
+                                    </div>
+                                </div>
+                            </DialogDescription>
+                        </DialogHeader>
+                    </DialogContent>
+                </Dialog>
+
+            </div>
             {/*  first part of user profile*/}
             <div className=' w-full md:w-[50%] lg:w-[50%] h-full '>
               {
@@ -152,7 +222,6 @@ function OtherUserProfile({ params }: any) {
                           otherProfile?.previouscompany?.map((item: PreviousCompany, index: number) => {
                             return (
                               <>
-
                                 <p>{"$ " + Math.floor(parseInt(`${item?.ctc}`) / 12) + "/month"}</p>
                               </>
                             )
@@ -208,27 +277,10 @@ function OtherUserProfile({ params }: any) {
 
                       </div>
                       <div>
-                        <h1>Years of Excellence</h1>
-                        {
-                          otherProfile?.previouscompany?.map((item: PreviousCompany, index: any) => {
-
-                            return (<div key={index}>{item.yearofexcellence}</div>)
-                          })
-                        }
-
-                      </div>
-                      <div>
                         <h1>Phone</h1>
                         <p>{otherProfile?.phone}</p>
-
                       </div>
-                      <div>
-                        <h1>CTC</h1>
-                        <p>{otherProfile?.previouscompany?.map((item: PreviousCompany, index: any) => {
-                          return (<div key={index}>{item.ctc}</div>)
-                        })}</p>
-
-                      </div>
+                     
                       <div>
                         <h1>Location</h1>
                         <p>{otherProfile?.PermanentAddress}</p>
@@ -239,8 +291,6 @@ function OtherUserProfile({ params }: any) {
                         <p className=' '>{otherProfile?.userId?.email}</p>
 
                       </div>
-
-
                     </div>
 
                   </div>
@@ -407,6 +457,7 @@ function OtherUserProfile({ params }: any) {
 
           </div>
         </div >) : (<div className='flex flex-wrap justify-center items-start w-full h-full'>
+        
           {/*  first part of user profile*/}
           <div className='w-full md:w-[50%] lg:w-[50%] h-full'>
             <div className='flex flex-col justify-center items-center gap-2 shadow-md border m-2 p-4 w-[100%]'>

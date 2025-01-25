@@ -4,6 +4,7 @@ import { createContext, useEffect, useState  } from "react";
  function PopUpClose({children}:any) {
      const [OpenPopUp,setOpenPopUp]=useState<boolean>(false);
      const [seekerId,setSeekerId]=useState<any>("");
+         const [validUser, setValidUser] = useState<any>();
     useEffect(()=>{
       if(typeof window !==undefined){
          const id=localStorage.getItem("userId")
@@ -11,7 +12,7 @@ import { createContext, useEffect, useState  } from "react";
       }
     },[]);
    return (
-      <MyPopUpContext.Provider value={{OpenPopUp,setOpenPopUp,seekerId,setSeekerId}}>
+      <MyPopUpContext.Provider value={{OpenPopUp,setOpenPopUp,seekerId,setSeekerId,validUser, setValidUser}}>
            {children}
       </MyPopUpContext.Provider>
    )
