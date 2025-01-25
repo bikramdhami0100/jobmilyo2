@@ -186,11 +186,11 @@ function Navbar() {
                 if (data?.message == "User Already Exists") {
                     localStorage.setItem("userId", data?.results._id);
 
-                    router.push("/employer");
+                    router.push("/user/userinformation");
                 }
                 localStorage.setItem("userId", data?.results._id);
 
-                router.push("/employer");
+                router.push("/user/userinformation");
             }
 
             // console.log(userInfo?.data,"user Info");
@@ -301,14 +301,15 @@ function Navbar() {
 
                         </div> : <div className=' flex  gap-1'>
                             <Button onClick={() => {
-                                setOpenPopUp(!OpenPopUp)
+                                // setOpenPopUp(!OpenPopUp)
+                                seekerGoogleLogin();
                             }} className=' bg-blue-600'>JOB SEEKER</Button>
                             <Button onClick={() => {
 
                                 googleLogin()
                             }} className=' bg-blue-600'>EMPLOYER</Button>
 
-                            <AlertDialog open={OpenPopUp} >
+                            {/* <AlertDialog open={OpenPopUp} >
                                 <AlertDialogContent className=' bg-gray-400'>
                                     <AlertDialogHeader>
                                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -337,7 +338,7 @@ function Navbar() {
                                         }}>Cancel</AlertDialogCancel>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
-                            </AlertDialog>
+                            </AlertDialog> */}
 
                         </div>
                 }

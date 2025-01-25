@@ -1,58 +1,32 @@
 "use client"
-import React, { useEffect, useState } from 'react'
-
-import { useSelector } from "react-redux";
+import React, { useContext, useEffect, useState } from 'react'
 import { useTheme } from 'next-themes';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-
 import { ToastAction } from "@/components/ui/toast"
 import { useToast } from "@/components/ui/use-toast"
 import { CldUploadButton } from 'next-cloudinary';
-
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
 import axios from 'axios';
+import { MyPopUpContext } from '../context/PopUpClose';
 
 // import { profile } from 'console';
 function userInformation() {
-    interface PrecompanyDetailsType {
-        companyname: string,
-        ctc: string,
-        workingtime: string,
-        previousrole: string,
-        yearofexcellence: string
-
-    }
+    
+    const { theme } = useTheme();
     const [mounted, setMounted] = useState(false);
-
+     const {setSeekerId}=useContext<any>(MyPopUpContext);
     useEffect(() => {
         setMounted(true);
     }, []);
-    const { toast } = useToast()
-    const [preCompanyForm, setPreCompanyForm] = useState<PrecompanyDetailsType>({
-        companyname: "",
-        ctc: "",
-        workingtime: "",
-        previousrole: "",
-        yearofexcellence: ""
-    })
+    const { toast } = useToast();
+    const router = useRouter();
+  
     const [existpreCompany, setexistpreCompany] = useState<string>("no")
-
     const [cv, setcv] = useState(false);
     const [marksheet, setmarksheet] = useState(false);
-
+    // console.log(userId,"This is user Id")
     const [formData, setFormData] = useState<any>({
         fname: '',
         gender: '',
@@ -78,7 +52,7 @@ function userInformation() {
         interestedEmploymentType: '',
         expectedPositionLevel: '',
         uploadCV: "",
-
+        userId:"",
     });
 
 
@@ -114,21 +88,6 @@ function userInformation() {
         }
         // Handle successful upload, e.g., save the URL to state
     };
-
-    const router = useRouter();
-    const selector: any = useSelector((state: any) => {
-
-        return state.signupinfo.Users;
-    });
-
-    if (selector[0] == undefined) {
-        // router.push("/user/signup");
-    }
-
-    const { theme } = useTheme();
-
-
-
     const Gender = ["Selcet Gender", "Male", "Female", "Other"];
     const boardNames = ["Select Board", "Nepal Board", "Higher Secondary Education Board", "Tribhuvan University", "Kathmandu University", "Pokhara University ", "Council for Technical Education and Vocational Training", "Nepal Medical Council", "Nepal Bar Council", "Farwestern University"];
     const levelNames = ["Select Level", "Undergraduate", "Primary Education", "Lower Secondary Education", "Secondary Education", "Higher Secondary Education", "Bachelor's Degree", "Master's Degree", "SEE", "Phd", "+2/PCL"];
@@ -144,8 +103,8 @@ function userInformation() {
     const SubmitData = async () => {
 
 
-        const data = (await axios.post("/api/userinfo/", formData)).data;
-        console.log("data", data)
+        const data = (await axios.post("/api/user/userinfo", formData)).data;
+
         if (data.message?.errors) {
             toast({
                 variant: "destructive",
@@ -153,7 +112,9 @@ function userInformation() {
                 description: "सबै क्षेत्रहरू आवश्यक छन् कृपया भर्नुहोस् (all fields are required please fillup )",
                 action: <ToastAction altText="Try again">Try again</ToastAction>,
             })
-        } else if (data.status === 200) {
+        } else if (data?.data
+            
+        ) {
             router.push("/user/profile")
         }
 
@@ -170,31 +131,32 @@ function userInformation() {
         // Validation
 
     };
-    const PreviousCompanyFormData = (e: any) => {
-        const { name, value } = e.target;
-        setPreCompanyForm({
-            ...preCompanyForm,
-            [name]: value
-        });
-        if (existpreCompany == "yes") {
-            setFormData((prevState: any) => ({
-                ...prevState,
-                previouscompany: [preCompanyForm]
-            }))
-        } else {
-            setFormData((prevState: any) => ({
-                ...prevState,
-                previouscompany: existpreCompany
-            }))
-        }
-    }
-    const submitPrecompanyData = async () => {
-        console.log(preCompanyForm)
-    }
   
+     const HandlerCheckUserDetails=async(id:any)=>{
+        const data = (await axios.get("/api/user/userinfo", {
+            params:{
+                id
+            }
+        })).data;
+        console.log(data)
+        if (data?.data?._id && data?.userType=="seeker") {
+             router.push("/user/profile")
+        }
+     }
+
     useEffect(()=>{
-       
+       if(typeof window!==undefined){
+        const id= localStorage.getItem("userId");
+        setFormData((prevState: any) => ({
+            ...prevState,
+            userId: id
+        }))
+       id&& HandlerCheckUserDetails(id);
+        setSeekerId(id);
+       }
+     
     },[])
+    console.log(formData?.userId)
     if (!mounted) return null;
     return (
         <div className=' flex  flex-col justify-around items-center gap-10 '>
@@ -339,70 +301,6 @@ function userInformation() {
                 </div>
                 {/* Employment  */}
                 <div className=' flex flex-col shadow-lg border p-4  m-auto gap-4 w-[80%]'>
-                    <h1 className=' '> Employment Information</h1>
-                    <div>
-                        <label htmlFor="previouscompany">Previour Company</label>
-                        <RadioGroup defaultValue={existpreCompany} onValueChange={(e) => {
-                            setexistpreCompany(e)
-                        }} >
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="yes" id="yes" />
-                                <Label htmlFor="yes">Yes</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="no" id="no" />
-                                <Label htmlFor="no">No</Label>
-                            </div>
-                        </RadioGroup>
-                        {
-                            existpreCompany.toLowerCase() === "yes" ? <>
-                                <Dialog >
-                                    <DialogTrigger>
-                                        <Button className=' mt-2 '>Add Details</Button> </DialogTrigger>
-                                    <DialogContent className=' bg-white text-black '>
-                                        <DialogHeader>
-                                            <DialogTitle>Some Company Details ?</DialogTitle>
-                                            <DialogDescription>
-                                                <div className=' w-full h-full text-black '>
-
-                                                    <div className=' flex flex-col justify-start items-start gap-2'>
-                                                        <div className=' w-full h-full '>
-                                                            <h1>Company name</h1>
-                                                            <Input onChange={PreviousCompanyFormData} name='companyname' value={preCompanyForm.companyname} type='text' className='' ></Input>
-                                                        </div>
-                                                        <div className=' w-full h-full '>
-                                                            <h1>CTC (cost-to-company)</h1>
-                                                            <Input onChange={PreviousCompanyFormData} name='ctc' value={preCompanyForm.ctc} placeholder=' Enter salary per year in $' type='number' className='' ></Input>
-                                                        </div>
-                                                        <div className=' w-full h-full '>
-                                                            <h1>Working time</h1>
-                                                            <Input onChange={PreviousCompanyFormData} name='workingtime' value={preCompanyForm.workingtime} type='text' className='' ></Input>
-                                                        </div>
-                                                        <div className=' w-full h-full '>
-                                                            <h1>Previous role</h1>
-                                                            <Input onChange={PreviousCompanyFormData} name='previousrole' value={preCompanyForm.previousrole} type='text' className='' ></Input>
-                                                        </div>
-                                                        <div className=' w-full h-full '>
-                                                            <h1>Year of excellence</h1>
-                                                            <Input onChange={PreviousCompanyFormData} name='yearofexcellence' value={preCompanyForm.yearofexcellence} type='text' className='' ></Input>
-                                                        </div>
-                                                        <DialogClose>
-                                                            <Button onClick={submitPrecompanyData} className=' w-full h-full'>Submit</Button>
-                                                        </DialogClose>
-                                                    </div>
-
-                                                </div>
-                                            </DialogDescription>
-                                        </DialogHeader>
-                                    </DialogContent>
-                                </Dialog>
-
-                            </> : ""
-                        }
-                        {/* <Input type="checkbox" name='previouscompany' placeholder='Optional' value={formData.previouscompany} onChange={handleChange}  ></Input>
-                        <Input type="checkbox" name='previouscompany' placeholder='Optional' value={formData.previouscompany} onChange={handleChange}  ></Input> */}
-                    </div>
-
                     <div>
                         <label htmlFor="interestedFiels">Interested Field</label>
                         <select className={`flex ${theme == "light" ? "bg-[rgb(255,255,255)]" : "bg-[rgb(2,8,23)] "} border w-full p-2 rounded-md outline-1 outline-black`} name="interestedFiels" value={formData.interestedFiels} id="" onChange={handleChange}>

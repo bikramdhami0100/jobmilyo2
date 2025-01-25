@@ -18,11 +18,10 @@ export async function POST(req: any) {
             email: data?.email,
             password: "null",
             userVerify: data?.email_verified,
-            userType: "employer",
+            userType: "seeker",
         });
 
         const saveResult = await employer.save();
-        console.log(employer)
         return NextResponse.json({ results: saveResult })
     } catch (error) {
         return NextResponse.json({ message: "Server Error", status: 500 })

@@ -24,7 +24,7 @@ export default async function UserLayout({
             <Toaster  />
 
           </div>
-          <div className={`z-0 mt-[70px] w-full h-full `} >
+          <div className={`z-0 mt-[80px] w-full h-full `} >
             {children}
           </div>
           {/* footer */}

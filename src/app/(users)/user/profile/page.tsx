@@ -1,6 +1,6 @@
 "use client"
 import { Button } from '@/components/ui/button';
-import { IconArrowBack, IconArrowBackUp, IconCalendarTime, IconCircleCheckFilled, IconEdit, IconEditCircle, IconEyeStar, IconPhoneCall, IconPhotoEdit, IconSignRightFilled, IconStar, IconStarFilled, IconStarOff, IconUpload } from '@tabler/icons-react';
+import { IconCircleCheckFilled, IconStarFilled } from '@tabler/icons-react';
 import { ArrowLeft, ArrowRightLeft, Bookmark, Download, Loader, PencilLine, Phone, PhoneCall, Plus, Rocket, SendHorizonal, Share, Star } from 'lucide-react';
 import Image from 'next/image'
 import React, { use, useEffect, useState } from 'react'
@@ -9,22 +9,17 @@ import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
 } from "@/components/ui/card"
 import {
     Dialog,
     DialogClose,
     DialogContent,
     DialogDescription,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
 import axios from "axios";
-import { Label } from "@/components/ui/label"
 import {
     Tabs,
     TabsContent,
@@ -66,7 +61,7 @@ function UserProfile() {
     const [shareUrl, setShareUrl] = useState<any>()
     const [signup, setSignUp] = useState<any>();
     const [userInformation, setuserInformation] = useState<any>([]);
-    var [allSkill, setAllSkill] = useState<string[]>([]);
+    var [allSkill, setAllSkill] = useState<any>("");
 
     const [showUploadButton, setShowUploadButton] = useState(false);
     const session = useSession()
@@ -98,22 +93,20 @@ function UserProfile() {
     };
 
 
-    const dataFromDatabase = async () => {
-        const data = await fetch("/api/profiledata/", {
-            method: "get"
-        })
-        const restult = await data.json();
+    const dataFromDatabase = async (id:any) => {
+        const result = (await axios.get("/api/user/profile",{params:{id}})).data;
 
-        if (restult) {
-            setuserInformation(restult.data.userInfos);
-            setSignUp(restult.data.user);
+        if (result) {
+            setuserInformation(result.data.userInfos);
+            setSignUp(result.data.user);
         }
     }
     useEffect(() => {
-        dataFromDatabase();
-
-
-    }, []);
+        if(typeof window!==undefined){
+            const id=localStorage.getItem("userId");
+            dataFromDatabase(id);
+        }
+    }, [allSkill]);
 
     const downloadCV = async (imageURL: any, username: any) => {
         setIsDownloading(true);
@@ -171,7 +164,7 @@ function UserProfile() {
 
                 // setSkillLoader(false)
                 setTimeout(() => {
-                    dataFromDatabase()
+                    setAllSkill("Again Show Data")
 
                 }, 100);
                 router.push("/user/profile")
