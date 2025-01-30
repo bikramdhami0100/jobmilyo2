@@ -20,6 +20,7 @@ function UserHome() {
           <Image alt="image" style={{}} src={"/banner2.jpeg"} width={500} height={200} className=" object-fill w-full h-full"></Image>
         </div>
       </div>
+      
       <TreandingJob />
       <CompanySlider />
     </div>

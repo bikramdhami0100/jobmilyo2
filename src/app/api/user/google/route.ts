@@ -18,11 +18,10 @@ export async function POST(req: any) {
             email: data?.email,
             password: "null",
             userVerify: data?.email_verified,
-            userType: "employer",
+            userType: "seeker",
         });
 
         const saveResult = await employer.save();
-        console.log(employer)
         return NextResponse.json({ results: saveResult })
     } catch (error) {
         return NextResponse.json({ message: "Server Error", status: 500 })
@@ -37,7 +36,7 @@ export async function GET(req: any) {
     await mongodbconn;
    const {searchParams}=new URL(req.url);
  const id=await searchParams.get("id");
-
+  
     try {
          const findExistUser=await Usersignup.findById(id).select("-password");
          if(!findExistUser?.email){

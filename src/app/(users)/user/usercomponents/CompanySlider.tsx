@@ -52,7 +52,7 @@ export function CompanySlider() {
               dataCompany.map((item, index) => {
                 return (
 
-                 <Link href={item.companylink}>
+                 <Link key={index} href={item.companylink}>
                    <Image key={index} alt="company image" src={item.image} width={100} height={60} className="mt-4 h-[60px] cursor-pointer  lg:h-[70px]  object-fill w-[150px] " />
                  </Link>
 

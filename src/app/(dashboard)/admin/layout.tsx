@@ -19,7 +19,7 @@ export default async function AdminLayout({
 
   return (
     <>
-      <CheckValidAdmin/>
+      {/* <CheckValidAdmin/> */}
       <div id="adminHome" className="w-full h-full">
         {/* Navbar */}
         <div className=" fixed z-10  flex justify-end items-end w-full">

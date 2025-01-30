@@ -14,8 +14,8 @@ export default async function UserLayout({
 
   return (
     <>
- 
-     <PopUpClose>
+      <div>
+      <PopUpClose>
       <div id="userHome" className=" w-full h-full" >
         <div className=" w-full h-full">
           {/* navbar and toast message */}
@@ -34,6 +34,8 @@ export default async function UserLayout({
         </div>
       </div>
       </PopUpClose>
+      </div>
+    
      
     </>
   );

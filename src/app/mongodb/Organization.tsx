@@ -5,7 +5,10 @@ const organizationSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'usersignups',
     },
-    name: {
+    logo:{
+        type:String,
+    },
+    organizationName: {
         type: String,
         required: true,
         trim: true,
@@ -31,53 +34,44 @@ const organizationSchema = new mongoose.Schema({
     contact: {
         email: {
             type: String,
-            required: true,
-            match: /.+\@.+\..+/,
+            unique:true,
         },
         phone: {
             type: String,
-            required: true,
         },
         address: {
             type: String,
-            required: true,
             trim: true,
         },
-    },
-    website: {
-        type: String,
-        required: true,
-        match: /^(https?:\/\/)?([\w-]+)+([\w.-]*)*\/?$/, // Basic URL validation
+        website: {
+            type: String,
+        },
     },
     socialMedia: {
         linkedin: {
             type: String,
-            match: /^(https?:\/\/)?(www\.)?linkedin\.com\/.+$/,
         },
         twitter: {
             type: String,
-            match: /^(https?:\/\/)?(www\.)?twitter\.com\/.+$/,
         },
         facebook: {
             type: String,
-            match: /^(https?:\/\/)?(www\.)?facebook\.com\/.+$/,
         },
     },
     services: {
         type: [String],
-        required: true,
     },
     isActive: {
         type: Boolean,
         default: true,
     },
-    post: {
+    post:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'postajobs',
     }
 });
 
 // Create the model
-const Organization = mongoose.models.organizations || mongoose.model("organizations", organizationSchema);
+export const Organization = mongoose.models.organizations || mongoose.model("organizations", organizationSchema);
 
-module.exports = Organization;
+

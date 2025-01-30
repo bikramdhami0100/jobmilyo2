@@ -232,7 +232,7 @@
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import React, { useContext, useEffect, useState } from 'react'
-import { LogOut, MessageCircle, MessagesSquare, Moon, PersonStanding, Send, Settings, Sun } from "lucide-react"
+import { AppWindow, BriefcaseBusiness, LayoutDashboard, LogOut, Menu, MessageCircle, MessagesSquare, Moon, PersonStanding, Send, Settings, Sun, User } from "lucide-react"
 import { useTheme } from "next-themes"
 import { usePathname, useRouter } from 'next/navigation'
 import {
@@ -243,75 +243,113 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
+import {
+    Sheet,
+    SheetClose,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from "@/components/ui/sheet";
 import { PersonIcon } from '@radix-ui/react-icons'
-import CheckUserType from '@/app/components/CheckUserType'
+// import CheckUserType from '@/app/components/CheckUserType'
 
 import axios from 'axios'
 import { MyEmployerLogInContext } from '@/app/(employer)/context/EmployerLogInContext'
+import Link from 'next/link'
 
 function EmployerNavbar() {
     const router = useRouter();
-    const path = usePathname()
-    const [resultData, setResultData] = useState<any>();
-    const [token, settoken] = useState<any>();
+    const pathname = usePathname()
     const { setTheme, theme } = useTheme();
-    const [mounted, setMounted] = useState(false);
-    const {employerData,setEmployerData}=useContext<any>(MyEmployerLogInContext);
+    const { employerData, setEmployerData } = useContext<any>(MyEmployerLogInContext);
+    const [showNavigationName,setShowNavigationName]=useState<any>("DASHBOARD");
 
-    console.log(CheckUserType)
-    useEffect(() => {
-        setMounted(true);
-    }, []);
+    const items = [
+        {
+            name: "DASHBOARD",
+            path: "/employer",
+            icon: LayoutDashboard
+        },
+        {
+            name: "POST JOB",
+            path: "/employer/postjob",
+            icon: BriefcaseBusiness
+        },
+        {
+            name: "POST INTERNSHIP",
+            path: "/employer/internship",
+            icon: User
+        },
+        {
+            name: "APPLICATION",
+            path: "/employer/application",
+            icon: AppWindow
+        },
+        {
+            name: "Message",
+            path: "/messaging",
+            icon: MessageCircle
+        },
 
-    const HandleLogOut = async () => {
-        // console.log("log out c")
-        const data = await fetch(`/api/login/logout?token=${token}`, {
-            method: "get",
 
-        })
-
-        if (data.ok) {
-            const result = await data.json()
-            if (result) {
-                router.push("/user/login/")
-
-            }
-
-        }
-    }
-
-
-    const handlerGetEmployerDetails = async (id: any) => {
-        const data = (await axios.get("/api/employer", {
-            params: {
-                id: id,
-            }
-        })).data;
-         setEmployerData(data);
-        setResultData(data?.results)
-
-    }
-
-    useEffect(() => {
-        if (typeof window !== undefined) {
-            const id = localStorage.getItem("employerId");
-            handlerGetEmployerDetails(id)
-        }
-    }, []);
-    // If the theme is not mounted yet, do not render the navbar
-    if (!mounted) return null;
-
+    ]
+  const filterName=items.filter((item)=>item.path==pathname);
+  useEffect(()=>{
+     setShowNavigationName(filterName[0])
+  },[pathname])
     return (
-        <div className={`flex w-full   justify-between m-auto shadow-md items-center p-3  `}>
+        <div className={`flex w-full  dark:bg-[rgb(17,24,39)] dark:text-white  justify-between m-auto shadow-md items-center p-3  `}>
 
             <div className=' flex gap-1 justify-center items-center'>
                 <div className=' visible md:hidden lg:hidden'>
+                    <Sheet>
+                        <SheetTrigger>
+                            <Menu className="size-10 m-2" />
+                        </SheetTrigger>
+                        <SheetContent className=' bg-white dark:bg-[rgb(17,24,39)] dark:text-white text-black' side="left">
+                            <SheetHeader>
+                                <SheetTitle>
 
+                                    <Image
+                                        alt="logo"
+                                        src="/images/logo.png"
+                                        width={80}
+                                        height={80}
+                                        className="rounded-full shadow-sm object-cover object-center"
+                                    />
+
+                                </SheetTitle>
+                                <SheetDescription>
+                                    <div>
+                                        {items.map((item, index) => (
+                                            <SheetClose asChild key={index}>
+                                                <Link
+                                                    href={item?.path}
+                                                    className={`flex gap-2 items-center rounded-md p-2 border m-2 hover:bg-blue-400 hover:text-white ${pathname === item?.path ? "bg-blue-700 text-white" : ""
+                                                        }`}
+                                                >
+                                                    <item.icon />
+                                                    <span>{item?.name}</span>
+                                                </Link>
+                                            </SheetClose>
+                                        ))}
+                                    </div>
+                                </SheetDescription>
+                            </SheetHeader>
+                        </SheetContent>
+                    </Sheet>
 
                 </div>
-                <Image className=' cursor-pointer' onClick={() => {
-                    router.push("/user")
-                }} alt='logo' src={"/images/logo.png"} height={100} width={100} /></div>
+                <div className=' font-bold underline underline-offset-1 underline-[8px]'>
+                {showNavigationName?.name}
+                </div>
+                {/* <Image className=' cursor-pointer' onClick={() => {
+                    router.push("/employer")
+                }} alt='logo' src={"/images/logo.png"} height={100} width={100} /> */}
+
+            </div>
 
 
             <div className=' flex  gap-[6px]'>
@@ -320,7 +358,7 @@ function EmployerNavbar() {
                         <DropdownMenuTrigger className=' outline-none' ><div>
 
                             <div className='relative group w-[40px] h-[35px] rounded-full  border '>
-                                <Image src={resultData?.color} alt={"profile image"} width={100} height={100} className=' object-fill h-[40px] w-[40px] rounded-[20px] ' />
+                                <Image src={employerData?.color} alt={"profile image"} width={100} height={100} className=' object-fill h-[40px] w-[40px] rounded-[20px] ' />
 
 
                             </div>
@@ -343,7 +381,7 @@ function EmployerNavbar() {
                             </DropdownMenuItem>
 
                             <DropdownMenuItem className=' cursor-pointer flex gap-1' onClick={() => {
-                                HandleLogOut();
+                                // HandleLogOut();
                             }} ><LogOut size={20} />log out</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

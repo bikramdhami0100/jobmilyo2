@@ -7,7 +7,7 @@ function AHome() {
     <div>
         <AdminDashoBoard/>
        {/* <AdminHome/> */}
-       
+      
     </div>
   )
 }

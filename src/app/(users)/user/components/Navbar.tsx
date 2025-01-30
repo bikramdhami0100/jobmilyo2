@@ -142,8 +142,7 @@ function Navbar() {
             );
 
 
-            const data = (await axios.post("/api/google", userInfo.data)).data;
-            console.log(data, "This is data")
+            const data = (await axios.post("/api/user/google", userInfo.data)).data;
             if (typeof window !== undefined) {
                 console.log(data)
                 if (data?.message == "User Already Exists") {
@@ -266,11 +265,26 @@ function Navbar() {
                         </div> : <div className=' flex  gap-1'>
                             <Button onClick={() => {
                                 // setOpenPopUp(!OpenPopUp)
-                                seekerGoogleLogin();
+                                if(typeof window!==undefined){
+                                     const data=localStorage.getItem("userId");
+                                     if(!data){ 
+                                         seekerGoogleLogin();
+                                      }else{
+                                          router.push(`/user/profile`)
+                                      }
+                                }
                             }} className=' bg-blue-600'>Job Seeker</Button>
                             <Button onClick={() => {
 
-                                googleLogin()
+                                
+                                if(typeof window!==undefined){
+                                    const data=localStorage.getItem("employerId");
+                                    if(!data){ 
+                                        googleLogin()
+                                     }else{
+                                         router.push("/employer")
+                                     }
+                               }
                             }} className=' bg-blue-600'>Employer</Button>
 
                             {/* <AlertDialog open={OpenPopUp} >

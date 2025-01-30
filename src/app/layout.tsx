@@ -10,8 +10,8 @@ import "./globals.css";
 import SplashScreen from "./components/SplashScreen";
 import NextSessionProvider from "./Provider";
 import { getServerSession } from "next-auth";
-import { MyProviders } from "../Redux/Provider";
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import ExistUserContext from "@/context/ExistUser";
 
 const lora = Lora({ subsets: ["latin"] });
 
@@ -19,6 +19,7 @@ export const metadata: Metadata = {
   title: "Job मिल्यो",
   description: "Job मिल्यो website is one of the popular website for job seeker and it's developed by K_DBMS Team of bsc.CSIT of farwestern University",
 };
+
 
 export default async function RootLayout({
   children,
@@ -28,17 +29,16 @@ export default async function RootLayout({
 
   const session = await getServerSession();
   return (
-    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
     <html lang="en">
       <body className={lora.className} id="defaultHome" >
-          <MyProviders>
+      <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
+         
         <NextSessionProvider session={session}>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             enableColorScheme
-            
             disableTransitionOnChange
           >   
             <div className=" fixed  z-30 top-0">
@@ -49,17 +49,19 @@ export default async function RootLayout({
         
           routerConfig={extractRouterConfig(ourFileRouter)}
         />
+           {/* <ExistUserContext> */}
+
            {children}
+           {/* </ExistUserContext> */}
             </div>
 
           </ThemeProvider>
         </NextSessionProvider>
        
-        </MyProviders>
+    </GoogleOAuthProvider>
       </body>
       
     </html>
-    </GoogleOAuthProvider>
     
   );
 }

@@ -10,38 +10,36 @@ export const metadata: Metadata = {
   description: "Job मिल्यो website is one of the popular websites for job seekers, developed by the K_DBMS Team of BSc.CSIT at Far Western University",
 };
 
-export default async function AdminLayout({
+export default async function EmployerLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: any) {
 
 
   return (
     <>
-      
-      <div id="employer" className="w-full h-full">
+       <div>
       <EmployerContext>
-        {/* Navbar */}
-        <div className="  backdrop-blur-lg fixed  z-30  flex justify-end items-end lg:w-[80%] w-full md:w-[80%]  right-0">
-          <div className="  w-full ">
-            <EmployerNavbar/>
+        <div id="employer" className="w-full h-full">
+          {/* Navbar */}
+          <div className="  backdrop-blur-lg fixed  z-30  flex justify-end items-end lg:w-[80%] w-full md:w-[80%]  right-0">
+            <div className="  w-full ">
+              <EmployerNavbar />
+            </div>
+          </div>
+          {/* Main Content */}
+          <div className="flex  flex-grow flex-row justify-between w-full h-full ">
+            {/* Sidebar (hidden on small screens) */}
+            <div className=" fixed top-0 hidden lg:flex md:flex w-[20%] min-h-screen ">
+              <EDashboardSideBar />
+            </div>
+
+            <div className=" flex md:ml-[20%] lg:ml-[20%] flex-col flex-grow overflow-y-auto lg:mt-[70px] mt-[80px]">
+              {children}
+            </div>
           </div>
         </div>
-        {/* Main Content */}
-        <div className="flex  flex-grow flex-row justify-between w-full h-full ">
-          {/* Sidebar (hidden on small screens) */}
-          <div className=" fixed top-0 hidden lg:flex md:flex w-[20%] min-h-screen ">
-            <EDashboardSideBar/>
-          </div>
-          
-          <div className=" flex md:ml-[20%] lg:ml-[20%] flex-col flex-grow overflow-y-auto mt-[70px]">
-            {children}
-          </div>
-        </div>
-        </EmployerContext>
+      </EmployerContext>
       </div>
-     
     </>
   );
 }
