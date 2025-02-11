@@ -7,8 +7,6 @@ import EDashboard from './components/Dashboard';
 function AdminHome() {
 const {employerData,organizationData}=useContext<any>(MyEmployerLogInContext);
 
-console.log(organizationData,"organization")
-
   return (
     <div>
        { !organizationData&&

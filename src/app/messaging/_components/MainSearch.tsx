@@ -4,12 +4,13 @@ import { CheckCheck, ListFilter, Search } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react'
 
-function MainSearch({setSearchItem,results,searchItem,handlerSubmitId,userCallBackHandler}:any) {
+function MainSearch({setSearchItem,setSelectItem ,results,searchItem}:any) {
+  console.log(results,"data")
   return (
     <>
        <div >
           {/* top part */}
-          <div className=' w-full flex justify-between '>
+          <div className=' w-full flex justify-between  '>
             <h1>Messaging</h1>
             <span><ListFilter /></span>
           </div>
@@ -33,52 +34,28 @@ function MainSearch({setSearchItem,results,searchItem,handlerSubmitId,userCallBa
                 ' 
               />
             </div>
+
+            
             <div>
-              {results.filter((item:any) => {
-                return searchItem?.length > 2 ?  searchItem.toLowerCase().trim()==item?.name?.toLowerCase().trim() : item;
-              }).map((item:any, index:any) => {
-                return (
-                  <div 
-                    key={index} 
-                    onClick={() => {
-                      handlerSubmitId(item?.id);
-                    }} 
-                    className=' 
-                      flex 
-                      border 
-                      mt-2 
-                      p-2 
-                      rounded-md 
-                      gap-2 
-                      justify-center 
-                      cursor-pointer 
-                      items-center
-                    '
-                  >
-                    {/* image part */}
-                    <div>
-                      <Image 
-                        src={item?.image} 
-                        alt={item?.name + index} 
-                        width={80} 
-                        height={80} 
-                        className=' w-[24px] h-[24px] rounded-[12px] ' 
-                      />
-                    </div>
-                    {/* content part */}
-                    <div className=''>
-                      <h1>{item?.name}</h1>
-                      <p className=' text-ellipsis'>{item.last_message}</p>
-                    </div>
-                    {/* last part */}
-                    <div>
-                      <p>{item?.time}</p>
-                      <p>{item.seen && <CheckCheck color='blue' />} {!item?.seen && <CheckCheck color='gray' />} </p>
-                    </div>
-                  </div>
-                )
-              })}
+                
             </div>
+          </div>
+          {/* UserData */}
+          <div className=' overflow-hidden text-pretty border m-1 p-1 rounded-md '>
+              {
+                results&& results?.map((item:any,index:any)=>(
+                  <div onClick={()=>{
+                    setSelectItem(item);
+                  }} key={index} className=' cursor-pointer flex gap-1 text-wrap justify-start items-center '>
+                     <Image src={item?.color} className=' h-[40px] w-[40px] rounded-[20px] ' alt='image' height={40} width={40}></Image>
+                      <div>
+                      <p>{item?.fullName}</p>
+                      <p>{item?.email}</p>
+                      </div>
+
+                  </div>
+                ))
+              }
           </div>
         </div>
     </>

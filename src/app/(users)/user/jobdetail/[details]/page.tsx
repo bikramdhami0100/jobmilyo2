@@ -47,38 +47,48 @@ interface USERPOSTEDJOBDETAILS {
 import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
 import CountDownTimer from '../../components/CountDownTimer';
-import { MyPopUpContext } from '../../context/PopUpClose';
+const handlerParam = async (paramData: any) => {
+  return await paramData?.details; // This function isn't necessary, but keeping it
+};
 function SingleJobDetails({ params }: any) {
-  
   const [jobdetails, setJobDetails] = useState<USERPOSTEDJOBDETAILS | undefined>()
   const [OtherJobs, setOtherJobs] = useState<any>();
-  const {seekerId}=useContext<any>(MyPopUpContext);
+  const [employerId,setEmployerId]=useState<any>();
   const router=useRouter();
-  const fetchJobDetailsData = () => {
-    const send = axios.post(`/api/user/jobdetails`, { id: params.details,seekerId }).then(({ data }: any) => {
-      setJobDetails(data.respondata)
+  const fetchJobDetailsData = (id:any) => {
+    const send = axios.get(`/api/user/jobdetails`, {params:{
+      id
+    }}).then(({ data }: any) => {
+      setJobDetails(data?.respondata)
       setTimeout(() => {
-        fetchOtherJobOpening(data.respondata.jobtitle)
+        fetchOtherJobOpening(data?.respondata?.jobtitle)
       }, 100);
     }).catch((error: any) => {
-      console.log(error.message)
+      console.log(error)
     })
   }
   const fetchOtherJobOpening = (jobtitle: string) => {
-   if(seekerId){
-    const send = axios.put(`/api/user/jobdetails`, { seekerId ,id: params.details,jobtitle }).then(({ data }: any) => {
-      setOtherJobs(data.respondata)
-
+   if(employerId){
+    const send = axios.put(`/api/user/jobdetails`, { id:employerId,jobtitle }).then(({ data }: any) => {
+      setOtherJobs(data?.respondata)
     }).catch((error: any) => {
-      console.log(error.message)
+      console.log(error)
     })
    }
   }
 
-  useEffect(() => {
-   seekerId&& fetchJobDetailsData();
+ useEffect(() => {
+  const fetchData = async () => {
+    const id = await handlerParam(params);
 
-  }, [seekerId])
+    if (id) {
+       setEmployerId(id);
+      fetchJobDetailsData(id);
+    }
+  };
+
+  fetchData();
+}, [params]);
   const createdAt: any = jobdetails?.createdAt; // Assuming this is your createdAt time in UTC
   const createdAtDate = new Date(createdAt);
   const now = Date.now(); // Current timestamp in milliseconds
@@ -121,9 +131,7 @@ function SingleJobDetails({ params }: any) {
         </div>
         {/* middle part */}
         <div className=' p-6  flex flex-row flex-wrap lg:flex-nowrap md:flex-nowrap justify-between  items-start mt-2 gap-4 w-[100%] md:w-[60%] lg:w-[60%] shadow-md   '>
-
           <div className=' w-[100px]'>
-
             <Image alt="item image" src={jobdetails?.company_logo || ""} height={100} width={100} />
           </div>
           <div className='w-full '>

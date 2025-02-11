@@ -26,6 +26,10 @@ const userAppliedJobSchema = new mongoose.Schema({
     trim: true,
     required:true
   },
+  room:{
+    type:String,
+  },
+  chatEnabled: { type: Boolean, default: false }
 
 }, {
   timestamps: true

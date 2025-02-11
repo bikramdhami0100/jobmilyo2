@@ -1,5 +1,8 @@
 "use client"
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input';
+import { DashboardIcon } from '@radix-ui/react-icons';
+import { Paperclip, Send } from 'lucide-react';
 import React, { useState } from 'react'
 
 function ChatForm({onSendMessage}:any) {
@@ -7,16 +10,19 @@ function ChatForm({onSendMessage}:any) {
 const handlerSubmit=(e:any)=>{
   e.preventDefault();
   onSendMessage(message);
-  console.log(message,"this is from chatform")
 }
   return (
-    <div>
-        <form onSubmit={handlerSubmit} action="">
-            <input onChange={(e)=>{
+    <div className=' w-full'>
+        <form onSubmit={handlerSubmit} className=' border flex w-full justify-stretch items-center' action="">
+          <DashboardIcon className=' w-[50px]'/>
+            <Input className='w-full rounded-none border-none   focus:outline-none outline-none' onChange={(e)=>{
                  setMessage(e.target.value)
             }} type='text' placeholder='Type your message here' />
 
-           <Button type="submit">Submit</Button>
+          <div className='flex items-center gap-1'>
+          <Paperclip size={40}/>
+          <Button className=' w-full' type="submit"><Send /></Button>
+          </div>
         </form>
 
     </div>

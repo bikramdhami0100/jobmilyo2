@@ -18,9 +18,14 @@ function PostAJob() {
   const [rating, setRating] = useState(0)
   const [companyLogo, setCompanyLogo] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const {seekerId}=useContext<any>(MyPopUpContext);
+  const [employerId,setEmployerId]=useState<any>("");
+  // const {employerId}=useContext<any>(MyPopUpContext);
   useEffect(() => {
       setMounted(true);
+      if(typeof window!==undefined){
+        const employerId = localStorage.getItem("employerId");
+        setEmployerId(employerId);
+      }
   }, []);
   const [form, setForm] = useState({
     jobtitle: "",
@@ -76,11 +81,11 @@ function PostAJob() {
   const handleSubmit = async (event: any) => {
 
     event.preventDefault();
-    if(seekerId){
+    if(employerId){
       try {
         const response = await fetch('/api/user/post', {
           method: 'POST',
-          body: JSON.stringify({form,seekerId}),
+          body: JSON.stringify({form,employerId}),
         });
   
         if (response.ok) {

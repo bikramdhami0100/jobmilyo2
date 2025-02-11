@@ -6,13 +6,13 @@ interface ChatMessageProps{
   // isSystemMessage:boolean
 }
 function ChatMessage({sender,message,isOwnMessage}:ChatMessageProps) {
-  const isSystemMessage =sender;
+
   
   return (
-    <div className={`flex ${isSystemMessage?"justify-center":isOwnMessage?"justify-end":"justify-start"} mb-3`}>
-       <div className={` max-w-xs px-4 rounded-lg ${isSystemMessage?"bg-gray-800 text-white text-center text-xs":isOwnMessage?"bg-blue-500 text-white":"bg-white text-black"}`}>
+    <div className={`flex ${isOwnMessage?"justify-end":"justify-start"} mb-3`}>
+       <div className={` max-w-xs px-4 rounded-lg ${isOwnMessage?"bg-blue-500 text-white":"bg-white text-black"}`}>
         {
-          isSystemMessage&& <p className=' text-sm font-bold '>{sender}</p>
+          <p className=' text-sm font-bold '>{sender}</p>
           
         }
            <p>{message}</p>

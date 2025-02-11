@@ -21,6 +21,35 @@ export async function POST(req: any) {
 
 }
 
+export async function PUT(req: any) {
+    await mongodbconn;
+    
+    try {
+        const { data, user } = await req.json();
+        const userId = user?._id;
+
+        if (!userId) {
+            return NextResponse.json({ message: "User ID is required", status: 400 });
+        }
+
+        const updatedEntry = await Organization.findOneAndUpdate(
+            { user: userId },
+            { $set: data }, // Use $set to update specific fields
+            { new: true }  // Returns updated document
+        );
+
+        if (!updatedEntry) {
+            return NextResponse.json({ message: "Entry not found", status: 404 });
+        }
+
+        console.log(updatedEntry, "This is updated data");
+        return NextResponse.json({ message: "Entry Updated", data: updatedEntry });
+
+    } catch (error) {
+        console.error("Update error:", error);
+        return NextResponse.json({ message: "Server Error", status: 500 });
+    }
+}
 
 
 export async function GET(req: any) {

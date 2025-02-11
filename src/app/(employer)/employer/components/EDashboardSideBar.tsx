@@ -1,9 +1,9 @@
 "use client"
-import { AppWindow, Archive, BriefcaseBusiness, LayoutDashboard, LucideHandCoins, Menu, MessageCircle, MessageCircleQuestion, Search, Settings, SquareChevronDown, Timer, TimerIcon, User } from 'lucide-react'
+import { AppWindow, Archive, BriefcaseBusiness, LayoutDashboard, ListCheck, LucideHandCoins, Menu, MessageCircle, MessageCircleQuestion, Search, Settings, SquareChevronDown, Timer, TimerIcon, User } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import React, { useEffect } from 'react'
+import React from 'react'
 
 function EDashboardSideBar() {
     const pathname=usePathname();
@@ -19,6 +19,11 @@ function EDashboardSideBar() {
             path: "/employer/postjob",
             icon:BriefcaseBusiness
         },
+        {
+          name: "POST JOB LIST",
+          path: "/employer/postjobslist",
+          icon: ListCheck
+      },
         {
             name: "POST INTERNSHIP",
             path: "/employer/internship",
@@ -38,9 +43,6 @@ function EDashboardSideBar() {
        
     ]
  
- useEffect(()=>{
-
- },[]);
   return (
     <div className=' sm:hidden md:block lg:block w-full  border-r-2'>
           <div>

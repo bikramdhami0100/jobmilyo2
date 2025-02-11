@@ -9,7 +9,6 @@ function UserHome() {
   
   return (
     <div className=' w-full h-full'>
-     
       <div className=' w-full h-full'>
         <div className=' w-full h-full flex  flex-col items-center justify-center'>
           <div className=" absolute z-10 flex flex-col  gap-1 lg:gap-2 m-auto justify-center items-center">

@@ -43,33 +43,47 @@ interface USERPOSTEDJOBDETAILS {
   __v: number;
   _id: string;
 }
-// similarjobs
+import { v4 as uuidv4 } from "uuid";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CldUploadButton } from 'next-cloudinary';
 import { toast } from '@/components/ui/use-toast';
-import { Toast } from '@/components/ui/toast';
 import CountDownTimer from '../../components/CountDownTimer';
 import { MyPopUpContext } from '../../context/PopUpClose';
-function ApplyForJob({ params }: any) {
 
+const handlerParam = async (paramData: any) => {
+  return await paramData?.jobs; // This function isn't necessary, but keeping it
+};
+function ApplyForJob({ params }: any) {
   const [jobdetails, setJobDetails] = useState<USERPOSTEDJOBDETAILS | undefined>()
   const [applyloader,setApplyLoader] = useState<any>()
-  const {seekerId} =useContext<any>(MyPopUpContext);
   const [resume, setResume] = useState<any>();
   const [loadresume, setloadresume] = useState<boolean>(false)
-  const fetchJobDetailsData = () => {
-    const send = axios.post(`/api/user/jobdetails`, { id: params.jobs,seekerId }).then(({ data }: any) => {
+  const [jobId,setjobId]=useState<any>();
+  const {seekerId}:any=useContext(MyPopUpContext);
+  const fetchJobDetailsData = (id:string) => {
+    const send = axios.get(`/api/user/jobdetails`, { params:{
+      id
+    } }).then(({ data }: any) => {
+      console.log(data,"This is data")
       setJobDetails(data.respondata)
     }).catch((error: any) => {
-      console.log(error.message)
+      console.log(error)
     })
   }
 
 
-  useEffect(() => {
-    seekerId&&fetchJobDetailsData();
-  }, [seekerId])
+ useEffect(() => {
+  const fetchData = async () => {
+    const id = await handlerParam(params);
+     setjobId(id);
+    if (id) {
+      fetchJobDetailsData(id);
+    }
+  };
+
+  fetchData();
+}, [params]);
   const createdAt: any = jobdetails?.createdAt; // Assuming this is your createdAt time in UTC
   const createdAtDate = new Date(createdAt);
   const now = Date.now(); // Current timestamp in milliseconds
@@ -113,12 +127,13 @@ function ApplyForJob({ params }: any) {
   const timeAgoMessage = formatTimeDifference(differenceMs);
   const handlerJobApply=async()=>{
     setApplyLoader(true)
- const send=(await axios.post("/api/user/apply",{jobId:params.jobs,resume:resume,seekerId})).data
-  console.log(send);
-  setApplyLoader(false);
-  if(send.status===200){
-    toast({title:"Apply successfully",className:"bg-white text-black border-green-600 border-[2px]"})
-  }
+       if(seekerId){
+        const send=(await axios.post("/api/user/apply",{jobId:jobId,resume:resume,jobseeker:seekerId,roomId:uuidv4()})).data
+        setApplyLoader(false);
+        if(send.status===200){
+          toast({title:"Apply successfully",className:"bg-white text-black border-green-600 border-[2px]"})
+        }
+       }
   }
   return (
     <div>
@@ -182,7 +197,7 @@ function ApplyForJob({ params }: any) {
             </div>
           </div>
           <Button onClick={()=>{
-            seekerId&&handlerJobApply()
+           handlerJobApply()
           }} className=' bg-blue-600 w-full  mt-4'>
           {applyloader&&<Loader className=' mr-2 animate-spin'/>}   Apply Now
           </Button>

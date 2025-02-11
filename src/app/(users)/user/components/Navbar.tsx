@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import React, { useContext, useEffect, useState } from 'react'
-import { BookMarked, BookMarkedIcon, Bookmark, BriefcaseBusiness, BriefcaseBusinessIcon, Group, Home, LogOut, MessageCircle, MessagesSquare, Moon, PersonStanding, Send, Settings, Sun } from "lucide-react"
+import { BookMarked, BookMarkedIcon, Bookmark, BriefcaseBusiness, BriefcaseBusinessIcon, Group, Home, LogOut, MessageCircle, MessageCircleDashed, MessagesSquare, Moon, PersonStanding, Send, Settings, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 import { usePathname, useRouter } from 'next/navigation'
 import {
@@ -37,18 +37,18 @@ import {
 } from "@/components/ui/sheet"
 import { useSelector } from 'react-redux'
 import { PersonIcon } from '@radix-ui/react-icons'
-import { IconNotebook, IconNotes } from '@tabler/icons-react'
+import { IconNotebook, IconNotes, IconSocial } from '@tabler/icons-react'
 import { MyPopUpContext } from '../context/PopUpClose'
 import axios from 'axios'
 
 function Navbar() {
     const router = useRouter();
     const path = usePathname()
-    const { OpenPopUp, setOpenPopUp,seekerId,validUser, setValidUser }: any = useContext(MyPopUpContext);
-    console.log(seekerId,"This is seekers")
+    const { seekerId, validUser, setValidUser, jobSeekerApplyData, setJobSeekerApplyData }: any = useContext(MyPopUpContext);
+    console.log(jobSeekerApplyData, "This is apply")
     const { setTheme, theme } = useTheme();
     const [mounted, setMounted] = useState(false);
-   
+
     useEffect(() => {
         setMounted(true);
     }, []);
@@ -81,18 +81,17 @@ function Navbar() {
     ]
 
     const checkuserVerify = async () => {
-        const data = await (await axios.get("/api/user/user_type",{params:{id:seekerId}})).data
+        const data = await (await axios.get("/api/user/user_type", { params: { id: seekerId } })).data
         setValidUser(data?.validuser)
     }
     useEffect(() => {
-    
-       seekerId&& checkuserVerify();
+        seekerId && checkuserVerify();
     }, [seekerId]);
 
 
     const HandleLogOut = async () => {
         // console.log("log out c")
-        if(typeof window!==undefined){
+        if (typeof window !== undefined) {
             localStorage.removeItem("userId");
             setValidUser("")
             router.push("/user");
@@ -133,7 +132,7 @@ function Navbar() {
     });
 
     // Seeker Login from google
-    const seekerGoogleLogin= useGoogleLogin({
+    const seekerGoogleLogin = useGoogleLogin({
         onSuccess: async (tokenResponse) => {
             // console.log(tokenResponse);
             const userInfo = await axios.get(
@@ -160,7 +159,7 @@ function Navbar() {
         },
         onError: errorResponse => console.log(errorResponse),
     });
- 
+
     // If the theme is not mounted yet, do not render the navbar
     if (!mounted) return null;
 
@@ -169,7 +168,6 @@ function Navbar() {
 
             <div className=' flex gap-1 justify-center items-center'>
                 <div className=' visible md:hidden lg:hidden'>
-
                     <Sheet>
 
                         <SheetTrigger>  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-align-justify"><line x1="3" x2="21" y1="6" y2="6" /><line x1="3" x2="21" y1="12" y2="12" /><line x1="3" x2="21" y1="18" y2="18" /></svg></SheetTrigger>
@@ -194,7 +192,6 @@ function Navbar() {
                             </SheetHeader>
                         </SheetContent>
                     </Sheet>
-
                 </div>
                 <Image className=' cursor-pointer' onClick={() => {
                     router.push("/user")
@@ -213,25 +210,19 @@ function Navbar() {
                 }</div>
             <div className=' flex  gap-[6px]'>
                 {
-                     validUser?
-                        <div>
+                    validUser ?
+                        <div className=' flex justify-center items-center gap-1'>
+                           
                             <DropdownMenu >
-                                <DropdownMenuTrigger className=' outline-none' ><div>
-                                    {
-                                        validUser?.color.startsWith("#") ? (
-                                            <div className='w-[40px] flex justify-center items-center -mb-4 relative group'>
-                                                <div style={{ backgroundColor: validUser?.color }} className='flex justify-center items-center w-[40px] h-[40px] rounded-full'>
-                                                    <div className='text-center'>{validUser.fullName.charAt(0).toUpperCase()}</div>
-                                                </div>
+                                <DropdownMenuTrigger className=' outline-none' >
+                                    <div>
+                                        <div className='relative group w-[40px] h-[35px] rounded-full  border '>
+                                            <Image src={validUser?.color} alt={"profile image"} width={100} height={100} className=' object-fill h-[40px] w-[40px] rounded-[20px] ' />
+                                        </div>
 
-                                            </div>
-                                        ) : (
-                                            <div className='relative group w-[40px] h-[35px] rounded-full  border '>
-                                                <Image src={validUser?.color} alt={"profile image"} width={100} height={100} className=' object-fill h-[40px] w-[40px] rounded-[20px] ' />
-                                            </div>
-                                        )
-                                    }
-                                </div></DropdownMenuTrigger>
+                                    </div>
+
+                                </DropdownMenuTrigger>
                                 <DropdownMenuContent>
                                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                     <DropdownMenuSeparator />
@@ -262,29 +253,30 @@ function Navbar() {
                                 </DropdownMenuContent>
                             </DropdownMenu>
 
-                        </div> : <div className=' flex  gap-1'>
+                        </div> :
+                        <div className=' flex  gap-1'>
                             <Button onClick={() => {
                                 // setOpenPopUp(!OpenPopUp)
-                                if(typeof window!==undefined){
-                                     const data=localStorage.getItem("userId");
-                                     if(!data){ 
-                                         seekerGoogleLogin();
-                                      }else{
-                                          router.push(`/user/profile`)
-                                      }
+                                if (typeof window !== undefined) {
+                                    const data = localStorage.getItem("userId");
+                                    if (!data) {
+                                        seekerGoogleLogin();
+                                    } else {
+                                        router.push(`/user/profile`)
+                                    }
                                 }
                             }} className=' bg-blue-600'>Job Seeker</Button>
                             <Button onClick={() => {
 
-                                
-                                if(typeof window!==undefined){
-                                    const data=localStorage.getItem("employerId");
-                                    if(!data){ 
+
+                                if (typeof window !== undefined) {
+                                    const data = localStorage.getItem("employerId");
+                                    if (!data) {
                                         googleLogin()
-                                     }else{
-                                         router.push("/employer")
-                                     }
-                               }
+                                    } else {
+                                        router.push("/employer")
+                                    }
+                                }
                             }} className=' bg-blue-600'>Employer</Button>
 
                             {/* <AlertDialog open={OpenPopUp} >

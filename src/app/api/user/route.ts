@@ -60,7 +60,6 @@ export async function GET(req: any) {
   try {
     const minRating=4;
     const jobs = await UserPostedJob.find({rating: { $gte: minRating }}).sort({ jobupload: -1 }).limit(8).populate({path:"user",select:"fullName  color"});
-
     return NextResponse.json({ message: "Successfully fetched jobs", status: 200, data: jobs });
   } catch (error:any) {
     return NextResponse.json({ message: "Error fetching jobs", status: 500, error: error.message });
