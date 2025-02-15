@@ -49,8 +49,7 @@ function MessageDashboard() {
   // Handle sending a message
   const handleSendMessage = (message: any) => {
     if (message.trim() === "") return; // Prevent empty messages
-    const newMessage = { senderId: senderData?._id, message, sender: senderData?.fullName, room: roomId };
-    setMessages((prev) => [...prev, newMessage]);
+    // Emit the message to the server
     socket.emit("messages", { message, sender: senderData?.fullName, room: roomId, senderId: senderData?._id });
   };
 
@@ -82,6 +81,7 @@ function MessageDashboard() {
 
       // Listen for incoming messages
       socket.on("con_message", ({ sender, message, senderId }) => {
+        // Add the message to the state
         setMessages((prev) => [...prev, { sender, message, senderId }]);
         setDefaultData((prev: any) => [...prev, { sender, message, senderId }]);
       });
@@ -106,7 +106,6 @@ function MessageDashboard() {
     }
   }, [checkMessage]);
 
-  console.log(messages.length,"length of message")
   return (
     <div>
       <div className='flex-col py-2'>

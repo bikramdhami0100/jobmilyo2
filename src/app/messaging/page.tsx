@@ -9,6 +9,7 @@ import { socket } from "@/lib/SocketClient";
 import ChatForm from './_components/ChatFrom';
 import axios from 'axios';
 import { useSearchParams } from 'next/navigation';
+import VideoCall from './_components/VideoCall'; // Import the VideoCall component
 
 function MessageDashboard() {
   const [messages, setMessages] = useState<{ sender: string; message: string, senderId: string }[]>([]);
@@ -21,6 +22,7 @@ function MessageDashboard() {
   const [searchItem, setSearchItem] = useState<any>("");
   const [checkMessage, setCheckMessage] = useState<any>("");
   const [defaultData, setDefaultData] = useState<any>([]);
+  const [isVideoCallOpen, setIsVideoCallOpen] = useState(false); // Track video call state
 
   const param = useSearchParams();
   const receiverId = param.get("id");
@@ -106,6 +108,7 @@ function MessageDashboard() {
     }
   }, [checkMessage]);
 
+  console.log(isVideoCallOpen,"here video calling")
   return (
     <div>
       <div className='flex-col py-2'>
@@ -131,7 +134,7 @@ function MessageDashboard() {
                 </div>
 
                 <div className='flex gap-2 items-center'>
-                  <Video className='cursor-pointer' />
+                  <Video className='cursor-pointer' onClick={() => setIsVideoCallOpen(true)} /> {/* Video call button */}
                   <Phone className='cursor-pointer' />
                   <div className='flex gap-[1px]'>
                     <Circle fill='gray' size={12} />
@@ -175,6 +178,16 @@ function MessageDashboard() {
           )}
         </div>
       </div>
+
+      {/* Video Call Component */}
+      {isVideoCallOpen && (
+        <VideoCall
+          roomId={roomId}
+          senderId={senderData?._id}
+          receiverId={selectItem?._id}
+          onClose={() => setIsVideoCallOpen(false)}
+        />
+      )}
     </div>
   );
 }
