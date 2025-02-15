@@ -4,7 +4,7 @@ import { CheckCheck, ListFilter, Search } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react'
 
-function MainSearch({setSearchItem,setSelectItem ,results,searchItem}:any) {
+function MainSearch({setSelectReceiverId, setSearchItem,setSelectItem ,results,searchItem}:any) {
   console.log(results,"data")
   return (
     <>
@@ -46,6 +46,7 @@ function MainSearch({setSearchItem,setSelectItem ,results,searchItem}:any) {
                 results&& results?.map((item:any,index:any)=>(
                   <div onClick={()=>{
                     setSelectItem(item);
+                    setSelectReceiverId(item?._id);
                   }} key={index} className=' cursor-pointer flex gap-1 text-wrap justify-start items-center '>
                      <Image src={item?.color} className=' h-[40px] w-[40px] rounded-[20px] ' alt='image' height={40} width={40}></Image>
                       <div>

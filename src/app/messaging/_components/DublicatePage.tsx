@@ -1,161 +1,136 @@
 "use client";
 import { Circle, Phone, Video } from 'lucide-react';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { v4 as uuidv4 } from 'uuid';
+import MainSearch from '../_components/MainSearch';
+import ChatMessage from '../_components/ChatMessage';
 import { socket } from "@/lib/SocketClient";
+import ChatForm from '../_components/ChatFrom';
 import axios from 'axios';
+import { useSearchParams } from 'next/navigation';
 
 function MessageDashboard() {
-  const [messages, setMessages] = useState<{ sender: string; message: string }[]>([]);
-  const [room, setRoom] = useState<any>([{id:""}]);
-  const [joined, setJoined] = useState<boolean>(false);
-  const [userName, setUserName] = useState<any>("");
+  const [messages, setMessages] = useState<{ sender: string; message: string, senderId: string }[]>([]);
+  const [senderData, setSenderData] = useState<any>();
+  const [roomId, setRoomId] = useState<any>("");
+  const [receiverData, setReceiverData] = useState<any>("");
+  const [selectReceiverId, setSelectReceiverId] = useState<any>("");
+  const [checkRoomId, setCheckRoomId] = useState<any>("");
+  const [selectItem, setSelectItem] = useState<any>("");
   const [searchItem, setSearchItem] = useState<any>("");
-  const [itemsById, setItemsById] = useState<any>(null);
-  const results = [
-    {
-      name: "Bikki Joc",
-      image: "/images/social/google.png",
-      last_message: "Thank you very much. I'm glad",
-      seen: true,
-      online: true,
-      time: "4m Ago",
-      id: room
-    },
-    {
-      name: "Sunita Joc",
-      image: "/images/social/google.png",
-      last_message: "Thank you very much. I'm glad",
-      seen: true,
-      online: false,
-      time: "4m Ago",
-      id: room
-    }
-  ];
+  const [checkMessage, setCheckMessage] = useState<any>("");
+  const [defaultData, setDefaultData] = useState<any>([]);
 
-  const getJobSeekerDetails = async (userId: any) => {
-    const data = await axios.get("/api/user/apply", {
-      params: {
-        id: userId
-      }
-    }).then((respon) => {
-      console.log(respon?.data?.data,"This is job seeker data")
-      setUserName(respon?.data);
-      setRoom(respon?.data?.data[0]?.job?.user);
-    }).catch((error) => {
-      console.log(error);
-    });
+  const param = useSearchParams();
+  const receiverId = param.get("id");
+
+  // Fetch receiver data
+  const handlerReceiver = async (id: any) => {
+    const receiver = (await axios.get("/api/user/user_type", { params: { id } })).data;
+    setReceiverData(receiver?.receivers);
   };
 
-  const handlerSubmitId = (id: string) => {
-    if (id) {
-      const onlineUserData = results.filter((item) => id === item.id);
-      setItemsById(onlineUserData);
-    } else {
-      alert("Select User");
-    }
+  // Fetch sender data
+  const handlerSenderData = async (id: any) => {
+    const user = (await axios.get("/api/user/profile", { params: { id } })).data;
+    setSenderData(user?.data?.user);
   };
- 
 
-  const getEmployerDetails = async (employerId: any) => {
-    const data = await axios.get("/api/employer", {
-      params: {
-        id: employerId
-      }
-    }).then((respon) => {
-      setUserName(respon.data.results);
-    }).catch((error) => {
-      console.log(error);
-    });
-  };
-  
+  // Fetch sender and receiver data on component mount
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const employerId = localStorage.getItem("employerId");
-      const userId=localStorage.getItem("userId");
-      if (employerId) {
-        setJoined(true);
-        setRoom((prev:any)=>({id:employerId}));
-        getEmployerDetails(employerId);
-      }
-      if(userId){
-        setJoined(true);
-        getJobSeekerDetails(userId);
-      }
-      
+      const senderId = localStorage.getItem("employerId") || localStorage.getItem("userId");
+      senderId && handlerSenderData(senderId);
+      senderId && handlerReceiver(senderId);
     }
-
-
-    // Listen for incoming messages
-    socket.on("message", (data: { sender: string; message: string }) => {
-      setMessages((prev) => [...prev, data]);
-    });
-
-    // Cleanup listeners on component unmount
-    return () => {
-      socket.off("message");
-    };
   }, []);
- 
-  useEffect(()=>{
-    
-  },[room]);
-  const handleSendMessage = (message: string) => {
-    if (message.trim() && room && userName) {
-      const data = { room, message, sender: userName?.fullName };
-      setMessages((prev) => [...prev, { sender: userName?.fullName, message }]);
-      socket.emit("message", data);
-    }
+
+  // Handle sending a message
+  const handleSendMessage = (message: any) => {
+    if (message.trim() === "") return; // Prevent empty messages
+    const newMessage = { senderId: senderData?._id, message, sender: senderData?.fullName, room: roomId };
+    setMessages((prev) => [...prev, newMessage]);
+    socket.emit("messages", { message, sender: senderData?.fullName, room: roomId, senderId: senderData?._id });
   };
 
+  // Check if a room ID exists for the users
+  const handlerRoomIdCheck = async (id: string, senderId: string) => {
+    const send = (await axios.get("/api/messaging/new_message", { params: { id, senderId } })).data;
+    setCheckMessage(send?.new_message);
+    setCheckRoomId(send?.new_message[0]?.room);
+  };
+
+  // Generate or set room ID
   useEffect(() => {
-    if (itemsById && typeof window !== "undefined") {
-      const roomId = localStorage.getItem("employerId");
-      const receiverName = itemsById[0]?.name;
-
-      if (roomId && receiverName) {
-        socket.emit("join-seeker", { room: roomId, receiver: receiverName });
-      }
+    if (senderData) {
+      selectReceiverId && handlerRoomIdCheck(selectReceiverId, senderData?._id);
     }
+    if (!checkRoomId && checkMessage?.length === 0) {
+      const uuid = uuidv4();
+      setRoomId(uuid);
+    } else {
+      setRoomId(checkRoomId);
+    }
+  }, [checkRoomId, selectItem]);
 
-    // Cleanup listeners on component unmount
-    return () => {
-      socket.off("join-seeker");
-    };
-  }, [itemsById]);
+  // Socket event listeners
+  useEffect(() => {
+    if (selectItem && senderData && roomId) {
+      // Join the room
+      socket.emit("join_user", { room: roomId, username: senderData?.fullName, receiverId: selectItem?._id });
 
+      // Listen for incoming messages
+      socket.on("con_message", ({ sender, message, senderId }) => {
+        setMessages((prev) => [...prev, { sender, message, senderId }]);
+        setDefaultData((prev: any) => [...prev, { sender, message, senderId }]);
+      });
+
+      // Cleanup socket listeners on unmount
+      return () => {
+        socket.off("con_message");
+        socket.off("join_user");
+      };
+    }
+  }, [selectItem, roomId]);
+
+  // Load existing messages
+  useEffect(() => {
+    if (checkMessage) {
+      const formattedMessages = checkMessage.map((item: any) => ({
+        sender: item?.sender?._id === senderData?._id ? item?.sender?.fullName : item?.receiver?.fullName,
+        senderId: item?.sender?._id,
+        message: item?.message,
+      }));
+      setMessages(formattedMessages);
+    }
+  }, [checkMessage]);
+
+  console.log(messages.length,"length of message")
   return (
     <div>
       <div className='flex-col py-2'>
         {/* Search Section */}
         <div className='flex py-2'>
-          <div className='min-h-screen border-r-2 p-2'>
-            {/* <MainSearch handlerSubmitId={handlerSubmitId} setSearchItem={setSearchItem} searchItem={searchItem} results={results} /> */}
+          <div className='min-h-screen h-full border-r-2 p-2'>
+            <MainSearch setSearchItem={setSearchItem} setSelectItem={setSelectItem} setSelectReceiverId={setSelectReceiverId} searchItem={searchItem} results={receiverData} />
           </div>
           {/* Chat Header Section */}
-          {itemsById && itemsById.length > 0 ? (
+          {selectItem && (
             <div className='w-full'>
-              {/* top main contain */}
+              {/* Top main container */}
               <div className='flex justify-between border-b-2 p-2'>
                 <div>
-                  <div className='flex gap-2 mx-1'>
+                  <div className='flex justify-start items-center gap-2 mx-1'>
                     <div>
-                      <Image src={itemsById[0]?.image} alt='image' width={40} height={40} />
+                      <Image className='w-[40px] h-[40px] rounded-[20px]' src={selectItem?.color} alt='image' width={40} height={40} />
                     </div>
                     <div className=''>
-                      <div>{itemsById[0]?.name}</div>
-                      <div className='flex gap-1 justify-center items-center'>
-                        {itemsById[0]?.online ? (
-                          <>
-                            <Circle color='green' fill='green' size={8} /> Online
-                          </>
-                        ) : (
-                          <>Offline</>
-                        )}
-                      </div>
+                      <div>{selectItem?.fullName}</div>
                     </div>
                   </div>
                 </div>
+
                 <div className='flex gap-2 items-center'>
                   <Video className='cursor-pointer' />
                   <Phone className='cursor-pointer' />
@@ -167,21 +142,26 @@ function MessageDashboard() {
                 </div>
               </div>
               {/* Chat Section */}
-              <div className='w-full max-w-3xl mx-auto'>
-                {/* <div className='h-[500px] overflow-y-auto p-4 mb-4 bg-gray-200 border-2 rounded-lg'>
+              <div className='w-full h-full max-w-3xl mx-auto'>
+                <div className='overflow-y-auto p-4 mb-4'>
                   {messages.map((msg, index) => (
                     <ChatMessage
                       key={index}
-                      sender={msg.sender}
+                      sender={msg?.senderId === senderData?._id ? senderData?.fullName : selectItem?.fullName}
                       message={msg.message}
-                      isOwnMessage={msg.sender === userName?.fullName}
+                      isOwnMessage={msg.senderId === senderData?._id}
                     />
                   ))}
-                </div> */}
-                {/* <ChatForm onSendMessage={handleSendMessage} /> */}
+                </div>
+                <div className='relative'>
+                  <div className='w-[60%] fixed bottom-2 right-2'>
+                    <ChatForm onSendMessage={handleSendMessage} />
+                  </div>
+                </div>
               </div>
             </div>
-          ) : (
+          )}
+          {!selectItem && (
             <div className='w-full h-full flex justify-center items-center p-4 text-center'>
               <div>
                 <h1 className='text-2xl font-bold mb-4'>Welcome to Jobmilyo</h1>

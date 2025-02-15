@@ -1,78 +1,118 @@
 "use client";
 import { Circle, Phone, Video } from 'lucide-react';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { v4 as uuidv4 } from 'uuid';
 import MainSearch from './_components/MainSearch';
 import ChatMessage from './_components/ChatMessage';
 import { socket } from "@/lib/SocketClient";
 import ChatForm from './_components/ChatFrom';
-import { MyExistUser } from '@/context/ExistUser';
 import axios from 'axios';
 import { useSearchParams } from 'next/navigation';
 
 function MessageDashboard() {
-  const [messages, setMessages] = useState<{ sender: string; message: string }[]>([]);
+  const [messages, setMessages] = useState<{ sender: string; message: string, senderId: string }[]>([]);
+  const [senderData, setSenderData] = useState<any>();
   const [roomId, setRoomId] = useState<any>("");
   const [receiverData, setReceiverData] = useState<any>("");
+  const [selectReceiverId, setSelectReceiverId] = useState<any>("");
+  const [checkRoomId, setCheckRoomId] = useState<any>("");
   const [selectItem, setSelectItem] = useState<any>("");
-  const [userName, setUserName] = useState<any>("");
   const [searchItem, setSearchItem] = useState<any>("");
+  const [checkMessage, setCheckMessage] = useState<any>("");
+  const [defaultData, setDefaultData] = useState<any>([]);
 
   const param = useSearchParams();
   const receiverId = param.get("id");
-  console.log(receiverId);
 
-  const handlerSender = async (id: any) => {
-    const sender = (await axios.get("/api/user/user_type", { params: { id } })).data;
-    setUserName(sender?.validuser);
-    console.log(sender);
-    setReceiverData(sender?.receivers);
+  // Fetch receiver data
+  const handlerReceiver = async (id: any) => {
+    const receiver = (await axios.get("/api/user/user_type", { params: { id } })).data;
+    setReceiverData(receiver?.receivers);
   };
 
+  // Fetch sender data
+  const handlerSenderData = async (id: any) => {
+    const user = (await axios.get("/api/user/profile", { params: { id } })).data;
+    setSenderData(user?.data?.user);
+  };
+
+  // Fetch sender and receiver data on component mount
   useEffect(() => {
     if (typeof window !== "undefined") {
       const senderId = localStorage.getItem("employerId") || localStorage.getItem("userId");
-      console.log(senderId, "sender");
-      senderId && handlerSender(senderId);
+      senderId && handlerSenderData(senderId);
+      senderId && handlerReceiver(senderId);
     }
   }, []);
 
+  // Handle sending a message
   const handleSendMessage = (message: any) => {
-    console.log("message", message);
+    if (message.trim() === "") return; // Prevent empty messages
+    // Emit the message to the server
+    socket.emit("messages", { message, sender: senderData?.fullName, room: roomId, senderId: senderData?._id });
   };
 
-  // Generate roomId when selectItem changes
+  // Check if a room ID exists for the users
+  const handlerRoomIdCheck = async (id: string, senderId: string) => {
+    const send = (await axios.get("/api/messaging/new_message", { params: { id, senderId } })).data;
+    setCheckMessage(send?.new_message);
+    setCheckRoomId(send?.new_message[0]?.room);
+  };
+
+  // Generate or set room ID
   useEffect(() => {
-    if (selectItem) {
+    if (senderData) {
+      selectReceiverId && handlerRoomIdCheck(selectReceiverId, senderData?._id);
+    }
+    if (!checkRoomId && checkMessage?.length === 0) {
       const uuid = uuidv4();
       setRoomId(uuid);
+    } else {
+      setRoomId(checkRoomId);
     }
-  }, [selectItem]);
+  }, [checkRoomId, selectItem]);
 
-  // Join room when roomId is set
+  // Socket event listeners
   useEffect(() => {
-    if (roomId && selectItem) {
-      console.log("User is joining room:", roomId);
-      socket.emit("join_user", { room: roomId, username: userName?.fullName || "Anonymous" });
-    }
+    if (selectItem && senderData && roomId) {
+      // Join the room
+      socket.emit("join_user", { room: roomId, username: senderData?.fullName, receiverId: selectItem?._id });
 
-    socket.on("join_success",(value)=>{
-      console.log(value,"value is")
-    })
-    // Cleanup listeners on component unmount
-    return () => {
-      socket.off("join_user");
-    };
-  }, [roomId, selectItem]);
+      // Listen for incoming messages
+      socket.on("con_message", ({ sender, message, senderId }) => {
+        // Add the message to the state
+        setMessages((prev) => [...prev, { sender, message, senderId }]);
+        setDefaultData((prev: any) => [...prev, { sender, message, senderId }]);
+      });
+
+      // Cleanup socket listeners on unmount
+      return () => {
+        socket.off("con_message");
+        socket.off("join_user");
+      };
+    }
+  }, [selectItem, roomId]);
+
+  // Load existing messages
+  useEffect(() => {
+    if (checkMessage) {
+      const formattedMessages = checkMessage.map((item: any) => ({
+        sender: item?.sender?._id === senderData?._id ? item?.sender?.fullName : item?.receiver?.fullName,
+        senderId: item?.sender?._id,
+        message: item?.message,
+      }));
+      setMessages(formattedMessages);
+    }
+  }, [checkMessage]);
 
   return (
     <div>
       <div className='flex-col py-2'>
         {/* Search Section */}
         <div className='flex py-2'>
-          <div className='min-h-[800px] h-full border-r-2 p-2'>
-            <MainSearch setSearchItem={setSearchItem} setSelectItem={setSelectItem} searchItem={searchItem} results={receiverData} />
+          <div className='min-h-screen h-full border-r-2 p-2'>
+            <MainSearch setSearchItem={setSearchItem} setSelectItem={setSelectItem} setSelectReceiverId={setSelectReceiverId} searchItem={searchItem} results={receiverData} />
           </div>
           {/* Chat Header Section */}
           {selectItem && (
@@ -89,6 +129,7 @@ function MessageDashboard() {
                     </div>
                   </div>
                 </div>
+
                 <div className='flex gap-2 items-center'>
                   <Video className='cursor-pointer' />
                   <Phone className='cursor-pointer' />
@@ -100,18 +141,22 @@ function MessageDashboard() {
                 </div>
               </div>
               {/* Chat Section */}
-              <div className='w-full max-w-3xl mx-auto'>
-                <div className='h-screen overflow-y-auto p-4 mb-4'>
+              <div className='w-full h-full max-w-3xl mx-auto'>
+                <div className='overflow-y-auto p-4 mb-4'>
                   {messages.map((msg, index) => (
                     <ChatMessage
                       key={index}
-                      sender={msg.sender}
+                      sender={msg?.senderId === senderData?._id ? senderData?.fullName : selectItem?.fullName}
                       message={msg.message}
-                      isOwnMessage={msg.sender === userName?.fullName}
+                      isOwnMessage={msg.senderId === senderData?._id}
                     />
                   ))}
                 </div>
-                <ChatForm onSendMessage={handleSendMessage} />
+                <div className='relative'>
+                  <div className='w-[60%] fixed bottom-2 right-2'>
+                    <ChatForm onSendMessage={handleSendMessage} />
+                  </div>
+                </div>
               </div>
             </div>
           )}

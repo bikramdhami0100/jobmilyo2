@@ -10,6 +10,7 @@ export async function GET(req:any) {
   await mongodbconn;
   const {searchParams}=new URL(req.url);
   const id=searchParams.get("id");
+  console.log(id ,"This is id ")
   const users = await Usersignup.findById(id).select("-password");
   console.log(users);
   try {
