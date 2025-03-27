@@ -104,7 +104,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ roomId, senderId, receiverId, onC
     setIsCalling(false);
     onClose();
   };
-
+//  handleVideoCall();
   return (
     <Dialog open={isCalling || !!incomingCall} onOpenChange={(open) => !open && endCall()}>
       <DialogContent>

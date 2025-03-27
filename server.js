@@ -98,6 +98,10 @@ app.prepare().then(() => {
       console.log(`Call accepted by ${receiverId} for ${senderId} in room ${room}`);
       io.to(room).emit("callAccepted", signal);
     });
+    socket.on('joinRoom', (roomId) => {
+      socket.join(roomId);
+      console.log(`User ${socket.id} joined room ${roomId}`);
+    });
 
     // Handle user disconnect
     socket.on("disconnect", () => {

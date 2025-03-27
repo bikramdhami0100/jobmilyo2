@@ -134,7 +134,10 @@ function MessageDashboard() {
                 </div>
 
                 <div className='flex gap-2 items-center'>
-                  <Video className='cursor-pointer' onClick={() => setIsVideoCallOpen(true)} /> {/* Video call button */}
+                  <Video className='cursor-pointer' onClick={() => {
+                    setIsVideoCallOpen(true);
+                    alert("Allow video Calling ...")
+                  }} /> {/* Video call button */}
                   <Phone className='cursor-pointer' />
                   <div className='flex gap-[1px]'>
                     <Circle fill='gray' size={12} />
