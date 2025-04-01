@@ -11,6 +11,7 @@ function NewMessages() {
         console.log("any Data for message",send?.new_message)
         console.log(send,"New message available")
     }
+    
     useEffect(() => {
         if (typeof window !== undefined) {
             const senderId = localStorage.getItem("employerId") || localStorage.getItem("userId");

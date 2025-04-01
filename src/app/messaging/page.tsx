@@ -10,20 +10,27 @@ import ChatForm from './_components/ChatFrom';
 import axios from 'axios';
 import { useSearchParams } from 'next/navigation';
 import VideoCall from './_components/VideoCall'; // Import the VideoCall component
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 
 function MessageDashboard() {
   const [messages, setMessages] = useState<{ sender: string; message: string, senderId: string }[]>([]);
   const [senderData, setSenderData] = useState<any>();
-  const [roomId, setRoomId] = useState<any>("");
+  const [roomId, setRoomId] = useState<string>("");
   const [receiverData, setReceiverData] = useState<any>("");
   const [selectReceiverId, setSelectReceiverId] = useState<any>("");
-  const [checkRoomId, setCheckRoomId] = useState<any>("");
+  const [checkRoomId, setCheckRoomId] = useState<string>("");
   const [selectItem, setSelectItem] = useState<any>("");
   const [searchItem, setSearchItem] = useState<any>("");
   const [checkMessage, setCheckMessage] = useState<any>("");
   const [defaultData, setDefaultData] = useState<any>([]);
   const [isVideoCallOpen, setIsVideoCallOpen] = useState(false); // Track video call state
-
   const param = useSearchParams();
   const receiverId = param.get("id");
 
@@ -48,10 +55,17 @@ function MessageDashboard() {
     }
   }, []);
 
+  const saveInitailUserMessage = async (roomId: any, sender: any, receiver: any, message: any) => {
+    const send = (await axios.post("/api/messaging", { roomId, sender, receiver, message })).data;
+    console.log(send);
+
+
+  }
   // Handle sending a message
   const handleSendMessage = (message: any) => {
     if (message.trim() === "") return; // Prevent empty messages
     // Emit the message to the server
+    saveInitailUserMessage(roomId, senderData?._id, selectItem?._id, message)
     socket.emit("messages", { message, sender: senderData?.fullName, room: roomId, senderId: senderData?._id });
   };
 
@@ -80,7 +94,6 @@ function MessageDashboard() {
     if (selectItem && senderData && roomId) {
       // Join the room
       socket.emit("join_user", { room: roomId, username: senderData?.fullName, receiverId: selectItem?._id });
-
       // Listen for incoming messages
       socket.on("con_message", ({ sender, message, senderId }) => {
         // Add the message to the state
@@ -106,20 +119,22 @@ function MessageDashboard() {
       }));
       setMessages(formattedMessages);
     }
+
   }, [checkMessage]);
 
-  console.log(isVideoCallOpen,"here video calling")
+
+
   return (
     <div>
       <div className='flex-col py-2'>
         {/* Search Section */}
-        <div className='flex py-2'>
-          <div className='min-h-screen h-full border-r-2 p-2'>
+        <div className=' flex  max-h-screen'>
+          <div className=' hidden lg:flex md:flex h-full  p-2'>
             <MainSearch setSearchItem={setSearchItem} setSelectItem={setSelectItem} setSelectReceiverId={setSelectReceiverId} searchItem={searchItem} results={receiverData} />
           </div>
           {/* Chat Header Section */}
           {selectItem && (
-            <div className='w-full'>
+            <div className='w-full grid-cols-4 h-screen'> {/* Add h-screen to constrain height */}
               {/* Top main container */}
               <div className='flex justify-between border-b-2 p-2'>
                 <div>
@@ -146,9 +161,11 @@ function MessageDashboard() {
                   </div>
                 </div>
               </div>
+
               {/* Chat Section */}
-              <div className='w-full h-full max-w-3xl mx-auto'>
-                <div className='overflow-y-auto p-4 mb-4'>
+              <div className='w-full relative border-l-2 h-[calc(100vh-80px)] flex flex-col'>
+                {/* Messages Container */}
+                <div className='flex-1 overflow-y-auto p-4 pb-20'> {/* Add pb-20 for padding-bottom */}
                   {messages.map((msg, index) => (
                     <ChatMessage
                       key={index}
@@ -158,10 +175,10 @@ function MessageDashboard() {
                     />
                   ))}
                 </div>
-                <div className='relative'>
-                  <div className='w-[60%] fixed bottom-2 right-2'>
-                    <ChatForm onSendMessage={handleSendMessage} />
-                  </div>
+
+                {/* Fixed Chat Form */}
+                <div className='w-full rounded-md border-t lg:w-[60%] md:w-[50%] fixed bottom-0 bg-white dark:bg-[rgb(2,8,23)] dark:text-white'>
+                  <ChatForm onSendMessage={handleSendMessage} />
                 </div>
               </div>
             </div>
@@ -174,7 +191,20 @@ function MessageDashboard() {
                   Find your dream job by chatting and video calling directly with employers.
                 </p>
                 <button className='bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600'>
-                  Get Started
+                  <Sheet>
+                    <SheetTrigger>Get Started</SheetTrigger>
+                    <SheetContent side={"bottom"}>
+                      <SheetHeader>
+                        <SheetTitle>Available Users </SheetTitle>
+                        <SheetDescription>
+                          <div className=' h-full  p-2'>
+                            <MainSearch setSearchItem={setSearchItem} setSelectItem={setSelectItem} setSelectReceiverId={setSelectReceiverId} searchItem={searchItem} results={receiverData} />
+                          </div>
+                        </SheetDescription>
+                      </SheetHeader>
+                    </SheetContent>
+                  </Sheet>
+
                 </button>
               </div>
             </div>
