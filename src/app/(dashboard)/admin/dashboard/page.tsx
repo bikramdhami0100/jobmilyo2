@@ -2,10 +2,10 @@
 import React, { useEffect, useState } from 'react'
 import DashContentBox from '../../components/DashContent'
 import axios from 'axios'
+import { useAdminContext } from '../../context/AdminExistProvider'
 function AdminDashoBoard() {
   const [totaldata, setTotalData] = useState<any>()
-
-
+  const {adminId}=useAdminContext();
   const dataSummary = [
     {
       name: "Total Users",
@@ -29,11 +29,11 @@ function AdminDashoBoard() {
     }
   ];
 
-
+ console.log(adminId,"admin id from dashboard")
 
   const Totalhandler = async () => {
     const send = (await axios.get("/api/dashboard/",{params:{
-      email:"bikramdhami334@gmail.com",
+      adminId:adminId,
       
     }})).data;
     console.log(send)

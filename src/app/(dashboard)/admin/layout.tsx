@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import AdminNavbar from "../components/AdminNavbar";
 import AdminSideBar from "../components/AdminSideBar";
 import CheckValidAdmin from "../components/CheckValidAdmin";
+import AdminExistProvider from "../context/AdminExistProvider";
 
 export const metadata: Metadata = {
   title: "Job मिल्यो Admin",
@@ -20,6 +21,7 @@ export default async function AdminLayout({
   return (
     <>
       {/* <CheckValidAdmin/> */}
+
       <div id="adminHome" className="w-full h-full">
         {/* Navbar */}
         <div className=" fixed z-10  flex justify-end items-end w-full">
@@ -37,10 +39,13 @@ export default async function AdminLayout({
 
           {/* Content */}
           <div className=" mt-[60px] flex md:ml-[20%] lg:ml-[20%] flex-col flex-grow overflow-y-auto">
+          <AdminExistProvider>
             {children}
+          </AdminExistProvider>
           </div>
         </div>
       </div>
+     
     </>
   );
 }

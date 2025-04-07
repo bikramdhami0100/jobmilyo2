@@ -4,19 +4,17 @@ import UserContact from "@/app/mongodb/UserContacts";
 import UserPostedJob from "@/app/mongodb/UserPostedJob";
 import mongodbconn from "@/app/mongodb/connection";
 import { NextResponse } from "next/server";
-const jwt = require("jsonwebtoken");
 
 export async function GET(req:any) {
   await mongodbconn;
 
   const { searchParams } = new URL(req.url);
-  const email = searchParams.get("email");
- console.log(email,"email")
+  const adminId = searchParams.get("adminId");
+
   try {
         
-    const users = await Usersignup.findOne({ email: email }).select("-password");
-//   console.log(users);
-   if(users.userType=="admin"){
+    const users = await Usersignup.findById(adminId).select("-password");
+   if(users?.userType=="admin"){
     const totaluser= await Usersignup.countDocuments();
     const totalpostedjob=await UserPostedJob.countDocuments();
     const totalContactUser=await UserContact.countDocuments();
@@ -28,10 +26,6 @@ export async function GET(req:any) {
   } catch (error) {
     console.error(error);
     return NextResponse.json({ success: false, status: 404 });
-  } finally{
-    mongodbconn.then((conn:any)=>{
-      conn.close();
-    })
-  }
+  } 
 }
 

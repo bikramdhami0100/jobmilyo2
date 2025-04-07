@@ -8,24 +8,20 @@ function CheckValidAdmin() {
     const router= useRouter()
     const ValideAdmin=async()=>{
         setLoading(true)
-      try {
-        const data=(await axios.get("/api/checkadmin/")).data
-      //   console.log(data);
-     if(data.success===true){
-        setLoading(false)
-        setshowAdmin(true)
-     }else{
-        setshowAdmin(false)
-        setLoading(false)
-        router.push("/user/login")
-     }
-      } catch (error) {
-         if(error){
-            setshowAdmin(false)
-            setLoading(false)
-            router.push("/user/login")
-         }
-      }
+        if(typeof window !== "undefined"){
+            const adminId=localStorage.getItem("adminId");
+            console.log(adminId)
+            if(adminId){
+               //  setshowAdmin(true)
+                router.push("/admin/dashboard");
+                setLoading(false);
+                setshowAdmin(false);
+            }else{
+                setshowAdmin(false)
+                setLoading(false)
+                router.push("/user/login")
+            }
+        }
         
     }
     
