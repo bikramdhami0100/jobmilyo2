@@ -40,6 +40,7 @@ import { PersonIcon } from '@radix-ui/react-icons'
 import { IconNotebook, IconNotes, IconSocial } from '@tabler/icons-react'
 import { MyPopUpContext } from '../context/PopUpClose'
 import axios from 'axios'
+import Link from 'next/link'
 
 function Navbar() {
     const router = useRouter();
@@ -101,64 +102,6 @@ function Navbar() {
         router.push(path)
     }
 
-    // employer  login from google 
-    const googleLogin = useGoogleLogin({
-        onSuccess: async (tokenResponse) => {
-            // console.log(tokenResponse);
-            const userInfo = await axios.get(
-                'https://www.googleapis.com/oauth2/v3/userinfo',
-                { headers: { Authorization: 'Bearer ' + tokenResponse?.access_token } },
-            );
-
-
-            const data = (await axios.post("/api/employer", userInfo.data)).data;
-            console.log(data, "This is data")
-            if (typeof window !== undefined) {
-                console.log(data)
-                if (data?.message == "User Already Exists") {
-                    localStorage.setItem("employerId", data?.results._id);
-
-                    router.push("/employer");
-                }
-                localStorage.setItem("employerId", data?.results._id);
-
-                router.push("/employer");
-            }
-
-            // console.log(userInfo?.data,"user Info");
-
-        },
-        onError: errorResponse => console.log(errorResponse),
-    });
-
-    // Seeker Login from google
-    const seekerGoogleLogin = useGoogleLogin({
-        onSuccess: async (tokenResponse) => {
-            // console.log(tokenResponse);
-            const userInfo = await axios.get(
-                'https://www.googleapis.com/oauth2/v3/userinfo',
-                { headers: { Authorization: 'Bearer ' + tokenResponse?.access_token } },
-            );
-
-
-            const data = (await axios.post("/api/user/google", userInfo.data)).data;
-            if (typeof window !== undefined) {
-                console.log(data)
-                if (data?.message == "User Already Exists") {
-                    localStorage.setItem("userId", data?.results._id);
-
-                    router.push("/user/userinformation");
-                }
-                localStorage.setItem("userId", data?.results._id);
-
-                router.push("/user/userinformation");
-            }
-
-            // console.log(userInfo?.data,"user Info");
-
-        },
-        onError: errorResponse => console.log(errorResponse),
-    });
 
     // If the theme is not mounted yet, do not render the navbar
     if (!mounted) return null;
@@ -255,61 +198,16 @@ function Navbar() {
 
                         </div> :
                         <div className=' flex  gap-1'>
-                            <Button onClick={() => {
-                                // setOpenPopUp(!OpenPopUp)
-                                if (typeof window !== undefined) {
-                                    const data = localStorage.getItem("userId");
-                                    if (!data) {
-                                        seekerGoogleLogin();
-                                    } else {
-                                        router.push(`/user/profile`)
-                                    }
-                                }
-                            }} className=' bg-blue-600'>Job Seeker</Button>
+                            <Button onClick={()=>{
+                                 router.push("/user/login")
+                            }} className=' bg-blue-600'>Login</Button>
                             <Button onClick={() => {
 
 
-                                if (typeof window !== undefined) {
-                                    const data = localStorage.getItem("employerId");
-                                    if (!data) {
-                                        googleLogin()
-                                    } else {
-                                        router.push("/employer")
-                                    }
-                                }
-                            }} className=' bg-blue-600'>Employer</Button>
+                                router.push("/user/signup")
+                            }} className=' bg-blue-600'>SignUp</Button>
 
-                            {/* <AlertDialog open={OpenPopUp} >
-                                <AlertDialogContent className=' bg-gray-400'>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-
-                                            <div className=' flex  gap-1  w-full'>
-                                                <Button onClick={() => {
-                                                    seekerGoogleLogin();
-                                                }} className=' '>
-                                                    <Image src="/images/social/google.png" height={30} width={30} alt={"images"} className=' m-1 p-1 cursor-pointer '></Image>
-
-                                                </Button>
-                                                <Button className='bg-blue-600' onClick={() => {
-                                                    router.push("/user/login")
-                                                }}>Log in</Button>
-                                                <Button className=' bg-blue-600' onClick={() => {
-                                                    router.push("/user/signup")
-                                                }}>Sign Up</Button>
-
-                                            </div>
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel onClick={() => {
-                                            setOpenPopUp(!OpenPopUp)
-                                        }}>Cancel</AlertDialogCancel>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog> */}
-
+                            
                         </div>
                 }
                 <DropdownMenu >

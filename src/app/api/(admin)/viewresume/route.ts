@@ -1,17 +1,19 @@
 import mongodbconn from "@/app/mongodb/connection";
+import Usersignup from "@/app/mongodb/SignUpSchema";
 import UserAppliedJob from "@/app/mongodb/UserAppliedJobSchema";
 import { NextRequest, NextResponse } from "next/server";
 const jwt=require("jsonwebtoken");
 export async function POST(req:NextRequest) {
     await mongodbconn;
-    const {currentPage, limit}=await req.json();
+    const {currentPage, limit,email}=await req.json();
     // console.log(first)
-    const usertoken=await req.cookies.get("token")?.value;
-    const decoded = jwt.verify(usertoken, process.env.TOKEN_SECRETKEY);
-    const user=decoded.encodeemail;
-    const userId=user._id;
+
     const skip=(currentPage-1)*limit
     try {
+        const user=await Usersignup.findOne({ email: email }).select("-password");
+        if (user.userType != "admin") {
+            return NextResponse.json({ message: "You are not authorized to access this page", status: 403 })
+        }
          const applyjob=await UserAppliedJob.find().populate({path:"job", select:"_id company company_logo phonenumber jobtitle email "}).populate({path:"user", select:"fullName email color"}).limit(limit).skip(skip);
          const totalapplydocument=await UserAppliedJob.countDocuments();
          const totalpage=Math.ceil(totalapplydocument/limit);

@@ -1,4 +1,5 @@
 
+import Usersignup from "@/app/mongodb/SignUpSchema";
 import UserContact from "@/app/mongodb/UserContacts";
 
 import mongodbconn from "@/app/mongodb/connection";
@@ -7,17 +8,13 @@ const jwt = require("jsonwebtoken");
 
 export async function POST(req: any) {
     await mongodbconn;
-    const { pages,limit } = await req.json();
+    const { pages,limit ,email="bikramdhami334@gmail.com"} = await req.json();
     console.log(pages, limit)
     const skip = (pages - 1) * limit;
-    const token = req.cookies.get("token")?.value;
-    // console.log(token)
-
-    const decoded = jwt.verify(token, process.env.TOKEN_SECRETKEY);
-    const userdetail = decoded.encodeemail;
-    if (!token) {
-        return NextResponse.json({ message: "Invalid token", status: 401 });
-
+  
+    const user =await Usersignup.findOne({ email: email }).select("-password");
+    if (user.userType != "admin") {
+        return NextResponse.json({ message: "You are not authorized to access this page", status: 403 })
     }
     try {
 
@@ -27,13 +24,19 @@ export async function POST(req: any) {
         
         const totalJobs = await UserContact.countDocuments();
 
+
         return NextResponse.json({
             message: "Successfully inserted job", status: 200, contactlist: jobs, totalJobs,
             totalPages: Math.ceil(totalJobs / limit),
             currentPage: pages
         });
+        
     } catch (error) {
         return NextResponse.json({ message: error })
+    } finally{
+        mongodbconn.then((conn:any)=>{
+            conn.close();
+          })
     }
 
 }

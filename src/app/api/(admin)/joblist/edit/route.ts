@@ -1,4 +1,5 @@
 
+import Usersignup from "@/app/mongodb/SignUpSchema";
 import UserPostedJob from "@/app/mongodb/UserPostedJob";
 import mongodbconn from "@/app/mongodb/connection";
 import { NextResponse } from "next/server";
@@ -6,20 +7,15 @@ const jwt = require("jsonwebtoken");
 
 export async function POST(req: any) {
     await mongodbconn;
-    const { id,jobData } = await req.json();
-    console.log(id,"this is id");
-    console.log("this is jobdata",jobData);
-    const token = req.cookies.get("token")?.value;
-
-    const decoded = jwt.verify(token, process.env.TOKEN_SECRETKEY);
-    const userdetail = decoded.encodeemail;
-    if (!token) {
-        return NextResponse.json({ message: "Invalid token", status: 401 });
-
-    }
+    const { id,jobData,email } = await req.json();
+   
+  
     try {
 
-    
+        const user =await  Usersignup.findOne({ email: email }).select("-password");
+        if (user.userType != "admin") {
+            return NextResponse.json({ message: "You are not authorized to access this page", status: 403 })
+        }
         const jobs = await UserPostedJob.findByIdAndUpdate(id,{
             jobtitle:jobData.jobtitle,
             number_of_post:jobData.number_of_post,

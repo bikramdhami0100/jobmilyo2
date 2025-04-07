@@ -57,8 +57,8 @@ function Contact() {
       try {
         const user = (await axios.get("/api/user/contact",{params:{id:seekerId}})).data;
         setContact({
-          name: user?.data?.fullName || '',
-          email: user?.data?.email || '',
+          name: user?.data?.fullName || 'Hello world',
+          email: user?.data?.email || 'bikramdhami334@gmail.com',
           message: ''
         });
       } catch (error) {

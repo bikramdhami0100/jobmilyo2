@@ -122,7 +122,7 @@ function MessageDashboard() {
 
   }, [checkMessage]);
 
-
+  console.log(isVideoCallOpen,"isVideoCallOpen")
 
   return (
     <div>
@@ -150,8 +150,8 @@ function MessageDashboard() {
 
                 <div className='flex gap-2 items-center'>
                   <Video className='cursor-pointer' onClick={() => {
-                    setIsVideoCallOpen(true);
-                    alert("Allow video Calling ...")
+                    setIsVideoCallOpen(!isVideoCallOpen);
+                    // alert("Allow video Calling ...")
                   }} /> {/* Video call button */}
                   <Phone className='cursor-pointer' />
                   <div className='flex gap-[1px]'>
@@ -213,14 +213,22 @@ function MessageDashboard() {
       </div>
 
       {/* Video Call Component */}
-      {isVideoCallOpen && (
-        <VideoCall
-          roomId={roomId}
-          senderId={senderData?._id}
-          receiverId={selectItem?._id}
-          onClose={() => setIsVideoCallOpen(false)}
-        />
-      )}
+      
+        {
+          isVideoCallOpen&&(
+            <div className='fixed inset-0 flex items-center justify-center z-50 backdrop-blur-2xl'>
+
+            <VideoCall
+            roomId={roomId}
+            senderId={senderData?._id}
+            receiverId={selectItem?._id}
+            isvideoCallOpen={isVideoCallOpen}
+            setIsVideoCallOpen={setIsVideoCallOpen}
+            onClose={() => setIsVideoCallOpen(false)}
+          />
+            </div>
+          )
+        }
     </div>
   );
 }

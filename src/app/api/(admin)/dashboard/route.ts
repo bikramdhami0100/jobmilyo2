@@ -9,16 +9,14 @@ const jwt = require("jsonwebtoken");
 export async function GET(req:any) {
   await mongodbconn;
 
-  const tokendata = await req.cookies.get("token").value;
-  const useremail = jwt.verify(tokendata, process.env.TOKEN_SECRETKEY);
-  const email = useremail.encodeemail.email;
-
-
+  const { searchParams } = new URL(req.url);
+  const email = searchParams.get("email");
+ console.log(email,"email")
   try {
         
     const users = await Usersignup.findOne({ email: email }).select("-password");
 //   console.log(users);
-   if(users.admin==true){
+   if(users.userType=="admin"){
     const totaluser= await Usersignup.countDocuments();
     const totalpostedjob=await UserPostedJob.countDocuments();
     const totalContactUser=await UserContact.countDocuments();
@@ -30,6 +28,10 @@ export async function GET(req:any) {
   } catch (error) {
     console.error(error);
     return NextResponse.json({ success: false, status: 404 });
+  } finally{
+    mongodbconn.then((conn:any)=>{
+      conn.close();
+    })
   }
 }
 

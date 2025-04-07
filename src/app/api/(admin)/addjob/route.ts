@@ -28,12 +28,17 @@ export async function POST(req:any) {
     state:result.state
   })
   data.save()
+  //closed connection after saving the data
+   mongodbconn.then((conn:any)=>{
+     conn.close();
+   })
  return NextResponse.json({message:"success",data:data});
   
 }
 export async function GET(req:any) {
     await mongodbconn;
    const result=await AddJob.find();
+   // Ensure the database connection is properly handled elsewhere if needed
 
    return NextResponse.json({message:"success",data:result});
     

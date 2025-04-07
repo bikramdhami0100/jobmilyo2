@@ -40,7 +40,7 @@ function JobList() {
 
   const fetchJobData = async (page: number) => {
     try {
-      const result = (await axios.post("/api/joblist/", { page, limit: itemsPerPage })).data;
+      const result = (await axios.post("/api/joblist/", { page, limit: itemsPerPage ,email:"bikramdhami334@gmail.com"})).data;
       setJobs(result.joblist);
       setTotalPages(Math.ceil(result.totalJobs / itemsPerPage));
     } catch (error) {

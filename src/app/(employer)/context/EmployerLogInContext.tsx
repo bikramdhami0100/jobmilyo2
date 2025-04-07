@@ -32,6 +32,7 @@ function EmployerContext({ children }: any) {
   useEffect(() => {
     if (typeof window !== undefined) {
       const id = localStorage.getItem("employerId");
+      console.log(id,"employer id from local storage")
       handlerGetEmployerDetails(id);
       handlerGetOrganizationDetails(id);
     }

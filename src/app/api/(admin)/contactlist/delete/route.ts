@@ -1,4 +1,5 @@
 
+import Usersignup from "@/app/mongodb/SignUpSchema";
 import UserContact from "@/app/mongodb/UserContacts";
 
 import mongodbconn from "@/app/mongodb/connection";
@@ -7,19 +8,15 @@ const jwt = require("jsonwebtoken");
 
 export async function POST(req: any) {
     await mongodbconn;
-    const { id } = await req.json();
+    const { id ,email} = await req.json();
   
-    const token = req.cookies.get("token")?.value;
-    // console.log(token)
-
-    const decoded = jwt.verify(token, process.env.TOKEN_SECRETKEY);
-    const userdetail = decoded.encodeemail;
-    if (!token) {
-        return NextResponse.json({ message: "Invalid token", status: 401 });
-
-    }
+  
     try {
 
+         const user=await Usersignup.findOne({ email: email }).select("-password");
+        if (user.userType != "admin") {
+            return NextResponse.json({ message: "You are not authorized to access this page", status: 403 })
+        }
     
         const jobs = await  UserContact.findByIdAndDelete(id);
 

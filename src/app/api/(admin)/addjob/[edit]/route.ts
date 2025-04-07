@@ -17,6 +17,11 @@ export async function GET(req:any) {
     try {
         const result=await UserPostedJob.findById(id);
         console.log(result);
+         if(result){
+            mongodbconn.then((conn:any)=>{
+                conn.close();
+              })
+         }
         return NextResponse.json({message:"success",status:200,data:result});
     } catch (error) {
         

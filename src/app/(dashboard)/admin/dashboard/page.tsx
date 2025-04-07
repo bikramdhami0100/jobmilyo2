@@ -30,52 +30,21 @@ function AdminDashoBoard() {
   ];
 
 
-  const data = {
-    labels: ['Tota Girls', 'Total boys'],
-    datasets: [
-      {
-        label: '# visite',
-        data: [12, 14],
-        backgroundColor: [
-          "pink",
-          "blue"
-        ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
 
-        ],
-        borderWidth: 2,
-      },
-    ],
-  };
-  const data2 = {
-    labels: ['Tota Jobs', 'Total Applied Jobs '],
-    datasets: [
-      {
-        label: '# senario',
-        data: [12, 14],
-        backgroundColor: [
-          "pink",
-          "blue"
-        ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-
-        ],
-        borderWidth: 2,
-      },
-    ],
-  };
   const Totalhandler = async () => {
-    const send = (await axios.get("/api/dashboard/")).data;
+    const send = (await axios.get("/api/dashboard/",{params:{
+      email:"bikramdhami334@gmail.com",
+      
+    }})).data;
     console.log(send)
     setTotalData(send.data);
   }
   useEffect(() => {
-    Totalhandler()
-  }, [])
+    Totalhandler();
+    return()=>{
+      removeEventListener("beforeunload", Totalhandler)
+    }
+  }, []);
   return (
     <div>
       <h1 className=' text-3xl text-center italic my-10 font-bold underline'>Dashboard</h1>

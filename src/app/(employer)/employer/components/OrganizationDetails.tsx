@@ -66,7 +66,7 @@ const FormSchema = z.object({
   isActive: z.boolean(),
 });
 
-function OrganizationDetailsForm({ setStep, orgData, setOrgData,employerData }: any) {
+function OrganizationDetailsForm({employerData }: any) {
   const [loader, setLoader] = useState(false);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),

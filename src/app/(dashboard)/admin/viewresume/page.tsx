@@ -52,7 +52,7 @@ function ViewResume() {
   const { theme } = useTheme();
   let limit: number = 4;
   const fetchResumeData = async (page: any) => {
-    const resume = (await axios.post("/api/viewresume/", { currentPage: page, limit: limit })).data;
+    const resume = (await axios.post("/api/viewresume/", { currentPage: page, limit: limit,email:"bikramdhami334@gmail.com" })).data;
     setResumeData(resume?.data);
     setTotalPage(resume?.totalpage);
   }
@@ -61,7 +61,7 @@ function ViewResume() {
   }, [pagination]);
   const handlerStatus = async (text: any, id: any) => {
     // console.log(text,id);
-    const send = (await axios.post("/api/status", { status: text, id: id })).data;
+    const send = (await axios.post("/api/status", { status: text, id: id,email:"bikramdhami334@gmail.com" })).data;
     if (send) {
       setTimeout(() => {
         fetchResumeData(pagination);

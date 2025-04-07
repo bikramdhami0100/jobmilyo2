@@ -273,7 +273,7 @@ function UserProfile() {
                                 <div className='flex'>
                                     <Input className='rounded-r-none' placeholder='Message' />
                                     <Button onClick={() => {
-
+                                        return(<a href={`mailto:${signup?.email}`}></a>)
                                     }} className='rounded-l-none gap-2 bg-green-600'>Send <SendHorizonal /></Button>
                                 </div>
                             </div>
@@ -384,8 +384,8 @@ function UserProfile() {
                                            
                                             <div>
                                                 <h1>Phone</h1>
-                                                <p>{item?.phone}</p>
-
+                                                {/* <p>{item?.phone}</p> */}
+                                                <a className="btn call" href={`tel:${item?.phone}`}><i className="bi bi-telephone"></i>&nbsp;{item.phone}</a>
                                             </div>
                                           
                                             <div>
@@ -395,7 +395,7 @@ function UserProfile() {
                                             </div>
                                             <div>
                                                 <h1>Mail</h1>
-                                                <p>{signup?.email}</p>
+                                                <a href={`mailto:${signup?.email}`}>{signup?.email}</a>
 
                                             </div>
 

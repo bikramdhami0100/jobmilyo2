@@ -53,11 +53,11 @@ function EmployerNavbar() {
             path: "/employer/postjobslist",
             icon: ListCheck
         },
-        {
-            name: "POST INTERNSHIP",
-            path: "/employer/internship",
-            icon: User
-        },
+        // {
+        //     name: "POST INTERNSHIP",
+        //     path: "/employer/internship",
+        //     icon: User
+        // },
         {
             name: "APPLICATION",
             path: "/employer/application",

@@ -46,7 +46,7 @@ function HandleJob() {
     console.log(jobData)
     try {
       if (jobData) {
-       const data= (await axios.post(`/api/joblist/edit`, {id:jobData._id,jobData})).data;
+       const data= (await axios.post(`/api/joblist/edit`, {id:jobData._id,jobData,email:"bikramdhami334@gmail.com"})).data;
         // alert("Job updated successfully");
         router.push('/admin/joblist');  // Redirect to job list after saving
       }
@@ -59,7 +59,7 @@ function HandleJob() {
     <div>
         <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-4">Edit Job</h1>
-      <form  className={`bg-white p-6 rounded shadow-md ${theme === 'dark' ? 'bg-gray-800' : ''}`}>
+      <form  className={` p-6 rounded shadow-md ${theme === 'dark' ? 'bg-gray-800' : ''}`}>
         <div className="mb-4">
           <label className="block text-sm font-bold mb-2" htmlFor="jobtitle">
             Job Title

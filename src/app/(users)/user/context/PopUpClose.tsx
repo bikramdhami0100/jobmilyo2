@@ -20,14 +20,24 @@ function PopUpClose({ children }: any) {
    }
    useEffect(() => {
       if (typeof window !== undefined) {
-         const id = localStorage.getItem("userId")
+         const id = localStorage.getItem("userId");
+         console.log(id,"this is in pop up")
          setSeekerId(id);
         if(id){
          handlerChatEnable(id);
+         console.log(id,"this is in pop up")
          setOpenPopUp(true)
         }
       }
-      
+   
+       return()=>{
+         setOpenPopUp(false)
+         setSeekerId("")
+         setJobSeekerApplyData("")
+         setValidUser(false)
+         // localStorage.removeItem("userId")
+         // localStorage.removeItem("employerId")
+       }
    }, []);
    return (
       <div>

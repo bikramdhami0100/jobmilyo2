@@ -1,5 +1,6 @@
 
 import mongodbconn from "@/app/mongodb/connection";
+import Usersignup from "@/app/mongodb/SignUpSchema";
 import UserAppliedJob from "@/app/mongodb/UserAppliedJobSchema";
 import { NextRequest, NextResponse } from "next/server";
 const jwt = require("jsonwebtoken");
@@ -8,25 +9,14 @@ export async function POST(req: NextRequest) {
     await mongodbconn;
 
     try {
-        const { status,id } = await req.json();
-        const usertoken = req.cookies.get("token")?.value;
-           console.log(status,id);
-        if (!usertoken) {
-            return NextResponse.json({ message: "Token not found", status: 401 });
-        }
-
-        const decoded = jwt.verify(usertoken, process.env.TOKEN_SECRETKEY);
+        const { status,id ,email} = await req.json();
         
-        if (!decoded || !decoded.encodeemail) {
-            return NextResponse.json({ message: "Invalid token", status: 401 });
+      const realUser=await  Usersignup.findOne({ email: email }).select("-password");
+        if (realUser.userType != "admin") {
+            return NextResponse.json({ message: "You are not authorized to access this page", status: 403 })
         }
 
-        const user = decoded.encodeemail;
-        const userId = user._id;
-        console.log(userId,user)
-        if (!userId) {
-            return NextResponse.json({ message: "Invalid user data", status: 400 });
-        }
+
 
         const applyjob = await UserAppliedJob.findByIdAndUpdate(
             id,

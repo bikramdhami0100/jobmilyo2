@@ -52,7 +52,7 @@ function ContactList() {
   }
  const handlerDeleteContact=async(id:any)=>{
   //  console.log(id);
-   const sendForDelete=(await axios.post("/api/contactlist/delete",{id})).data;
+   const sendForDelete=(await axios.post("/api/contactlist/delete",{id,email:"bikramdhami334@gmail.com"})).data;
   //  console.log(sendForDelete)
    if(sendForDelete){
     setTimeout(() => {
