@@ -3,23 +3,11 @@ import UserPostedJob from "@/app/mongodb/UserPostedJob";
 // import { UserPostedJob } from "@/app/mongodb/UserPostedJob";
 import mongodbconn from "@/app/mongodb/connection";
 import { NextResponse } from "next/server";
-const jwt=require("jsonwebtoken");
 
-// // part of posted job by user
 export async function POST(req:any) {
     await mongodbconn;
     const form = await req.json();
-    console.log(form.rating)
-    const token = req.cookies.get("token")?.value;
-    console.log(token)
-    
-    const decoded = jwt.verify(token, process.env.TOKEN_SECRETKEY);
-    const userdetail = decoded.encodeemail;
-    const allowuser=await Usersignup.find({email:userdetail.email});
-    if(!token){
-        return NextResponse.json({ message: "Invalid token", status: 401 });
-
-    }
+    const { userId } = form;
     console.log(form.jobtitle)
     const received = new UserPostedJob({
         jobtitle: form.jobtitle,
@@ -45,10 +33,9 @@ export async function POST(req:any) {
         address: form.address,
         state: form.state,
         rating:form.rating,
-        user:userdetail._id
+        user:userId
       });
     const job=  await received.save()
-    console.log("job",job)
     return NextResponse.json({ message: "Successfully inserted job", status: 200, postjob:job });
     // try {
     // } catch (error) {

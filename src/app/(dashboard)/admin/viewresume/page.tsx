@@ -17,6 +17,7 @@ import { useTheme } from 'next-themes';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation'
+import { useAdminContext } from '../../context/AdminExistProvider'
 interface JobType {
   _id: string,
   company: string,
@@ -45,26 +46,26 @@ interface ResumeType {
 function ViewResume() {
   const router=useRouter();
   const [resumData, setResumeData] = useState<ResumeType[]>();
-  // const [currentpage, setCurrentPage] = useState<number>(1);
+  const {adminId}=useAdminContext()
   const [totalpage, setTotalPage] = useState<any>(1);
   // 
   const [pagination, setPaganatation] = useState<any>(1)
   const { theme } = useTheme();
   let limit: number = 4;
-  const fetchResumeData = async (page: any) => {
-    const resume = (await axios.post("/api/viewresume/", { currentPage: page, limit: limit,email:"bikramdhami334@gmail.com" })).data;
+  const fetchResumeData = async (page: any,adminId:string|null) => {
+    const resume = (await axios.post("/api/viewresume/", { currentPage: page, limit: limit,adminId})).data;
     setResumeData(resume?.data);
     setTotalPage(resume?.totalpage);
   }
   useEffect(() => {
-    fetchResumeData(pagination)
+    fetchResumeData(pagination,adminId)
   }, [pagination]);
   const handlerStatus = async (text: any, id: any) => {
     // console.log(text,id);
-    const send = (await axios.post("/api/status", { status: text, id: id,email:"bikramdhami334@gmail.com" })).data;
+    const send = (await axios.post("/api/status", { status: text, id: id,adminId })).data;
     if (send) {
       setTimeout(() => {
-        fetchResumeData(pagination);
+        fetchResumeData(pagination,adminId);
       }, 100);
     }
   
@@ -74,7 +75,7 @@ function ViewResume() {
     console.log(send);
     if(send.status==200){
       setTimeout(() => {
-         fetchResumeData(pagination);
+         fetchResumeData(pagination,adminId);
       }, 100);
     }
  };
@@ -104,7 +105,7 @@ function ViewResume() {
               resumData?.map((item: ResumeType, index: any) => {
                 // console.log(item.status, "data of items");
                 return (
-                  <tr className={`${theme == "light" ? "bg-gray-300" : null} border-2  `}>
+                  <tr key={index} className={`${theme == "light" ? "bg-gray-300" : null} border-2  `}>
 
                     <td className=" border-2   p-2 ">{index + 1 + (pagination - 1) * limit}</td>
                     <td className=" border-2   p-2 ">{item?.job?.company}</td>
@@ -149,9 +150,9 @@ function ViewResume() {
         {/* paganization */}
         <div className=''>
           <Pagination className=' flex justify-start items-start'>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious href="#" onClick={() => {
+            <PaginationContent key={pagination}>
+              <PaginationItem >
+                <PaginationPrevious  href="#" onClick={() => {
                   if (pagination != 1) {
                     setPaganatation(pagination - 1)
                   }
@@ -161,7 +162,7 @@ function ViewResume() {
                 Array(totalpage).fill(null).map((item: any, index: any) => {
                   return (
                     <>
-                      <PaginationItem>
+                      <PaginationItem key={index}>
                         <PaginationLink href="#" isActive={pagination == index + 1 ? true : false} onClick={() => {
                           setPaganatation(index + 1)
                         }}>
@@ -176,7 +177,7 @@ function ViewResume() {
                   )
                 })
               }
-              <PaginationItem>
+              <PaginationItem >
                 <PaginationNext href="#" onClick={() => {
                   if (pagination !== totalpage) {
                     setPaganatation(pagination + 1)

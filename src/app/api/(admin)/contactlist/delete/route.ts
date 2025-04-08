@@ -4,7 +4,6 @@ import UserContact from "@/app/mongodb/UserContacts";
 
 import mongodbconn from "@/app/mongodb/connection";
 import { NextResponse } from "next/server";
-const jwt = require("jsonwebtoken");
 
 export async function POST(req: any) {
     await mongodbconn;

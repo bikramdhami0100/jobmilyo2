@@ -6,8 +6,6 @@ function AHome() {
   return (
     <div>
         <AdminDashoBoard/>
-       {/* <AdminHome/> */}
-      
     </div>
   )
 }

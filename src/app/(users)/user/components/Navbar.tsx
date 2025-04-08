@@ -91,9 +91,8 @@ function Navbar() {
 
 
     const HandleLogOut = async () => {
-        // console.log("log out c")
         if (typeof window !== undefined) {
-            localStorage.removeItem("userId");
+            await localStorage.removeItem("userId");
             setValidUser("")
             router.push("/user");
         }

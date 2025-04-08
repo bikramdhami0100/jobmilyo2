@@ -4,10 +4,6 @@ import UserAppliedJob from '@/app/mongodb/UserAppliedJobSchema';
 import UserPostedJob from '@/app/mongodb/UserPostedJob';
 import mongodbconn from '@/app/mongodb/connection';
 import { NextResponse, NextRequest } from 'next/server';
-const nodemailer = require("nodemailer");
-const bcrypt = require("bcryptjs");
-const jwt = require('jsonwebtoken');
-
 // Secret key should be stored in environment variable
 const SECRET_KEY = process.env.NEXT_PUBLIC_TOKEN_SECRETKEY || 'secretkeybikramdhami';
 
@@ -86,67 +82,10 @@ export async function POST(req: NextRequest) {
 
     try {
         const { femail } = await req.json();
-        const token = req.cookies.get("token")?.value;
+        const user = await Usersignup.findOne({ email: femail });
 
-        if (!token) {
-            const user = await Usersignup.findOne({ email: femail });
-
-            if (!user) {
-                return NextResponse.json({ message: "User not found", status: 404 });
-            }
-
-            const transporter = nodemailer.createTransport({
-                service: "gmail",
-                host: "smtp.gmail.com",
-                port: 587,
-                secure: false, // Use TLS
-                auth: {
-                    user: process.env.NEXT_PUBLIC_EMAIL_USER,
-                    pass: process.env.NEXT_PUBLIC_EMAIL_PASS,
-                },
-            });
-
-            try {
-                await transporter.sendMail({
-                    from: "jobmilyo@gmail.com",
-                    to: user.email,
-                    subject: `For password reset ${user.email}`,
-                    html: `
-                        <p>Email: ${user.email} </p>
-                        <p> Click here to verify: 
-                            <a href='${process.env.NEXT_PUBLIC_DEPLOY_URL}/user/forgotpassword/${user._id}'> Verify </a>
-                        </p>
-                    `,
-                });
-
-                return NextResponse.json({ message: "Success: email sent", status: 200, success: true });
-
-            } catch (mailError) {
-                console.error("Mail sending error:", mailError);
-                return NextResponse.json({ message: "Could not send email", status: 500 });
-            }
-        }
-
-        try {
-            const decoded = jwt.verify(token, SECRET_KEY);
-            const email = decoded.encodeemail;
-
-            if (femail === email) {
-                const user = await Usersignup.findOne({ email });
-
-                if (!user) {
-                    return NextResponse.json({ message: "User not found", status: 404 });
-                }
-
-                return user.userVerify
-                    ? NextResponse.json({ message: "Email verified successfully", status: 200 })
-                    : NextResponse.json({ message: "User is not verified", status: 401, user });
-            } else {
-                return NextResponse.json({ message: "Email mismatch", status: 400 });
-            }
-        } catch (tokenError) {
-            console.error("Token verification error:", tokenError);
-            return NextResponse.json({ message: "Invalid token", status: 401 });
+        if (!user) {
+            return NextResponse.json({ message: "User not found", status: 404 });
         }
 
     } catch (error) {

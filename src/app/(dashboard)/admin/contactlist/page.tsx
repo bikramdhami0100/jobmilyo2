@@ -25,6 +25,7 @@ import {
 import { Trash2 } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import axios from 'axios'
+import { useAdminContext } from '../../context/AdminExistProvider'
 
 interface ContactType {
   _id:any,
@@ -40,10 +41,10 @@ function ContactList() {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 4;
-
+ const {adminId}=useAdminContext()
   const handleContact = async (page: number) => {
     try {
-      const response = await axios.post("/api/contactlist/", { pages: page, limit: itemsPerPage });
+      const response = await axios.post("/api/contactlist/", { pages: page, limit: itemsPerPage,adminId });
       setContactList(response.data.contactlist);
       setTotalPages(response.data.totalPages);
     } catch (error) {
@@ -52,7 +53,7 @@ function ContactList() {
   }
  const handlerDeleteContact=async(id:any)=>{
   //  console.log(id);
-   const sendForDelete=(await axios.post("/api/contactlist/delete",{id,email:"bikramdhami334@gmail.com"})).data;
+   const sendForDelete=(await axios.post("/api/contactlist/delete",{id,adminId})).data;
   //  console.log(sendForDelete)
    if(sendForDelete){
     setTimeout(() => {
@@ -62,6 +63,10 @@ function ContactList() {
  }
   useEffect(() => {
     handleContact(currentPage);
+    return ()=>{
+      setContactList([]);
+      
+    }
   }, [currentPage]);
   // console.log(contactList)
   return (
@@ -83,8 +88,8 @@ function ContactList() {
             <tbody>
               {
                 contactList.length>=1?contactList.map((item, index) => (
-                <>
-                  <tr key={item.Sr_No} className={`${theme === "light" ? "bg-gray-300" : ""} border-2`}>
+             
+                  <tr key={index} className={`${theme === "light" ? "bg-gray-300" : ""} border-2`}>
                     <td className="border-2 p-2">{index + 1 + (currentPage - 1) * itemsPerPage}</td>
                     <td className="border-2 p-2">{item.userName}</td>
                     <td className="border-2 p-2">{item.email}</td>
@@ -111,8 +116,14 @@ function ContactList() {
                       <Trash2 />
                     </td>
                   </tr>
-                </>
-                )):" No any data available"
+            
+                )):(
+                  <tr>
+                  <td colSpan={5} className="text-center p-4">
+                    No any data available
+                  </td>
+                </tr>
+                )
               }
             </tbody>
           </table>

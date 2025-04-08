@@ -2,31 +2,14 @@ import Usersignup from "@/app/mongodb/SignUpSchema";
 import UserInformation from "@/app/mongodb/UserInformationSchema";
 import mongodbconn from "@/app/mongodb/connection";
 import { NextResponse } from "next/server";
-var jwt = require('jsonwebtoken');
-
 export async function POST(req: any) {
      await mongodbconn;
 const userinformation=await req.json();
 
-     const data=await req.cookies.get("token");
-     const token=data.value
-    //  console.log(token);
-     if (!token) {
-        return NextResponse.json({ message: "Token not found", status: 400 });
-    }
 
-     var decoded = jwt.verify(token, process.env.TOKEN_SECRETKEY);
-     let  email = decoded.encodeemail.email;
-     console.log(email)
-     const user = await Usersignup.findOne(
-            { email },
-        ); 
-     
-
-         let  userId=user._id;
      try {
         const newUserInfo = new UserInformation({
-            userId: userId,
+            userId: "",
             fname: userinformation.fname,
             gender: userinformation.gender,
             phone: userinformation.phone,

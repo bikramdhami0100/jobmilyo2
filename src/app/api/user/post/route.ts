@@ -1,18 +1,22 @@
 
+import Usersignup from "@/app/mongodb/SignUpSchema";
 import UserPostedJob from "@/app/mongodb/UserPostedJob";
 import mongodbconn from "@/app/mongodb/connection";
 import { NextResponse } from "next/server";
-const jwt=require("jsonwebtoken");
 
-// // part of posted job by user
 export async function POST(req:any) {
     await mongodbconn;
-    const {form,seekerId} = await req.json();
+    const {form,employerId} = await req.json();
 
-    if(!seekerId){
+    if(!employerId){
         return NextResponse.json({ message: "Invalid token", status: 401 });
+      }
+     
+      const existUser=await Usersignup.findById(employerId).select("-password")
+      if(!existUser){
+        return NextResponse.json({ message: "Invalid token", status: 401 });
+      }
 
-    }
     try {
           // console.log(form.jobtitle)
     const received = new UserPostedJob({
@@ -39,7 +43,7 @@ export async function POST(req:any) {
       address: form.address,
       state: form.state,
       rating:form.rating,
-      user:seekerId
+      user:employerId
     });
   const job=  await received.save()
 
@@ -54,16 +58,8 @@ export async function POST(req:any) {
 export async function GET(req: any) {
   await mongodbconn; // Ensure you have a connection utility
 
-  const token = req.cookies.get("token")?.value;
-
-  if (!token) {
-    return NextResponse.json({ message: "Invalid token", status: 401 });
-  }
-
   try {
-    const decoded = jwt.verify(token, process.env.TOKEN_SECRETKEY);
-    const userdetail = decoded.encodeemail;
-
+  
     // Fetch and sort data by jobupload
     const jobs = await UserPostedJob.find().sort({ jobupload: -1 }).limit(3).populate({path:"user",select:"fullName  email color"});
 

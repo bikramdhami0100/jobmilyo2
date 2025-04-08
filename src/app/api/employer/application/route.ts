@@ -4,12 +4,12 @@ import UserAppliedJob from "@/app/mongodb/UserAppliedJobSchema";
 import { NextRequest, NextResponse } from "next/server";
 export async function POST(req:NextRequest) {
     await mongodbconn;
-    const {currentPage, limit,adminId}=await req.json();
+    const {currentPage, limit,employerId}=await req.json();
     // console.log(first)
 
     const skip=(currentPage-1)*limit
     try {
-        const user=await Usersignup.findById(adminId).select("-password");
+        const user=await Usersignup.findById(employerId).select("-password");
         if (user.userType != "admin") {
             return NextResponse.json({ message: "You are not authorized to access this page", status: 403 })
         }

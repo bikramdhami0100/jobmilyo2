@@ -4,15 +4,14 @@ import UserContact from "@/app/mongodb/UserContacts";
 
 import mongodbconn from "@/app/mongodb/connection";
 import { NextResponse } from "next/server";
-const jwt = require("jsonwebtoken");
 
 export async function POST(req: any) {
     await mongodbconn;
-    const { pages,limit ,email="bikramdhami334@gmail.com"} = await req.json();
+    const { pages,limit ,adminId} = await req.json();
     console.log(pages, limit)
     const skip = (pages - 1) * limit;
   
-    const user =await Usersignup.findOne({ email: email }).select("-password");
+    const user =await Usersignup.findById(adminId).select("-password");
     if (user.userType != "admin") {
         return NextResponse.json({ message: "You are not authorized to access this page", status: 403 })
     }

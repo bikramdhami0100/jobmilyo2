@@ -13,8 +13,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+
 function JobsTopSearchCategory() {
     const router = useRouter();
     const [selectsubpart, setSelectedSubpart] = useState("");
@@ -118,7 +117,7 @@ function JobsTopSearchCategory() {
                 {
                     JobsItems.map((item, index) => {
                         return (
-                            <div>
+                            <div key={index}>
 
                                 <Dialog >
                                     <DialogTrigger asChild>

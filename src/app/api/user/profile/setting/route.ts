@@ -2,7 +2,6 @@
 import Usersignup from "@/app/mongodb/SignUpSchema";
 import mongodbconn from "@/app/mongodb/connection";
 import { NextResponse } from "next/server";
-const jwt = require("jsonwebtoken");
 
 export async function GET(req:any) {
   await mongodbconn;

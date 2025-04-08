@@ -5,9 +5,9 @@ import { NextRequest, NextResponse } from "next/server";
 const jwt=require("jsonwebtoken");
 export async function POST(req:NextRequest) {
     await mongodbconn;
-    const {id,adminId}=await req.json();
+    const {id,employerId}=await req.json();
     try {
-        const existUser=await Usersignup.findById(adminId).select("-password");
+        const existUser=await Usersignup.findById(employerId).select("-password");
         if (existUser.userType != "admin") {    
             return NextResponse.json({ message: "You are not authorized to access this page", status: 403 })
         }

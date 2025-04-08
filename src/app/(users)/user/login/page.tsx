@@ -149,15 +149,17 @@ function Login() {
     if (role == "Employee (कर्मचारी)") {
       if (typeof window !== undefined) {
         const data = localStorage.getItem("userId");
+
         if (!data) {
           seekerGoogleLogin()
         } else {
-          router.push("/user/")
+          router.push("/user/profile")
         }
       }
     } else if (role == "Employer (रोजगारदाता)") {
       if (typeof window !== undefined) {
         const data = localStorage.getItem("employerId");
+        
         if (!data) {
           handlerEmployergoogleLogin()
         } else {
@@ -184,11 +186,10 @@ function Login() {
       <div className='relative  flex flex-col shadow-lg p-6 justify-center items-center ml-12 rounded-md'>
         < Link href={"/user/login"} className=' mb-4 border-b-[2px] p-1 font-bold text-xl  '>Login/SignUp</Link>
         <div className='flex flex-col gap-4'>
-
           <div className=' flex flex-col gap-3 cursor-pointer self-center'>
             {
               socialItem.map((item: any, index) => (
-                <>
+                <div key={index} className=' w-full h-full cursor-pointer'>
                   {
                     item?.role !== "Admin" && (
                       <div onClick={() => {
@@ -200,8 +201,8 @@ function Login() {
                     )
                   }
                   {item?.role == "Admin" && (
-                    <Dialog>
-                      <DialogTrigger>
+                    <Dialog >
+                      <DialogTrigger className=' w-full h-full cursor-pointer'>
                         <div key={index} className=' shadow-sm hover:shadow-md transition-all duration-100 ease-in flex gap-4 items-center  justify-between border p-2 rounded-md '>
                           <h1>{item?.role}</h1>    <Image src={item?.image} height={30} width={30} alt={item.name} ></Image>
                         </div>
@@ -243,11 +244,10 @@ function Login() {
                     </Dialog>
                   )
                   }
-                </>
+                </div>
               ))
             }
           </div>
-
           <p className=' text-center'>Don't have an account ? <Link href={"/user/signup"} className=' underline text-blue-600'> Signup</Link></p>
         </div>
       </div>

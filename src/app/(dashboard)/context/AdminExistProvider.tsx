@@ -38,7 +38,7 @@ function AdminExistProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Initial check on mount
     if (adminId) {
-      router.push("/admin/dashboard");
+      router.push("/admin");
     } else {
       router.push("/user/login"); // Consider if you want to redirect here initially
     }
@@ -47,7 +47,7 @@ function AdminExistProvider({ children }: { children: React.ReactNode }) {
     return () => {
       window.removeEventListener("storage", handlerStorageEvent);
     };
-  }, [adminId, router]); // Add adminId and router to the dependency array
+  }, []); // Add adminId and router to the dependency array
 
   return (
     <AdminExistContext.Provider value={{ adminId, setAdminId }}>

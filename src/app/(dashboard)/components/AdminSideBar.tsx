@@ -13,40 +13,21 @@ function AdminSideBar() {
     const router = useRouter();
     const [mounted, setMounted] = useState(false);
     const [loadinglogout,setLoadingLogout]=useState<any>(false)
-    const { setTheme, theme } = useTheme();
+    const { theme } = useTheme();
     const pathname=usePathname()
     useEffect(() => {
         setMounted(true);
     }, []);
 
-
     const HandleLogOut = async () => {
 
         setLoadingLogout(true)
-        const data = await fetch(`/api/adminlogout`, {
-            method: "get",
-
-        })
-
-        if (data.ok) {
-            
-            const result = await data.json()
-            if (result) {
-                setLoadingLogout(false)
-                toast({
-                    description: result?.message,
-                })
-
-                router.push("/user/login/")
-
-            }
-
+        if(typeof window !==undefined){
+            const id =await localStorage.removeItem("adminId")
+             router.push("/user/login")
         }
+      
     }
-
-    // If the theme is not mounted yet, do not render the navbar
-    if (!mounted) return null;
-
     const AdminSideMenu = [
         {
             name: "Dashboard",

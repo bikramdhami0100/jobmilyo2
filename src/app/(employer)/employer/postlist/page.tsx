@@ -1,12 +1,4 @@
-// import React from 'react'
 
-// function PostList() {
-//   return (
-//     <div>PostList</div>
-//   )
-// }
-
-// export default PostList
 "use client"
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';

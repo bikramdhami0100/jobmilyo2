@@ -119,7 +119,7 @@ function AdminNavbar() {
                                                 {
                                                     AdminMenu.map((item, index) => {
                                                         return (
-                                                            <div className={`hover:bg-[#ed4b4b] m-1 ${pathname==item.path?"bg-[#ed4b4b]":""} ${theme == "light" ? "text-black" : ""}  rounded-md cursor-pointer  w-full p-2 flex gap-4 font-extrabold text-[20px]`} onClick={() => {
+                                                            <div key={index} className={`hover:bg-[#ed4b4b] m-1 ${pathname==item.path?"bg-[#ed4b4b]":""} ${theme == "light" ? "text-black" : ""}  rounded-md cursor-pointer  w-full p-2 flex gap-4 font-extrabold text-[20px]`} onClick={() => {
                                                                 router.push(item.path)
                                                             }}>
                                                                 <item.icon />

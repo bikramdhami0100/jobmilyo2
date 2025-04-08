@@ -24,7 +24,14 @@ function PostAJob() {
       setMounted(true);
       if(typeof window!==undefined){
         const employerId = localStorage.getItem("employerId");
-        setEmployerId(employerId);
+        const adminId = localStorage.getItem("adminId");
+        if (employerId) {
+          setEmployerId(employerId);
+        } else if(adminId){
+          setEmployerId(adminId);
+        }
+        // console.log(employerId, "employer id from local storage")
+        // setEmployerId(employerId);
       }
   }, []);
   const [form, setForm] = useState({
@@ -85,7 +92,7 @@ function PostAJob() {
       try {
         const response = await fetch('/api/user/post', {
           method: 'POST',
-          body: JSON.stringify({form,employerId}),
+          body: JSON.stringify({ form, employerId }),
         });
   
         if (response.ok) {

@@ -14,6 +14,7 @@ import {
 import { Pencil, Trash2 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
+import { useAdminContext } from '../../context/AdminExistProvider';
 
 interface JobDetailType {
   _id: string;
@@ -32,7 +33,7 @@ interface JobDetailType {
 
 function JobList() {
   const { theme } = useTheme();
-
+  const {adminId}=useAdminContext();
   const [jobs, setJobs] = useState<JobDetailType[]>([]);
   const [currentPage, setCurrentPage] = useState<any>(1);
   const [totalPages, setTotalPages] = useState<any>(1);
@@ -40,7 +41,7 @@ function JobList() {
 
   const fetchJobData = async (page: number) => {
     try {
-      const result = (await axios.post("/api/joblist/", { page, limit: itemsPerPage ,email:"bikramdhami334@gmail.com"})).data;
+      const result = (await axios.post("/api/joblist/", { page, limit: itemsPerPage ,adminId})).data;
       setJobs(result.joblist);
       setTotalPages(Math.ceil(result.totalJobs / itemsPerPage));
     } catch (error) {
@@ -48,8 +49,7 @@ function JobList() {
     }
   };
   const handlerDeleteItem=async(id:any)=>{
-    console.log(id);
-    const senddelete=(await axios.post("/api/joblist/delete",{id:id})).data;
+    const senddelete=(await axios.post("/api/joblist/delete",{id:id,adminId})).data;
     //  console.log(senddelete);
      if(senddelete){
       setTimeout(() => {

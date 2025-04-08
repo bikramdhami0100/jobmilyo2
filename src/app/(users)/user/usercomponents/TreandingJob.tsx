@@ -25,7 +25,10 @@ function TreandingJob() {
 
     }
     useEffect(() => {
-        TreandingHomeJobs()
+        TreandingHomeJobs();
+        return()=>{
+            setTreandingJobs([])
+        }
     }, [])
 
 
