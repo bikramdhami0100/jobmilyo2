@@ -50,6 +50,7 @@ import { CldUploadButton } from 'next-cloudinary';
 import { toast } from '@/components/ui/use-toast';
 import CountDownTimer from '../../components/CountDownTimer';
 import { MyPopUpContext } from '../../context/PopUpClose';
+import { useRouter } from 'next/navigation';
 
 const handlerParam = async (paramData: any) => {
   return await paramData?.jobs; // This function isn't necessary, but keeping it
@@ -61,11 +62,12 @@ function ApplyForJob({ params }: any) {
   const [loadresume, setloadresume] = useState<boolean>(false)
   const [jobId,setjobId]=useState<any>();
   const {seekerId}:any=useContext(MyPopUpContext);
+  const router=useRouter();
   const fetchJobDetailsData = (id:string) => {
     const send = axios.get(`/api/user/jobdetails`, { params:{
       id
     } }).then(({ data }: any) => {
-      console.log(data,"This is data")
+      
       setJobDetails(data.respondata)
     }).catch((error: any) => {
       console.log(error)
@@ -127,10 +129,11 @@ function ApplyForJob({ params }: any) {
   const timeAgoMessage = formatTimeDifference(differenceMs);
   const handlerJobApply=async()=>{
     setApplyLoader(true)
-       if(seekerId){
-        const send=(await axios.post("/api/user/apply",{jobId:jobId,resume:resume,jobseeker:seekerId,roomId:uuidv4()})).data
+       if(seekerId && jobdetails){
+        const send=(await axios.post("/api/user/apply",{jobId:jobId,to:jobdetails?.user, resume:resume,jobseeker:seekerId,roomId:uuidv4()})).data
         setApplyLoader(false);
         if(send.status===200){
+          router.push("/user/apply")
           toast({title:"Apply successfully",className:"bg-white text-black border-green-600 border-[2px]"})
         }
        }

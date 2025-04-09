@@ -20,7 +20,7 @@ function PostAJob() {
   const [mounted, setMounted] = useState(false);
   const [employerId,setEmployerId]=useState<any>("");
   const {employerData,organizationData}=useContext<any>(MyEmployerLogInContext);
-  console.log(organizationData,"Organization Data")
+
   useEffect(() => {
       setMounted(true);
       if(typeof window!==undefined){
@@ -96,7 +96,7 @@ function PostAJob() {
             className:" text-black bg-white border-green-600 ",
             description: "Your job posting has been added.",
           });
-          // router.push("/user/Jobs")
+          router.push("/employer/postjobslist");
           
         } else {
           toast({

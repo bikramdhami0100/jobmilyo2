@@ -5,10 +5,9 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req:NextRequest) {
     await mongodbconn;
 
-    const {jobId,resume,jobseeker,roomId}=await req.json();
-     console.log(jobId,resume,jobseeker);
+    const {jobId,resume,jobseeker,roomId,to}=await req.json();
     try {
-         const applyjob=new UserAppliedJob({job:jobId,user:jobseeker,resume:resume,chatEnabled:true,room:roomId});
+         const applyjob=new UserAppliedJob({job:jobId,user:jobseeker, to:to, resume:resume,chatEnabled:true,room:roomId});
          const data= await applyjob.save();
        
         return NextResponse.json({message:"apply successfully ", status:200})

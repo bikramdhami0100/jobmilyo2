@@ -122,8 +122,6 @@ function MessageDashboard() {
 
   }, [checkMessage]);
 
-  console.log(isVideoCallOpen,"isVideoCallOpen")
-
   return (
     <div>
       <div className='flex-col py-2'>
@@ -169,7 +167,7 @@ function MessageDashboard() {
                   {messages.map((msg, index) => (
                     <ChatMessage
                       key={index}
-                      sender={msg?.senderId === senderData?._id ? senderData?.fullName : selectItem?.fullName}
+                      sender={msg?.senderId === senderData?._id ? selectItem?.fullName : senderData?.fullName}
                       message={msg.message}
                       isOwnMessage={msg.senderId === senderData?._id}
                     />

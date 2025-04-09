@@ -75,6 +75,12 @@ function EmployerNavbar() {
   useEffect(()=>{
      setShowNavigationName(filterName[0])
   },[pathname])
+  const HandleLogOut=()=>{
+      if(typeof window!=undefined){
+        localStorage.removeItem("employerId");
+        router.push("/user/login");
+      }
+  }
     return (
         <div className={`flex w-full  dark:bg-[rgb(17,24,39)] dark:text-white  justify-between m-auto shadow-md items-center p-3  `}>
 
@@ -149,7 +155,7 @@ function EmployerNavbar() {
                             </DropdownMenuItem>
 
                             <DropdownMenuItem className=' cursor-pointer flex gap-1' onClick={() => {
-                                // HandleLogOut();
+                                HandleLogOut();
                             }} ><LogOut size={20} />log out</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

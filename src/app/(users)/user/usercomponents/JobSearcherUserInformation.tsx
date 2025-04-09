@@ -13,16 +13,16 @@ import { MyPopUpContext } from '../context/PopUpClose';
 
 // import { profile } from 'console';
 function userInformation() {
-    
+
     const { theme } = useTheme();
     const [mounted, setMounted] = useState(false);
-     const {setSeekerId,seekerId}=useContext<any>(MyPopUpContext);
+    const { setSeekerId, seekerId } = useContext<any>(MyPopUpContext);
     useEffect(() => {
         setMounted(true);
     }, []);
     const { toast } = useToast();
     const router = useRouter();
-  
+
     const [existpreCompany, setexistpreCompany] = useState<string>("no")
     const [cv, setcv] = useState(false);
     const [marksheet, setmarksheet] = useState(false);
@@ -52,7 +52,7 @@ function userInformation() {
         interestedEmploymentType: '',
         expectedPositionLevel: '',
         uploadCV: "",
-        userId:"",
+        userId: "",
     });
 
 
@@ -112,9 +112,7 @@ function userInformation() {
                 description: "सबै क्षेत्रहरू आवश्यक छन् कृपया भर्नुहोस् (all fields are required please fillup )",
                 action: <ToastAction altText="Try again">Try again</ToastAction>,
             })
-        } else if (data?.data
-            
-        ) {
+        } else if (data) {
             router.push("/user/profile")
         }
 
@@ -131,34 +129,34 @@ function userInformation() {
         // Validation
 
     };
-  
-     const HandlerCheckUserDetails=async(id:any)=>{
+
+    const HandlerCheckUserDetails = async (id: any) => {
         const data = (await axios.get("/api/user/userinfo", {
-            params:{
+            params: {
                 id
             }
         })).data;
-        console.log(data)
-        if (data?.data?._id && data?.userType=="seeker") {
-             router.push("/user/profile")
+        if (data?.data?._id && data?.userType == "seeker") {
+            router.push("/user/profile")
         }
-     }
+        console.log(data,"this is user exist check")
+    }
 
-    useEffect(()=>{
-       if(typeof window!==undefined){
-        const id= localStorage.getItem("userId");
-        setFormData((prevState: any) => ({
-            ...prevState,
-            userId: id
-        }))
-       HandlerCheckUserDetails(id);
-        setSeekerId(id);
-       }
-    },[])
+    useEffect(() => {
+        if (typeof window !== undefined) {
+            const id = localStorage.getItem("userId");
+            setFormData((prevState: any) => ({
+                ...prevState,
+                userId: id
+            }))
+            HandlerCheckUserDetails(id);
+            setSeekerId(id);
+        }
+    }, [])
 
-    useEffect(()=>{
-      seekerId&&HandlerCheckUserDetails(seekerId)
-    },[seekerId]);
+    useEffect(() => {
+        seekerId && HandlerCheckUserDetails(seekerId)
+    }, [seekerId]);
     console.log(formData?.userId)
     if (!mounted) return null;
     return (
@@ -235,7 +233,7 @@ function userInformation() {
                                 placeholder="Date of birth "
                                 value={formData.dateofBirth}
                             ></Input>
-                          
+
                         </div>
 
 

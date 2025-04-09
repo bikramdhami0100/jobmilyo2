@@ -12,6 +12,11 @@ const userAppliedJobSchema = new mongoose.Schema({
     ref: 'usersignups',
     required: true
   },
+  to:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'usersignups',
+    required: true
+  },
   applicationDate: {
     type: Date,
     default: Date.now

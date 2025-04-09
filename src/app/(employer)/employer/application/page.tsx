@@ -63,7 +63,7 @@ function Application() {
   }, [employerData,pagination]);
   const handlerStatus = async (text: any, id: any) => {
     // console.log(text,id);
-    const send = (await axios.get("/api/employer/application/status", { params: { status: text, id: id, employerId: employerData?._id } })).data;
+    const send = (await axios.post("/api/employer/application/status", {status: text, id: id, employerId: employerData?._id  })).data;
     if (send) {
       setTimeout(() => {
         if(employerData)fetchApplicationData(pagination, employerData?._id);

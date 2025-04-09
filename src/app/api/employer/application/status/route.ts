@@ -8,10 +8,10 @@ export async function POST(req: NextRequest) {
     await mongodbconn;
 
     try {
-        const { status,id ,adminId} = await req.json();
+        const { status,id ,employerId} = await req.json();
         
-      const realUser=await  Usersignup.findById(adminId).select("-password");
-        if (realUser.userType != "admin") {
+      const realUser=await  Usersignup.findById(employerId).select("-password");
+        if (realUser.userType != "employer") {
             return NextResponse.json({ message: "You are not authorized to access this page", status: 403 })
         }
 

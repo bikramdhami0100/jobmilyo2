@@ -84,7 +84,7 @@ function UserPostJobLists() {
     }
   }
   return (
-    <div>
+    <div className=' w-full min-h-screen'>
 
       {
           jobslist?.map((item: JobsType, index: number) => {
@@ -119,7 +119,7 @@ function UserPostJobLists() {
 
 
             return (
-                <div key={index} className={`  ${theme === "light" ? "bg-white" : ""} flex relative  flex-row  items-center justify-between gap-2 w-full h-full border p-4 mb-4 shadow-md `}>
+                <div key={index} className={`  ${theme === "light" ? "bg-white" : ""} flex relative  flex-row  items-center justify-between gap-2 w-full  border p-4 mb-4 shadow-md `}>
                     <div className=' w-full flex flex-col   flex-wrap gap-2'>
                         <div className='flex gap-2'>
                             <h1 className='text-2xl font-bold '> Posted by <span className=' text-blue-600 font-bold text-2xl  underline'>{userPost?.fullName || "admin "}</span></h1>

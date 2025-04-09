@@ -17,10 +17,8 @@ export async function GET(req: NextRequest) {
         if (user.userType != "employer") {
             return NextResponse.json({ message: "You are not authorized to access this page", status: 403 })
         }
-        const applyjob = await UserAppliedJob.find().populate({ path: "job", select: "_id company company_logo phonenumber jobtitle email " }).populate({ path: "user", select: "fullName email color" }).limit(limit).skip(skip);
-        const totalapplydocument = await UserAppliedJob.countDocuments();
-        console.log(applyjob);
-        console.log(user);
+        const applyjob = await UserAppliedJob.find({to:employerId}).populate({ path: "job", select: "_id company company_logo phonenumber jobtitle email " }).populate({ path: "user", select: "fullName email color" }).limit(limit).skip(skip);
+        const totalapplydocument = await UserAppliedJob.find({to:employerId}).countDocuments();
         const totalpage = Math.ceil(totalapplydocument / limit);
        
         return NextResponse.json({ message: "your data ", data: applyjob, totalpage: totalpage, status: 200 })

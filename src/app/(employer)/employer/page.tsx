@@ -9,8 +9,8 @@ const {employerData,organizationData}=useContext<any>(MyEmployerLogInContext);
 
   return (
     <div>
-       { !organizationData&&
-       <OrganizationDetails  employerData={employerData} />
+       { !organizationData&& 
+        <OrganizationDetails  employerData={employerData} />
        }  
        <EDashboard/>
     </div>

@@ -19,52 +19,58 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 import { IconCube, IconSquare } from "@tabler/icons-react"
-const chartData = [
-  { browser: "Shortlisted", visitors: 275, fill: "blue" },
-  { browser: "Hired", visitors: 200, fill: "green" },
-  { browser: "Rejected", visitors: 187, fill: "red" },
 
-]
+interface ResponChartProps {
+  numberOfHirings: number;
+  numberOfRejected: number;
+  totalApplication: number;
+}
 
-const chartConfig = {
-  visitors: {
-    label: "Visitors",
-  },
+export function ResponChart({numberOfHirings,numberOfRejected,totalApplication}:ResponChartProps) {
+  const chartData = [
+    { browser: "Shortlisted", visitors: totalApplication-numberOfHirings-numberOfRejected, fill: "blue" },
+    { browser: "Hired", visitors: numberOfHirings, fill: "green" },
+    { browser: "Rejected", visitors: numberOfRejected, fill: "red" },
   
-  chrome: {
-    label: "Rejected",
-    color: "red",
-  },
-  safari: {
-    label: "Hired",
-    color: "green",
-  },
-  firefox: {
-    label: "Short Listed",
-    color: "blue",
-  },
-
-} satisfies ChartConfig
-
-
-export function ResponChart() {
+  ]
+  
+  const chartConfig = {
+    visitors: {
+      label: "Visitors",
+      // color:"blue"
+    },
+    
+    chrome: {
+      label: "Rejected",
+      color: "red",
+    },
+    safari: {
+      label: "Hired",
+      color: "green",
+    },
+    firefox: {
+      label: "Short Listed",
+      color: "blue",
+    },
+  
+  } satisfies ChartConfig
   const bottomResult=[
     {
       name:"Shortlisted",
       color:"blue",
-      number:275,
+      number:totalApplication-numberOfHirings-numberOfRejected,
       icon:IconSquare
     },
     {
       name:"Hired",
       color:"green",
-      number:200,
+      number:numberOfHirings,
       icon:IconSquare
     },
     {
       name:"Rejected",
       color:"red",
-      number:187,
+      number:numberOfRejected,
       icon:IconSquare
     }
   ]

@@ -30,31 +30,55 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
+interface SectionFirstDash {
+  numberOfHirings:number,
+  numberOfMeetings:number,
+  totalApplication:number,
+  totalPostJob:string,
+  numberOfRejected:number,
+  results:{
+    color:string,
+    email:string,
+    fullName:string,
+    userType:string,
+    _id:string
+  }
 
+}
+
+interface DataSummary{
+  name:string,
+  number:number|undefined|string,
+  image:string,
+  
+}
 function EDashboard() {
-  const [totaldata, setTotalData] = useState<any>()
+  const [totaldata, setTotalData] = useState<SectionFirstDash>()
 
 
-  const dataSummary = [
+  const dataSummary:DataSummary[] = [
     {
       name: "Job Posts",
-      number: "2,456",
-      emoji: "",
+      number: totaldata?.totalPostJob,
+      image:"/employer/jobpost.png" ,
+       
     },
     {
       name: "Total Application",
-      number: totaldata?.totaljob || null,
-      emoji: "💼"
+      number: totaldata?.totalApplication ,
+      image: "/employer/apply.png",
+  
     },
     {
       name: "No of Meetings",
-      number: totaldata?.totalAppliedjob || 0,
-      emoji: "📄"
+      number: totaldata?.numberOfMeetings || 0,
+      image: "/employer/meeting.png",
+
     },
     {
       name: "No of Hirings",
-      number: totaldata?.totalContactuser || 0,
-      emoji: "📞"
+      number: totaldata?.numberOfHirings || 0,
+      image: "/employer/hired.png"
     }
   ];
 
@@ -65,7 +89,8 @@ const handlerGetEmployerDetails=async(id:any)=>{
       id:id,
     }
   })).data;
-  
+  console.log(data,"dashboard")
+   setTotalData(data);
 }
   useEffect(() => {
     if(typeof window!=="undefined"){
@@ -135,16 +160,16 @@ const handlerGetEmployerDetails=async(id:any)=>{
           <h1 className=' font-bold italic  text-2xl mt-2'>K_DBMS Teams</h1>
         </div>
         <div>
-          <Image src={"/employer/employer.jpg"} width={100} height={100} alt='image' className=' w-full h-full'></Image>
+          <Image src={"/employer/bgemployer.png"} width={100} height={100} alt='image' className=' w-full h-full'></Image>
         </div>
       </div>
       {/* box part */}
       <div className=' flex flex-wrap  justify-around m-4 gap-6'>
         {
-          dataSummary.map((item: any, index: any) => {
-            return (<div key={index} className=' cursor-pointer hover:shadow-md lg:w-[20%] sm:w-[40%] font-bold border rounded-xl px-4 py-1'>
+          dataSummary.map((item: DataSummary, index: number) => {
+            return (<div key={index} className=' cursor-pointer hover:shadow-md lg:w-[20%] sm:w-[40%] font-bold border rounded-xl px-4 py-1 flex flex-col justify-between items-start'>
               <h1 className=' text-xl italic '>{item.name}</h1>
-              <span className=' text-4xl my-2 mx-4'>{item.emoji}</span>
+               <Image  alt='thumbnail' className=' w-[80px] h-[60px]' src={item?.image} height={40} width={40}></Image>
               <span>{item.number}</span>
             </div>)
           })
@@ -155,7 +180,7 @@ const handlerGetEmployerDetails=async(id:any)=>{
       <div className=' grid md:grid-cols-2 lg:grid-cols-2 gap-4'>
         {/* Application Respone chart */}
         <div>
-          <ResponChart />
+          <ResponChart  numberOfHirings={totaldata?.numberOfHirings ||0} numberOfRejected={totaldata?.numberOfRejected ||0} totalApplication={totaldata?.totalApplication||0} />
         </div>
         {/* Recent Job Posts */}
         <div className=' border p-1 rounded-md'>

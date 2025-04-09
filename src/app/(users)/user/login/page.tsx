@@ -94,18 +94,20 @@ function Login() {
         { headers: { Authorization: 'Bearer ' + tokenResponse?.access_token } },
       );
 
-      console.log(userInfo, "userInfo")
+
       const data = (await axios.post("/api/user/google", userInfo.data)).data;
       if (typeof window !== undefined) {
-        console.log(data)
+       
         if (data?.message == "User Already Exists") {
           localStorage.setItem("userId", data?.results._id);
-
           router.push("/user/userinformation");
         }
+        
         localStorage.setItem("userId", data?.results._id);
-
-        router.push("/user/userinformation");
+        if(data){
+          router.push("/user/userinformation");
+        }
+        
       }
 
       // console.log(userInfo?.data,"user Info");
@@ -153,7 +155,7 @@ function Login() {
         if (!data) {
           seekerGoogleLogin()
         } else {
-          router.push("/user/profile")
+          router.push("/user/userinformation")
         }
       }
     } else if (role == "Employer (रोजगारदाता)") {
