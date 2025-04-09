@@ -2,9 +2,7 @@
 import UserPostedJob from "@/app/mongodb/UserPostedJob";
 import mongodbconn from "@/app/mongodb/connection";
 import { NextResponse } from "next/server";
-const jwt=require("jsonwebtoken");
 
-// // part of posted job by user
 export async function POST(req:any) {
     await mongodbconn;
     const {form,employerData} = await req.json();
@@ -59,10 +57,7 @@ export async function GET(req: any) {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.TOKEN_SECRETKEY);
-    const userdetail = decoded.encodeemail;
 
-    // Fetch and sort data by jobupload
     const jobs = await UserPostedJob.find().sort({ jobupload: -1 }).limit(3).populate({path:"user",select:"fullName  email color"});
 
     return NextResponse.json({ message: "Successfully fetched jobs", status: 200, data: jobs });

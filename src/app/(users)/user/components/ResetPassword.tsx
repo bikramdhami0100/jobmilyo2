@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
 import { userSignUpInfo } from '../../../../Redux/Slice';
 import { Eye, EyeOff } from 'lucide-react';
-const bcrypt = require("bcryptjs");
+
 export interface MysignupType {
     fullname: string,
     dob: string,

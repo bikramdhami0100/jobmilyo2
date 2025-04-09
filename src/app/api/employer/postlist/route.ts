@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
         const user = await Usersignup.findById(id).sort({ jobupload: -1 }).select("-password");
         const userId = user._id;
         const postlist = await UserPostedJob.find({ user: userId });
-        console.log(postlist);
+
         return NextResponse.json({ message: "data fetch successfully", data: postlist, user: user });
 
     } catch (error) {

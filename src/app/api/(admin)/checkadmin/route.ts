@@ -2,21 +2,18 @@ import Usersignup from "@/app/mongodb/SignUpSchema";
 
 import mongodbconn from "@/app/mongodb/connection";
 import { NextResponse } from "next/server";
-const jwt = require("jsonwebtoken");
 
 export async function GET(req:any) {
   await mongodbconn;
 
-  const tokendata = await req.cookies.get("token").value;
-  const useremail = jwt.verify(tokendata, process.env.TOKEN_SECRETKEY);
-  const email = useremail.encodeemail.email;
 
-
+  const { searchParams}=new URL(req.url);
+  const id=searchParams.get("id");
   try {
         
-    const users = await Usersignup.findOne({ email: email }).select("-password");
+    const users = await Usersignup.findById(id).select("-password");
 //   console.log(users);
-   if(users.admin==true){
+   if(users?.userType=="admin"){
  
     // const totalappliedjob=await 
     return NextResponse.json({ success: true,status: 200 });

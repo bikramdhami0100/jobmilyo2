@@ -2,7 +2,7 @@ import mongodbconn from "@/app/mongodb/connection";
 import Usersignup from "@/app/mongodb/SignUpSchema";
 import UserAppliedJob from "@/app/mongodb/UserAppliedJobSchema";
 import { NextRequest, NextResponse } from "next/server";
-const jwt=require("jsonwebtoken");
+
 export async function POST(req:NextRequest) {
     await mongodbconn;
     const {id,adminId}=await req.json();
