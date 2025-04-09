@@ -1,9 +1,9 @@
 import Usersignup from "@/app/mongodb/SignUpSchema";
+import UserAppliedJob from "@/app/mongodb/UserAppliedJobSchema";
 import UserPostedJob from "@/app/mongodb/UserPostedJob";
 import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
     const id=req.nextUrl.searchParams.get("id");
-    console.log(id , "this is id of object");
     if(!id){
         return NextResponse.json({message:"Some error due to "})
     }
@@ -38,11 +38,13 @@ export async function PUT(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
     const id= req.nextUrl.searchParams.get("id");
 
-    // console.log(id , "this is id from delete method");
     if(id){
        try {
         // const itemdata=await UserPostedJob.findByIdAndUpdate(id{new:true});
+        // const existUser=await UserPostedJob.findById(id);
+        const applyExist=await UserAppliedJob.deleteMany({job:id});
          const itemdelete=await UserPostedJob.findByIdAndDelete(id);
+         
         return NextResponse.json({message:"item findby id",status:200});
        } catch (error) {
         return NextResponse.json({message:"failed due to ",error})
