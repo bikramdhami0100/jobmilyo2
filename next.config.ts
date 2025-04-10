@@ -7,6 +7,14 @@ const nextConfig: NextConfig = {
   //   };
   //   return config;
   // },
+  experimental:{
+    serverActions: {
+      bodySizeLimit: "2mb", // Example value
+      allowedOrigins: ["*"], // Example value
+    },
+    
+    serverComponentsExternalPackages:["mongoose"]
+},
   images:{
     domains:["lh3.googleusercontent.com","res.cloudinary.com"]
   },
@@ -23,3 +31,4 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
