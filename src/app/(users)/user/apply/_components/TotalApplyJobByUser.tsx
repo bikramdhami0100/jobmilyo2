@@ -1,5 +1,5 @@
 "use client"
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import Image from 'next/image';
 import Link from 'next/link';
@@ -32,6 +32,7 @@ function TotalApplyJobByUser() {
     room:string;
   }
 
+
   const [applyjobList, setApplyJobList] = useState<JobApplication[]>([]);
   const { seekerId } = useContext<any>(MyPopUpContext);
   const totalJobApply = async () => {
@@ -45,8 +46,7 @@ function TotalApplyJobByUser() {
     }
 
   }
-  console.log(applyjobList,"list")
-
+ 
   useEffect(() => {
     seekerId && totalJobApply();
   }, [seekerId])
@@ -62,6 +62,7 @@ function TotalApplyJobByUser() {
       }
     }
   }
+ 
   return (
     <div className="container mx-auto p-4 mt-10">
       {applyjobList.length >= 1 ? (

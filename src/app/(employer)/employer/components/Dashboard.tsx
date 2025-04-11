@@ -1,15 +1,16 @@
 "use client"
+
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { ResponChart } from '../components/ResponChart';
-import Image from 'next/image';
+import { motion } from 'framer-motion';
+import { Briefcase, FileText, Users, CheckCircle } from 'lucide-react';
 
 import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -31,312 +32,144 @@ import {
 } from "@/components/ui/table"
 
 interface SectionFirstDash {
-  numberOfHirings:number,
-  numberOfMeetings:number,
-  totalApplication:number,
-  totalPostJob:string,
-  numberOfRejected:number,
-  results:{
-    color:string,
-    email:string,
-    fullName:string,
-    userType:string,
-    _id:string
+  numberOfHirings: number,
+  numberOfMeetings: number,
+  totalApplication: number,
+  totalPostJob: string,
+  numberOfRejected: number,
+  results: {
+    color: string,
+    email: string,
+    fullName: string,
+    userType: string,
+    _id: string
   }
-
 }
 
-interface DataSummary{
-  name:string,
-  number:number|undefined|string,
-  image:string,
-  
+interface DataSummary {
+  name: string,
+  number: number | undefined | string,
+  icon: React.ReactNode,
 }
+
 function EDashboard() {
   const [totaldata, setTotalData] = useState<SectionFirstDash>()
 
-
-  const dataSummary:DataSummary[] = [
+  const dataSummary: DataSummary[] = [
     {
       name: "Job Posts",
       number: totaldata?.totalPostJob,
-      image:"/employer/jobpost.png" ,
-       
+      icon: <Briefcase className="h-8 w-8 text-blue-600" />
     },
     {
-      name: "Total Application",
-      number: totaldata?.totalApplication ,
-      image: "/employer/apply.png",
-  
+      name: "Total Applications",
+      number: totaldata?.totalApplication,
+      icon: <FileText className="h-8 w-8 text-purple-600" />
     },
     {
-      name: "No of Meetings",
+      name: "Meetings",
       number: totaldata?.numberOfMeetings || 0,
-      image: "/employer/meeting.png",
-
+      icon: <Users className="h-8 w-8 text-orange-600" />
     },
     {
-      name: "No of Hirings",
+      name: "Hirings",
       number: totaldata?.numberOfHirings || 0,
-      image: "/employer/hired.png"
+      icon: <CheckCircle className="h-8 w-8 text-green-600" />
     }
   ];
 
+  const handlerGetEmployerDetails = async (id: any) => {
+    const data = (await axios.get("/api/employer", {
+      params: { id: id }
+    })).data;
+    setTotalData(data);
+  }
 
-const handlerGetEmployerDetails=async(id:any)=>{
-  const data=(await axios.get("/api/employer",{
-    params:{
-      id:id,
-    }
-  })).data;
-  console.log(data,"dashboard")
-   setTotalData(data);
-}
   useEffect(() => {
-    if(typeof window!=="undefined"){
-     const id= localStorage.getItem("employerId");
-       handlerGetEmployerDetails(id);
+    if (typeof window !== "undefined") {
+      const id = localStorage.getItem("employerId");
+      handlerGetEmployerDetails(id);
     }
   }, [])
 
   const invoices = [
-    {
-    
-      jobtitle: "UI UX Designer",
-      position_level: "Full Time",
-      openings: "12",
-      application: "135",
-      paymentStatus: "Paid",
-      paymentMethod: "Credit Card",
-      status: "Active",
-    },
-    {
-      
-      jobtitle: "Software Engineer",
-      position_level: "Part Time",
-      openings: "5",
-      application: "80",
-      paymentStatus: "Pending",
-      paymentMethod: "PayPal",
-      status: "Active",
-    },
-    {
-      
-      jobtitle: "Data Analyst",
-      position_level: "Contract",
-      openings: "8",
-      application: "110",
-      paymentStatus: "Overdue",
-      paymentMethod: "Bank Transfer",
-      status: "Inactive",
-    },
-    {
-      
-      jobtitle: "Project Manager",
-      position_level: "Full Time",
-      openings: "3",
-      application: "50",
-      paymentStatus: "Paid",
-      paymentMethod: "Credit Card",
-      status: "Active",
-    },
-    {
-     
-      jobtitle: "Graphic Designer",
-      position_level: "Freelance",
-      openings: "10",
-      application: "70",
-      paymentStatus: "Pending",
-      paymentMethod: "PayPal",
-      status: "Active",
-    },
+    { jobtitle: "UI UX Designer", position_level: "Full Time", openings: "12", application: "135", status: "Active" },
+    { jobtitle: "Software Engineer", position_level: "Part Time", openings: "5", application: "80", status: "Active" },
+    { jobtitle: "Data Analyst", position_level: "Contract", openings: "8", application: "110", status: "Inactive" },
+    { jobtitle: "Project Manager", position_level: "Full Time", openings: "3", application: "50", status: "Active" },
+    { jobtitle: "Graphic Designer", position_level: "Freelance", openings: "10", application: "70", status: "Active" }
   ];
+
   return (
-    <div className=' p-4'>
-      {/* welcome section */}
-      <div className='  flex border p-4 rounded-md justify-between  gap-4'>
-        <div className=' '>
-          <div className=' w-full text-3xl tracking-wider'>Welcom To <span className=' font-bold'>Job</span> <span className=' font-bold'>मिल्यो ?</span></div>
-          <h1 className=' font-bold italic  text-2xl mt-2'>K_DBMS Teams</h1>
-        </div>
+    <div className='p-4'>
+      {/* Welcome section */}
+      <div className='flex justify-between items-center border p-6 rounded-xl shadow-md bg-gradient-to-r '>
         <div>
-          <Image src={"/employer/bgemployer.png"} width={100} height={100} alt='image' className=' w-full h-full'></Image>
-        </div>
-      </div>
-      {/* box part */}
-      <div className=' flex flex-wrap  justify-around m-4 gap-6'>
-        {
-          dataSummary.map((item: DataSummary, index: number) => {
-            return (<div key={index} className=' cursor-pointer hover:shadow-md lg:w-[20%] sm:w-[40%] font-bold border rounded-xl px-4 py-1 flex flex-col justify-between items-start'>
-              <h1 className=' text-xl italic '>{item.name}</h1>
-               <Image  alt='thumbnail' className=' w-[80px] h-[60px]' src={item?.image} height={40} width={40}></Image>
-              <span>{item.number}</span>
-            </div>)
-          })
-        }
-
-      </div>
-      {/* main part */}
-      <div className=' grid md:grid-cols-2 lg:grid-cols-2 gap-4'>
-        {/* Application Respone chart */}
-        <div>
-          <ResponChart  numberOfHirings={totaldata?.numberOfHirings ||0} numberOfRejected={totaldata?.numberOfRejected ||0} totalApplication={totaldata?.totalApplication||0} />
-        </div>
-        {/* Recent Job Posts */}
-        <div className=' border p-1 rounded-md'>
-          <Tabs defaultValue="today" className="w-full   relative">
-            <TabsList className=" text-end  absolute right-2 top-2  items-end">
-              <TabsTrigger value="monthly">Monthly</TabsTrigger>
-              <TabsTrigger value="weekly">Weekly</TabsTrigger>
-              <TabsTrigger value="today">Today</TabsTrigger>
-            </TabsList>
-
-            <TabsContent className=' ' value="monthly">
-              <Card className=' border-none'>
-                <CardHeader>
-                  <CardTitle>Recent Job Posts</CardTitle>
-                  <CardDescription>
-                    Make changes to your account here. Click save when you're done.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="">
-                  <Table>
-                    <TableCaption>A list of your recent invoices.</TableCaption>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[100px]">Job Title</TableHead>
-                        <TableHead>Position Level</TableHead>
-                        <TableHead>Opening</TableHead>
-                        <TableHead>Applications</TableHead>
-                        <TableHead className="text-right">Status</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                    {invoices.map((invoice,index) => (
-                        <TableRow key={index}>
-                          <TableCell className="font-medium">{invoice?.jobtitle}</TableCell>
-                          <TableCell>{invoice?.position_level}</TableCell>
-                          <TableCell>{invoice?.openings}</TableCell>
-                          <TableCell>{invoice?.application}</TableCell>
-                          <TableCell className="text-right">
-                            <Button>{invoice?.status}</Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                    <TableFooter>
-                      {/* <TableRow>
-                        <TableCell colSpan={3}>Total</TableCell>
-                        <TableCell className="text-right">$2,500.00</TableCell>
-                      </TableRow> */}
-                    </TableFooter>
-                  </Table>
-                </CardContent>
-                {/* <CardFooter>
-                    <Button>Save changes</Button>
-                  </CardFooter> */}
-              </Card>
-            </TabsContent>
-
-            <TabsContent className=' ' value="weekly">
-              <Card className=' border-none'>
-                <CardHeader>
-                  <CardTitle>Recent Job Posts</CardTitle>
-                  <CardDescription>
-                    Make changes to your account here. Click save when you're done.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="">
-                  <Table>
-                    <TableCaption>A list of your recent invoices.</TableCaption>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[100px]">Job Title</TableHead>
-                        <TableHead>Position Level</TableHead>
-                        <TableHead>Opening</TableHead>
-                        <TableHead>Applications</TableHead>
-                        <TableHead className="text-right">Status</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                    {invoices.map((invoice,index) => (
-                        <TableRow key={index}>
-                          <TableCell className="font-medium">{invoice?.jobtitle}</TableCell>
-                          <TableCell>{invoice?.position_level}</TableCell>
-                          <TableCell>{invoice?.openings}</TableCell>
-                          <TableCell>{invoice?.application}</TableCell>
-                          <TableCell className="text-right">
-                            <Button>{invoice?.status}</Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                    <TableFooter>
-                      {/* <TableRow>
-                        <TableCell colSpan={3}>Total</TableCell>
-                        <TableCell className="text-right">$2,500.00</TableCell>
-                      </TableRow> */}
-                    </TableFooter>
-                  </Table>
-                </CardContent>
-                {/* <CardFooter>
-                    <Button>Save changes</Button>
-                  </CardFooter> */}
-              </Card>
-            </TabsContent>
-
-            <TabsContent className=' ' value="today">
-              <Card className=' border-none'>
-                <CardHeader>
-                  <CardTitle>Recent Job Posts</CardTitle>
-                  <CardDescription>
-                    Make changes to your account here. Click save when you're done.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="">
-                  <Table>
-                    <TableCaption>A list of your recent invoices.</TableCaption>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[100px]">Job Title</TableHead>
-                        <TableHead>Position Level</TableHead>
-                        <TableHead>Opening</TableHead>
-                        <TableHead>Applications</TableHead>
-                        <TableHead className="text-right">Status</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                    {invoices.map((invoice,index) => (
-                        <TableRow key={index}>
-                          <TableCell className="font-medium">{invoice?.jobtitle}</TableCell>
-                          <TableCell>{invoice?.position_level}</TableCell>
-                          <TableCell>{invoice?.openings}</TableCell>
-                          <TableCell>{invoice?.application}</TableCell>
-                          <TableCell className="text-right">
-                            <Button>{invoice?.status}</Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                    <TableFooter>
-                      {/* <TableRow>
-                        <TableCell colSpan={3}>Total</TableCell>
-                        <TableCell className="text-right">$2,500.00</TableCell>
-                      </TableRow> */}
-                    </TableFooter>
-                  </Table>
-                </CardContent>
-                {/* <CardFooter>
-                    <Button>Save changes</Button>
-                  </CardFooter> */}
-              </Card>
-            </TabsContent>
-          </Tabs>
+          <h1 className='text-4xl font-bold tracking-wide'>Welcome to <span className='text-blue-600'>Job</span> <span className='text-green-600'>मिल्यो?</span></h1>
+          <p className='mt-2 text-xl italic font-semibold text-gray-600'>K_DBMS Teams</p>
         </div>
       </div>
 
+      {/* Summary Boxes */}
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8'>
+        {dataSummary.map((item, index) => (
+          <motion.div
+            key={index}
+            className=' cursor-pointer border rounded-2xl p-5 shadow hover:shadow-xl transition duration-300 flex flex-col items-start gap-3'
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+          >
+            <div className=''>{item.icon}</div>
+            <h2 className='text-lg font-semibold'>{item.name}</h2>
+            <span className='text-2xl font-bold text-gray-800'>{item.number}</span>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Chart and Job Posts */}
+      <div className='grid md:grid-cols-2 gap-6 mt-10'>
+        <ResponChart
+          numberOfHirings={totaldata?.numberOfHirings || 0}
+          numberOfRejected={totaldata?.numberOfRejected || 0}
+          totalApplication={totaldata?.totalApplication || 0}
+        />
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Job Posts</CardTitle>
+            <CardDescription>Here are your latest job listings.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Job Title</TableHead>
+                  <TableHead>Position</TableHead>
+                  <TableHead>Openings</TableHead>
+                  <TableHead>Applications</TableHead>
+                  <TableHead className="text-right">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {invoices.map((job, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{job.jobtitle}</TableCell>
+                    <TableCell>{job.position_level}</TableCell>
+                    <TableCell>{job.openings}</TableCell>
+                    <TableCell>{job.application}</TableCell>
+                    <TableCell className='text-right'>
+                      <Button>{job.status}</Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }
 
-export default EDashboard
+export default EDashboard;

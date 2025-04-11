@@ -3,18 +3,20 @@ import UserPostedJob from "@/app/mongodb/UserPostedJob";
 import mongodbconn from "@/app/mongodb/connection";
 import { NextResponse } from "next/server";
 
-export async function POST(req:any) {
-    await mongodbconn;
-    const {form,employerData} = await req.json();
-    if(!employerData){
-        return NextResponse.json({ message: "Invalid token", status: 401 });
+export async function POST(req: any) {
+  await mongodbconn;
+  const { form, employerData } = await req.json();
+  if (!employerData) {
+    return NextResponse.json({ message: "Invalid token", status: 401 });
 
-    }
-    try {
-          // console.log(form.jobtitle)
+  }
+  console.log(employerData, "employer data");
+  console.log(form);
+  try {
+    // console.log(form.jobtitle)
     const received = new UserPostedJob({
       jobtitle: form.jobtitle,
-      phonenumber:form.phonenumber,
+      phonenumber: form.phonenumber,
       site: form.site,
       description: form.description,
       no_of_workingemployee: form.no_of_workingemployee,
@@ -35,15 +37,15 @@ export async function POST(req:any) {
       website_url: form.website_url,
       address: form.address,
       state: form.state,
-      rating:form.rating,
-      user:employerData?._id
+      rating: form.rating,
+      user: employerData?._id
     });
-  const job=  await received.save()
-  return NextResponse.json({ message: "Successfully inserted job", status: 200});
+    const job = await received.save()
+    return NextResponse.json({ message: "Successfully inserted job", job, status: 200 });
 
-    } catch (error) {
-      return NextResponse.json({message:error})
-    }
+  } catch (error) {
+    return NextResponse.json({ message: error })
+  }
 }
 
 
@@ -58,10 +60,10 @@ export async function GET(req: any) {
 
   try {
 
-    const jobs = await UserPostedJob.find().sort({ jobupload: -1 }).limit(3).populate({path:"user",select:"fullName  email color"});
+    const jobs = await UserPostedJob.find().sort({ jobupload: -1 }).limit(3).populate({ path: "user", select: "fullName  email color" });
 
     return NextResponse.json({ message: "Successfully fetched jobs", status: 200, data: jobs });
-  } catch (error:any) {
+  } catch (error: any) {
     return NextResponse.json({ message: "Error fetching jobs", status: 500, error: error.message });
   }
 }

@@ -203,19 +203,19 @@ function Login() {
                     )
                   }
                   {item?.role == "Admin" && (
-                    <Dialog >
+                    <Dialog  >
                       <DialogTrigger className=' w-full h-full cursor-pointer'>
                         <div key={index} className=' shadow-sm hover:shadow-md transition-all duration-100 ease-in flex gap-4 items-center  justify-between border p-2 rounded-md '>
                           <h1>{item?.role}</h1>    <Image src={item?.image} height={30} width={30} alt={item.name} ></Image>
                         </div>
                       </DialogTrigger>
-                      <DialogContent>
+                      <DialogContent className='  backdrop-blur-3xl '>
                         <DialogHeader>
                           <DialogTitle className=' text-center'>Admin Login</DialogTitle>
                           <DialogDescription>
-                            <div className='flex  flex-col justify-around items-center md:flex-row md:justify-around lg:justify-around lg:flex-row p-2'>
+                            <div className='flex   flex-col justify-around items-center md:flex-row md:justify-around lg:justify-around lg:flex-row p-2'>
                               <div className='relative  flex flex-col shadow-lg p-6 justify-center items-center ml-12 rounded-md'>
-                                <div className='flex flex-col gap-4'>
+                                <div className='flex flex-col backdrop-blur-md   gap-4'>
                                   <div className="flex flex-col justify-start item-start w-full">
                                     <label className=' font-bold mb-1 text-start items-start' htmlFor="email">Email</label>
                                     <Input onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Email address" name='email' />
