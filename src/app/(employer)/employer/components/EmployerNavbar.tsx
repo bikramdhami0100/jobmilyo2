@@ -33,8 +33,8 @@ import Link from 'next/link'
 function EmployerNavbar() {
     const router = useRouter();
     const pathname = usePathname()
-    const { setTheme, theme } = useTheme();
-    const { employerData,organizationData } = useContext<any>(MyEmployerLogInContext);
+    const { setTheme } = useTheme();
+    const { organizationData } = useContext<any>(MyEmployerLogInContext);
     const [showNavigationName,setShowNavigationName]=useState<any>("DASHBOARD");
      
     const items = [
@@ -146,14 +146,7 @@ function EmployerNavbar() {
                             }}><PersonIcon className=' size-[20px] cursor-pointer' />Profile
                             </DropdownMenuItem>
 
-                            {/* <DropdownMenuItem
-                                className=' text-sm flex gap-1 cursor-pointer'
-                                onClick={() => {
-                                    router.push("/employer/setting")
-                                }}
-                            ><Settings size={20} /> Setting
-                            </DropdownMenuItem> */}
-
+                          
                             <DropdownMenuItem className=' cursor-pointer flex gap-1' onClick={() => {
                                 HandleLogOut();
                             }} ><LogOut size={20} />log out</DropdownMenuItem>

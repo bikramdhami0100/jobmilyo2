@@ -6,8 +6,6 @@ import SplashScreen from "./components/SplashScreen";
 import NextSessionProvider from "./Provider";
 import { getServerSession } from "next-auth";
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import ExistUserContext from "@/context/ExistUser";
-
 const lora = Lora({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -40,11 +38,7 @@ export default async function RootLayout({
                 <SplashScreen />
               </div>
               <div>
-               
-                {/* <ExistUserContext> */}
-
                 {children}
-                {/* </ExistUserContext> */}
               </div>
 
             </ThemeProvider>
