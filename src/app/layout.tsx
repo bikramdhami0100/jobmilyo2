@@ -1,11 +1,6 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider"
 import { Lora } from "next/font/google";
-import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
-import { extractRouterConfig } from "uploadthing/server";
-
-import { ourFileRouter } from "@/app/api/uploadthing/core";
-
 import "./globals.css";
 import SplashScreen from "./components/SplashScreen";
 import NextSessionProvider from "./Provider";
@@ -45,10 +40,7 @@ export default async function RootLayout({
                 <SplashScreen />
               </div>
               <div>
-                <NextSSRPlugin
-
-                  routerConfig={extractRouterConfig(ourFileRouter)}
-                />
+               
                 {/* <ExistUserContext> */}
 
                 {children}

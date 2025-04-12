@@ -186,13 +186,13 @@ function EmployerProfile() {
                                 {organizationData?.services?.map((item: string, index: number) => (<div key={index} >{item}</div>))}
                             </h1>
                             <AlertDialog>
-                                <AlertDialogTrigger className=' flex gap-1'><Edit />Edit</AlertDialogTrigger>
+                                <AlertDialogTrigger className=' backdrop-blur-2xl flex gap-1'><Edit />Edit</AlertDialogTrigger>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
                                          <div className=' flex justify-between items-center '>
                                          <AlertDialogTitle>Are you absolutely sure ?</AlertDialogTitle> <AlertDialogCancel><X/></AlertDialogCancel>
                                          </div>
-                                        <AlertDialogDescription>
+                                        <AlertDialogDescription >
                                             <EditOrganizationData  organizationData={organizationData} orgData={orgData} setOrgData={setOrgData} employerData={employerData}/>
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>

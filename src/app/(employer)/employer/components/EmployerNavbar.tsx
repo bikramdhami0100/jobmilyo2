@@ -146,13 +146,13 @@ function EmployerNavbar() {
                             }}><PersonIcon className=' size-[20px] cursor-pointer' />Profile
                             </DropdownMenuItem>
 
-                            <DropdownMenuItem
+                            {/* <DropdownMenuItem
                                 className=' text-sm flex gap-1 cursor-pointer'
                                 onClick={() => {
                                     router.push("/employer/setting")
                                 }}
                             ><Settings size={20} /> Setting
-                            </DropdownMenuItem>
+                            </DropdownMenuItem> */}
 
                             <DropdownMenuItem className=' cursor-pointer flex gap-1' onClick={() => {
                                 HandleLogOut();

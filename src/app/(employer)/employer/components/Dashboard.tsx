@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import { ResponChart } from '../components/ResponChart';
 import { motion } from 'framer-motion';
@@ -30,6 +30,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { useTheme } from 'next-themes';
+import { useRouter } from 'next/navigation';
+import { MyEmployerLogInContext } from '../../context/EmployerLogInContext';
 
 interface SectionFirstDash {
   numberOfHirings: number,
@@ -54,6 +57,50 @@ interface DataSummary {
 
 function EDashboard() {
   const [totaldata, setTotalData] = useState<SectionFirstDash>()
+  interface JobsType {
+    address: String,
+    category: String,
+    company: String,
+    company_logo: String,
+    country: String,
+    createdAt: Date,
+    description: String
+    email: String,
+    experience: String
+    industry: String,
+    interestedEmploymentTypes: String,
+    jobtitle: String,
+    jobupload: Date,
+    last_date: Date,
+    no_of_office: Number,
+    no_of_workingemployee: Number,
+    no_vacancy: Number,
+    number_of_post: Number,
+    qualification: String,
+    rating: Number,
+    salary: String,
+    site: String,
+    specialization_req: String,
+    state: String,
+    updatedAt: Date,
+    user: String,
+    website_url: String,
+    __v: Number,
+    _id: String,
+  
+  }
+
+  const [jobslist, setJobList] = useState<any>();
+  const {employerData}=useContext(MyEmployerLogInContext);
+  const HandlerUserPostedJob = async () => {
+    const userposted = (await axios.get("/api/employer/postlist",{params:{id:employerData?._id}})).data;
+    setJobList(userposted?.data);
+   
+  }
+ 
+  useEffect(() => {
+    employerData&&HandlerUserPostedJob();
+  }, [employerData])
 
   const dataSummary: DataSummary[] = [
     {
@@ -92,13 +139,7 @@ function EDashboard() {
     }
   }, [])
 
-  const invoices = [
-    { jobtitle: "UI UX Designer", position_level: "Full Time", openings: "12", application: "135", status: "Active" },
-    { jobtitle: "Software Engineer", position_level: "Part Time", openings: "5", application: "80", status: "Active" },
-    { jobtitle: "Data Analyst", position_level: "Contract", openings: "8", application: "110", status: "Inactive" },
-    { jobtitle: "Project Manager", position_level: "Full Time", openings: "3", application: "50", status: "Active" },
-    { jobtitle: "Graphic Designer", position_level: "Freelance", openings: "10", application: "70", status: "Active" }
-  ];
+
 
   return (
     <div className='p-4'>
@@ -147,19 +188,20 @@ function EDashboard() {
                   <TableHead>Job Title</TableHead>
                   <TableHead>Position</TableHead>
                   <TableHead>Openings</TableHead>
-                  <TableHead>Applications</TableHead>
-                  <TableHead className="text-right">Status</TableHead>
+                  <TableHead>Last Date</TableHead>
+                  <TableHead className="text-right">Number of Vacancy
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {invoices.map((job, index) => (
+                {jobslist?.map((job:JobsType, index:number) => (
                   <TableRow key={index}>
                     <TableCell>{job.jobtitle}</TableCell>
-                    <TableCell>{job.position_level}</TableCell>
-                    <TableCell>{job.openings}</TableCell>
-                    <TableCell>{job.application}</TableCell>
+                    <TableCell>{job.site}</TableCell>
+                    <TableCell>{new Date(job?.createdAt).toLocaleDateString()}</TableCell>
+                    <TableCell>{new Date(job?.last_date).toLocaleDateString()}</TableCell>
                     <TableCell className='text-right'>
-                      <Button>{job.status}</Button>
+                      {job?.no_vacancy.toString()}
                     </TableCell>
                   </TableRow>
                 ))}

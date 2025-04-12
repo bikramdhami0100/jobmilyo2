@@ -121,7 +121,7 @@ function EditOrganizationData({ organizationData, orgData, setOrgData,employerDa
   console.log(organizationData,"This is from edit")
 
   return (
-    <div className="p-4 ">
+    <div className="p-4 backdrop-blur-xl ">
       <ScrollArea className=" h-[400px]">
       <Form {...form}>
         <form
