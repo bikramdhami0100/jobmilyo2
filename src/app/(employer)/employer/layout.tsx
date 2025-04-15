@@ -18,7 +18,6 @@ export default async function EmployerLayout({
   return (
     <>
        <div>
-      
         <div id="employer" className="w-full h-full">
           {/* Navbar */}
           <EmployerContext>
@@ -33,16 +32,12 @@ export default async function EmployerLayout({
             <div className=" fixed top-0 hidden lg:flex md:flex w-[20%] min-h-screen ">
               <EDashboardSideBar />
             </div>
-
             <div className=" flex md:ml-[20%] lg:ml-[20%] flex-col flex-grow overflow-y-auto lg:mt-[70px] mt-[80px]">
-           
               {children}
-             
             </div>
           </div>
           </EmployerContext>
         </div>
-     
       </div>
     </>
   );

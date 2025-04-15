@@ -12,17 +12,24 @@ interface VideoCallProps {
   setIsVideoCallOpen: (isOpen: boolean) => void;
   receiverId: string;
   onClose: () => void;
+  acceptCall: boolean;
+  setAcceptCall: (acceptCall: boolean) => void;
 }
 
-const VideoCall: React.FC<VideoCallProps> = ({ roomId, isvideoCallOpen,setIsVideoCallOpen, senderId, receiverId, onClose }) => {
+const VideoCall: React.FC<VideoCallProps> = ({ roomId, isvideoCallOpen,setIsVideoCallOpen, senderId, receiverId, onClose,acceptCall,setAcceptCall }) => {
+  
   const [isCalling, setIsCalling] = useState(false); // Track if a call is in progress
   const [incomingCall, setIncomingCall] = useState<any>(null); // Track incoming call
   const localVideoRef = useRef<HTMLVideoElement>(null); // Local video element
   const remoteVideoRef = useRef<HTMLVideoElement>(null); // Remote video element
   const pcRef = useRef<RTCPeerConnection>(null);
   const [offerCreated, setOfferCreated] = useState(false);
-
+ 
+  console.log(roomId,senderId,receiverId,"isvideoCallOpen",isvideoCallOpen);
   useEffect(() => {
+
+    socket.emit('join_video_room', { roomId, senderId,receiverId });
+
     const setupMedia = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -57,7 +64,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ roomId, isvideoCallOpen,setIsVide
           await pcRef.current.setRemoteDescription(offer);
           const answer = await pcRef.current.createAnswer();
           await pcRef.current.setLocalDescription(answer);
-          socket.emit('answer', { answer, roomId });
+          socket.emit('answer', { answer, roomId,senderId,receiverId });
         });
 
         socket.on('answer', async (answer) => {
@@ -84,6 +91,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ roomId, isvideoCallOpen,setIsVide
       createOffer();
     });
 
+    
     setupMedia();
 
     return () => {
@@ -123,6 +131,10 @@ const VideoCall: React.FC<VideoCallProps> = ({ roomId, isvideoCallOpen,setIsVide
 
 
   }
+
+  useEffect(()=>{
+      acceptCall&&createOffer();
+  },[acceptCall]);
   return (
     <div className=" w-full h-full">
 
@@ -134,8 +146,12 @@ const VideoCall: React.FC<VideoCallProps> = ({ roomId, isvideoCallOpen,setIsVide
               <div className=" flex flex-col justify-between items-center ">
               <div className="flex gap-4 mb-4">
                 <button
-                  onClick={createOffer}
+                  onClick={()=>{
+                  
+                    createOffer()
+                  }}
                   // disabled={offerCreated}
+
                   className="bg-blue-500 text-white px-4 py-2 rounded disabled:bg-gray-400"
                 >
                   Start Call

@@ -25,7 +25,6 @@ export default async function RootLayout({
     <html lang="en">
       <body className={lora.className} id="defaultHome" >
         <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
-
           <NextSessionProvider session={session}>
             <ThemeProvider
               attribute="class"
@@ -40,13 +39,10 @@ export default async function RootLayout({
               <div>
                 {children}
               </div>
-
             </ThemeProvider>
           </NextSessionProvider>
-
         </GoogleOAuthProvider>
       </body>
-
     </html>
 
   );

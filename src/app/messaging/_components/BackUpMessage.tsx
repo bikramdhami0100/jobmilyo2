@@ -3,13 +3,13 @@ import { Circle, Phone, Video } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { v4 as uuidv4 } from 'uuid';
-import MainSearch from './_components/MainSearch';
-import ChatMessage from './_components/ChatMessage';
+import MainSearch from '../_components/MainSearch';
+import ChatMessage from '../_components/ChatMessage';
 import { socket } from "@/lib/SocketClient";
-import ChatForm from './_components/ChatFrom';
+import ChatForm from '../_components/ChatFrom';
 import axios from 'axios';
 import { useSearchParams } from 'next/navigation';
-import VideoCall from './_components/VideoCall'; // Import the VideoCall component
+import VideoCall from '../_components/VideoCall'; // Import the VideoCall component
 import {
   Sheet,
   SheetContent,
@@ -44,7 +44,6 @@ function MessageDashboard() {
   const [defaultData, setDefaultData] = useState<any>([]);
   const [isVideoCallOpen, setIsVideoCallOpen] = useState(false); // Track video call state
   const [incomingCall, setIncomingCall] = useState<boolean>(false);
-  const [acceptCall, setAcceptCall] = useState<boolean>(false);
   const param = useSearchParams();
   const receiverId = param.get("id");
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -81,15 +80,6 @@ function MessageDashboard() {
       console.log("User joined for video:", data);
       audioRef.current?.pause();
       setIsVideoCallOpen(true);
-    });
-
-     socket.on("call_declined", (data) => {
-      console.log("Call declined:", data);
-      audioRef.current?.pause();
-      setIncomingCall(false);
-      setIsVideoCallOpen(false);
-      // navigator.mediaDevices.getDisplayMedia({video:false,audio:false});
-      // navigator.mediaDevices.getUserMedia({video:false,audio:false});
     });
   }, [socket]);
 
@@ -182,12 +172,6 @@ function MessageDashboard() {
           <div className="flex justify-end gap-4 mt-6">
             <Button
               variant="ghost"
-              onClick={()=>{
-                setIncomingCall(false);
-                audioRef.current?.pause();
-                setAcceptCall(false);
-                socket.emit("decline_call", { roomId, senderId: senderData?._id, receiverId: selectItem?._id });
-              }}
               className="px-4 py-2 text-red-600 hover:bg-red-100"
             >
               Decline
@@ -197,7 +181,6 @@ function MessageDashboard() {
                 setIncomingCall(false);
                 setIsVideoCallOpen(true);
                 audioRef.current?.pause();
-                setAcceptCall(true);
                 // socket.emit("accept_video_call", { roomId, senderId: senderData?._id, receiverId: selectItem?._id });
 
               }}
@@ -305,13 +288,13 @@ function MessageDashboard() {
 
             <VideoCall
               roomId={roomId}
-              setAcceptCall={setAcceptCall}
-              acceptCall={acceptCall}
               senderId={senderData?._id}
               receiverId={selectItem?._id}
               isvideoCallOpen={isVideoCallOpen}
               setIsVideoCallOpen={setIsVideoCallOpen}
               onClose={() => setIsVideoCallOpen(false)}
+              acceptCall={incomingCall}
+              setAcceptCall={setIncomingCall}
             />
 
           </div>

@@ -14,7 +14,7 @@ const handler = app.getRequestHandler();
 app.prepare().then(() => {
   // Create HTTP server
   const httpServer = createServer(handler);
-  const userSocketMap = {};
+
   // Initialize Socket.IO server
   const io = new Server(httpServer, {
     cors: {
@@ -29,7 +29,6 @@ app.prepare().then(() => {
     // Handle user joining a room
     socket.on("join_user", ({ room, username, receiverId }) => {
       console.log(`User ${username} joined room: ${room}`);
-      userSocketMap[receiverId] = socket.id;
       socket.join(room);
       socket.emit("join_success", { room, username, receiverId });
     });
@@ -56,18 +55,9 @@ app.prepare().then(() => {
   
   socket.on("accept_video_call", ({ roomId, senderId,receiverId }) => {
       socket.join(roomId);
-      // console.log(`User ${senderId} joined room ${roomId}`);
-      // socket.to(roomId).emit("user_join_for_video", { roomId, senderId,receiverId });
-      const receiverSocketId = userSocketMap[receiverId];
-      if (receiverSocketId) {
-        io.to(receiverSocketId).emit("user_join_for_video", { roomId, senderId, receiverId });
-      }
+      console.log(`User ${senderId} joined room ${roomId}`);
+      socket.to(roomId).emit("user_join_for_video", { roomId, senderId,receiverId });
   });
-
-   // handle video call events 
-   socket.on("decline_call", ({ roomId, senderId,receiverId }) => {
-    socket.to(roomId).emit("call_declined", { roomId, senderId,receiverId });
-});
     socket.on("offer", ({ offer, roomId }) => {
       socket.to(roomId).emit("offer", offer);
     });
@@ -85,12 +75,6 @@ app.prepare().then(() => {
     // Handle user disconnect
     socket.on("disconnect", () => {
       console.log(`User disconnected: ${socket.id}`);
-      for (const userId in userSocketMap) {
-        if (userSocketMap[userId] === socket.id) {
-          delete userSocketMap[userId];
-          break;
-        }
-      }
     });
   });
 

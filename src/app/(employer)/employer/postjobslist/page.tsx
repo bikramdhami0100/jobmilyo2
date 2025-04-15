@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button'
 import { IconTimeDuration60 } from '@tabler/icons-react'
 import axios from 'axios'
-import { BookmarkIcon, Calendar, Delete, DeleteIcon, Edit, MapPin } from 'lucide-react'
+import { Calendar, DeleteIcon, Edit, MapPin } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { useRouter } from 'next/navigation'
 import React, { useContext, useEffect, useState } from 'react'
