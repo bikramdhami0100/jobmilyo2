@@ -254,7 +254,8 @@ function MessageDashboard() {
                   {messages.map((msg, index) => (
                     <ChatMessage
                       key={index}
-                      sender={msg?.senderId === senderData?._id ? selectItem?.fullName : senderData?.fullName}
+                      // sender={msg?.senderId === senderData?._id ? selectItem?.fullName : senderData?.fullName}
+                      sender={msg?.senderId === senderData?._id ? senderData?.fullName:selectItem?.fullName }
                       message={msg.message}
                       isOwnMessage={msg.senderId === senderData?._id}
                     />

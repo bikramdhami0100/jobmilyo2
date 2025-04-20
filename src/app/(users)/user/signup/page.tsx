@@ -97,7 +97,7 @@ function Signup() {
 
   const handlerUserType = async (role: string) => {
     console.log(role, "role")
-    if (role == "Employee (कर्मचारी)") {
+    if (role == "Job Seeker") {
       if (typeof window !== undefined) {
         const data = localStorage.getItem("userId");
         if (!data) {
@@ -106,7 +106,7 @@ function Signup() {
           router.push("/user/")
         }
       }
-    } else if (role == "Employer (रोजगारदाता)") {
+    } else if (role == "Employer") {
       if (typeof window !== undefined) {
         const data = localStorage.getItem("employerId");
         if (!data) {

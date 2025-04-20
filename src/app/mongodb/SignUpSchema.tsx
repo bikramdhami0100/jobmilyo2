@@ -30,8 +30,10 @@ const userSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"usercontacts"
     },
-  
-  
+    archive:{
+        type:Boolean,
+        default:false
+    }
 });
 
 // Create the model

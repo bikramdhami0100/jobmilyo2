@@ -5,12 +5,12 @@ import OrganizationDetails from './components/OrganizationDetails';
 import EDashboard from './components/Dashboard';
 
 function AdminHome() {
-const {employerData,organizationData}=useContext<any>(MyEmployerLogInContext);
+const {employerData,organizationData,loader, setLoader}=useContext<any>(MyEmployerLogInContext);
 
   return (
     <div>
        { !organizationData&& 
-        <OrganizationDetails  employerData={employerData} />
+        <OrganizationDetails loader={loader} setLoader={setLoader}  employerData={employerData} />
        }  
        <EDashboard/>
     </div>

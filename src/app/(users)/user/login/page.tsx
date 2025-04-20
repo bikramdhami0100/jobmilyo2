@@ -69,13 +69,13 @@ function Login() {
 
     {
       name: "google",
-      role: "Employer (रोजगारदाता)",
+      role: "Employer",
       image: "/images/social/google.png",
       // link:"https://www.linkedin.com"
     },
     {
       name: "google",
-      role: "Employee (कर्मचारी)",
+      role: "Job Seeker",
       image: "/images/social/google.png",
       // link:"https://www.linkedin.com"
     },
@@ -127,7 +127,7 @@ function Login() {
 
 
       const data = (await axios.post("/api/employer", userInfo.data)).data;
-      console.log(data, "This is data")
+    
       if (typeof window !== undefined) {
         if (data?.message == "User Already Exists") {
           localStorage.setItem("employerId", data?.results._id);
@@ -148,7 +148,7 @@ function Login() {
 
   const handlerUserType = async (role: string) => {
     console.log(role, "role")
-    if (role == "Employee (कर्मचारी)") {
+    if (role == "Job Seeker") {
       if (typeof window !== undefined) {
         const data = localStorage.getItem("userId");
 
@@ -158,7 +158,7 @@ function Login() {
           router.push("/user/userinformation")
         }
       }
-    } else if (role == "Employer (रोजगारदाता)") {
+    } else if (role =="Employer") {
       if (typeof window !== undefined) {
         const data = localStorage.getItem("employerId");
         

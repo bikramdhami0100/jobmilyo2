@@ -12,7 +12,7 @@ export async function POST(req: any) {
         const newEntry=new Organization(data);
         const saveEntry=await newEntry.save();
          console.log(saveEntry)
-        return NextResponse.json({message:newEntry})
+        return NextResponse.json({message:"Successfully inserted", status: 200})
  
     } catch (error) {
         return NextResponse.json({ message:error, status: 500 })

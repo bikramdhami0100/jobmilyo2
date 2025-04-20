@@ -7,6 +7,7 @@ export const MyEmployerLogInContext = createContext<any>("bikram dhami from bajh
 function EmployerContext({ children }: any) {
   const router=useRouter();
   const [employerData, setEmployerData] = useState<any>("");
+    const [loader, setLoader] = useState(false);
   const [organizationData,setOrganizationData]=useState<any>("");
   const handlerGetEmployerDetails = async (id: any) => {
     const data = (await axios.get("/api/employer", {
@@ -38,9 +39,9 @@ function EmployerContext({ children }: any) {
     }
 
 
-  }, []);
+  }, [loader]);
   return (
-    <MyEmployerLogInContext.Provider value={{ employerData, setEmployerData ,organizationData,setOrganizationData}}>
+    <MyEmployerLogInContext.Provider value={{ employerData, setEmployerData ,organizationData,setOrganizationData,loader, setLoader}}>
       {children}
     </MyEmployerLogInContext.Provider>
   )

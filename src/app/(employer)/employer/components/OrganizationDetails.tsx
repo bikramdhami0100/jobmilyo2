@@ -66,8 +66,9 @@ const FormSchema = z.object({
   isActive: z.boolean(),
 });
 
-function OrganizationDetailsForm({employerData }: any) {
-  const [loader, setLoader] = useState(false);
+function OrganizationDetailsForm({employerData,loader, setLoader }: any) {
+
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -95,7 +96,7 @@ function OrganizationDetailsForm({employerData }: any) {
   });
 
  async function onSubmit(data: z.infer<typeof FormSchema>) {
-    // setLoader(true);
+    setLoader(true);
     console.log(data)
     const userId:string=employerData?._id;
     const logo:string=employerData?.color
@@ -105,6 +106,10 @@ function OrganizationDetailsForm({employerData }: any) {
      if(employerData){
        const  sendData=(await axios.post("/api/employer/organization_details",{data,user:employerData})).data;
        console.log(sendData)
+       if(sendData?.status===200){
+        setLoader(false)
+
+       }
      }
     // Handle form submission logic here
   }

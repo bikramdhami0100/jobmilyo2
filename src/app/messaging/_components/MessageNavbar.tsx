@@ -27,11 +27,11 @@ function EmployerNavbar() {
       url: "/messaging",
       icon: LayoutDashboard,
     },
-    {
-      title: "Priority",
-      url: "/",
-      icon:IconChessQueen  ,
-    },
+    // {
+    //   title: "Priority",
+    //   url: "/",
+    //   icon:IconChessQueen  ,
+    // },
     {
       title: "Archived",
       url: "/messaging/archived",
