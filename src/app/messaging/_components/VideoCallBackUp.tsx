@@ -18,7 +18,8 @@ interface VideoCallProps {
 
 const VideoCall: React.FC<VideoCallProps> = ({ roomId, isvideoCallOpen,setIsVideoCallOpen, senderId, receiverId, onClose,acceptCall,setAcceptCall }) => {
   
-
+  const [isCalling, setIsCalling] = useState(false); // Track if a call is in progress
+  const [incomingCall, setIncomingCall] = useState<any>(null); // Track incoming call
   const localVideoRef = useRef<HTMLVideoElement>(null); // Local video element
   const remoteVideoRef = useRef<HTMLVideoElement>(null); // Remote video element
   const pcRef = useRef<RTCPeerConnection>(null);

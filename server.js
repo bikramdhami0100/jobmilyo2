@@ -14,7 +14,9 @@ const handler = app.getRequestHandler();
 app.prepare().then(() => {
   // Create HTTP server
   const httpServer = createServer(handler);
-  const userSocketMap = {};
+
+  const socketIdKeyAndReceiverIdValue=new Map();
+  const  receiverIdKeyAndSocketIdValue=new Map();
   // Initialize Socket.IO server
   const io = new Server(httpServer, {
     cors: {
@@ -29,7 +31,10 @@ app.prepare().then(() => {
     // Handle user joining a room
     socket.on("join_user", ({ room, username, receiverId }) => {
       console.log(`User ${username} joined room: ${room}`);
-      userSocketMap[receiverId] = socket.id;
+      console.log(username,receiverId,"this is receiver id");
+      socketIdKeyAndReceiverIdValue.set(socket.id,receiverId);
+      receiverIdKeyAndSocketIdValue.set(receiverId,socket.id);
+      
       socket.join(room);
       socket.emit("join_success", { room, username, receiverId });
     });
@@ -41,33 +46,6 @@ app.prepare().then(() => {
     });
 
 
-
-    socket.on('joinRoom', (roomId) => {
-      socket.join(roomId);
-      console.log(`User ${socket.id} joined room ${roomId}`);
-    });
-    // handle video call events 
-    socket.on("join_video_room", ({ roomId, senderId,receiverId }) => {
-      socket.join(roomId);
-      console.log(`User ${senderId} joined room ${roomId}`);
-      socket.to(roomId).emit("incomming_call", { roomId, senderId,receiverId });
-
-  });
-  
-  socket.on("accept_video_call", ({ roomId, senderId,receiverId }) => {
-      socket.join(roomId);
-      // console.log(`User ${senderId} joined room ${roomId}`);
-      // socket.to(roomId).emit("user_join_for_video", { roomId, senderId,receiverId });
-      const receiverSocketId = userSocketMap[receiverId];
-      if (receiverSocketId) {
-        io.to(receiverSocketId).emit("user_join_for_video", { roomId, senderId, receiverId });
-      }
-  });
-
-   // handle video call events 
-   socket.on("decline_call", ({ roomId, senderId,receiverId }) => {
-    socket.to(roomId).emit("call_declined", { roomId, senderId,receiverId });
-});
     socket.on("offer", ({ offer, roomId }) => {
       socket.to(roomId).emit("offer", offer);
     });

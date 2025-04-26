@@ -72,8 +72,12 @@ function MessageDashboard() {
     socket.on("incomming_call", (data) => {
       console.log("Incoming call:", data);
       //handle audio play for incomming call
-      audioRef.current?.play();
-      setIncomingCall(true);
+      // if(data?.receiverId!=senderData?._id){
+      //   audioRef.current?.play();
+      //   setIncomingCall(true);
+
+      // }
+
       socket.emit("accept_video_call", { roomId: data.roomId, senderId: data.senderId, receiverId: data.receiverId });
       // setIsVideoCallOpen(true);
     });
@@ -83,7 +87,7 @@ function MessageDashboard() {
       setIsVideoCallOpen(true);
     });
 
-     socket.on("call_declined", (data) => {
+    socket.on("call_declined", (data) => {
       console.log("Call declined:", data);
       audioRef.current?.pause();
       setIncomingCall(false);
@@ -182,7 +186,7 @@ function MessageDashboard() {
           <div className="flex justify-end gap-4 mt-6">
             <Button
               variant="ghost"
-              onClick={()=>{
+              onClick={() => {
                 setIncomingCall(false);
                 audioRef.current?.pause();
                 setAcceptCall(false);
@@ -193,7 +197,7 @@ function MessageDashboard() {
               Decline
             </Button>
             <Button
-              onClick={()=>{
+              onClick={() => {
                 setIncomingCall(false);
                 setIsVideoCallOpen(true);
                 audioRef.current?.pause();
@@ -255,7 +259,7 @@ function MessageDashboard() {
                     <ChatMessage
                       key={index}
                       // sender={msg?.senderId === senderData?._id ? selectItem?.fullName : senderData?.fullName}
-                      sender={msg?.senderId === senderData?._id ? senderData?.fullName:selectItem?.fullName }
+                      sender={msg?.senderId === senderData?._id ? senderData?.fullName : selectItem?.fullName}
                       message={msg.message}
                       isOwnMessage={msg.senderId === senderData?._id}
                     />

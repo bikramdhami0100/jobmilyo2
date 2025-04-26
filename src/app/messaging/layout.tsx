@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import MessageNavbar from "./_components/MessageNavbar";
 import MessageSideBar from "./_components/MessageSideBar";
 
-
 export const metadata: Metadata = {
   title: "Job मिल्यो Admin",
   description: "Job मिल्यो website is one of the popular websites for job seekers, developed by the K_DBMS Team of BSc.CSIT at Far Western University",
