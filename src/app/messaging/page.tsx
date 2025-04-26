@@ -30,8 +30,11 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from '@/components/ui/button';
+import { userSocket } from '../context/SocketContext';
 
 function MessageDashboard() {
+  const {onlineUsers}=userSocket();
+  console.log(onlineUsers,"this is online users")
   const [messages, setMessages] = useState<{ sender: string; message: string, senderId: string }[]>([]);
   const [senderData, setSenderData] = useState<any>();
   const [roomId, setRoomId] = useState<string>("");
@@ -233,6 +236,7 @@ function MessageDashboard() {
                     </div>
                     <div className=''>
                       <div>{selectItem?.fullName}</div>
+                      <div>{onlineUsers?.some((item:any)=>item?.userId===selectItem?._id) ? "Online" : "Offline"}</div>
                     </div>
                   </div>
                 </div>

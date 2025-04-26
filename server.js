@@ -25,6 +25,8 @@ app.prepare().then(() => {
     },
   });
 
+  let onlineUsers = [];
+
   io.on("connection", (socket) => {
     console.log(`User connected: ${socket.id}`);
 
@@ -45,6 +47,12 @@ app.prepare().then(() => {
       io.to(room).emit("con_message", { sender, message, senderId });
     });
 
+   socket.on("addNewUsers",({userId,userData})=>{
+    console.log(userData)
+    userId&&!onlineUsers.some((user)=>user.userId===userId)
+    &&onlineUsers.push({userId,userData,socketId:socket.id})
+      io.emit("getUsers",onlineUsers);
+   })
 
     socket.on("offer", ({ offer, roomId }) => {
       socket.to(roomId).emit("offer", offer);
@@ -63,12 +71,9 @@ app.prepare().then(() => {
     // Handle user disconnect
     socket.on("disconnect", () => {
       console.log(`User disconnected: ${socket.id}`);
-      for (const userId in userSocketMap) {
-        if (userSocketMap[userId] === socket.id) {
-          delete userSocketMap[userId];
-          break;
-        }
-      }
+        onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
+        //send active users
+         io.emit("getUsers",onlineUsers);
     });
   });
 

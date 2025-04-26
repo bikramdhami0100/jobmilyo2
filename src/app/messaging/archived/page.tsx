@@ -1,6 +1,7 @@
 "use client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import axios from "axios";
+import { ChevronDown } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
@@ -16,7 +17,7 @@ export interface ArchivedData {
 
 function ArchiveChat() {
   const [userData, setUserData] = useState<ArchivedData[]>([]);
-
+  const [itemSelectOption, setItemSelectOption] = useState<string |"unarchived"| "unblock">("");
   const handlerFetchArchivedChat = async (userId: string) => {
     try {
       const send = (await axios.get("/api/messaging/archived", { params: { id: userId } })).data;
@@ -31,9 +32,24 @@ function ArchiveChat() {
     if (typeof window !== "undefined") {
       const userId = localStorage.getItem("userId") || localStorage.getItem("employerId");
       userId && handlerFetchArchivedChat(userId);
-      console.log(userId, "this is user id");
+
     }
   }, []);
+
+  const hanlderUnArchived = async (userId: string) => {
+              const send = (await axios.put("/api/messaging/archived", { userId, archive: false })).data;
+              console.log(send, "unarchive chat");
+  } 
+
+  useEffect(()=>{
+    const userId = localStorage.getItem("userId") || localStorage.getItem("employerId");
+            
+    if(itemSelectOption=="unarchived"){
+      userId && hanlderUnArchived(userId);
+    }else if(itemSelectOption=="unblock"){
+          // userId&&hanlderUnArchived(userId);
+    }
+  },[itemSelectOption]);
 
   return (
     <div className="">
@@ -66,6 +82,26 @@ function ArchiveChat() {
                 <div className="flex flex-col">
                   <h3 className="font-semibold text-base">{item.fullName}</h3>
                   <p className="text-sm text-gray-500">{item.email}</p>
+                </div>
+                <div className="relative bg-transparent inline-block w-14">
+                  <label htmlFor="select" className=" bg-transparent sr-only">Options</label>
+                  <select
+                    id="select"
+                    defaultValue=""
+                    onChange={(e)=>{
+                     setItemSelectOption(e.target.value);
+                    }}
+                    className="block appearance-none w-8 py-2 px-3 pr-10 rounded-md leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 bg-transparent"
+                  >
+                    <option value="" disabled hidden>Select option</option>
+                    <option className=' bg-black text-white ' value="unarchived">Unarchived</option>
+                    {/* <option className=' bg-black ' value="delete">Delete</option> */}
+                    <option className=' bg-black' value="unblock">Unblock</option>
+                  </select>
+
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2 text-gray-700">
+                    <ChevronDown className="w-4 h-4" />
+                  </div>
                 </div>
               </div>
             ))

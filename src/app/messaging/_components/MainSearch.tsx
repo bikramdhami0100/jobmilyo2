@@ -12,10 +12,6 @@ function MainSearch({ setSelectReceiverId, setSearchItem, setSelectItem, results
   useEffect(() => {
 
     results && setFilterData(results?.filter((item: any) => item?.fullName?.toLowerCase().includes(searchItem?.toLowerCase())))
-
-    return () => {
-
-    }
   }, [results, searchItem])
 
   console.log(itemSelectOption)
@@ -25,15 +21,21 @@ function MainSearch({ setSelectReceiverId, setSearchItem, setSelectItem, results
     console.log(send, "archive chat");
 
   }
+
+  const handlerUserArchivedActivate = async (userId: any) => {
+    const send = (await axios.put("/api/messaging/archived", { userId, archive: true })).data;
+    console.log(send, "archive chat");
+  }
+
   useEffect(() => {
      if(results?.length > 0){
       handlerUserArchived(results[0]?._id); // Pass the userId from results or another appropriate source
      };
+
+     if(itemSelectOption=="archive" && results?.length > 0){
+      handlerUserArchivedActivate(results[0]?._id);
+     }
     
-  //  if(itemSelectOption == "archive" && results?.length > 0){
-  //     handlerUserArchived(results[0]?._id); // Pass the userId from results or another appropriate source
-  //  }
-   
   }, [results,itemSelectOption]);
   
   return (
