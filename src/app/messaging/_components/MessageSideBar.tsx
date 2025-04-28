@@ -15,11 +15,6 @@ function MessageSideBar() {
           url: "/messaging",
           icon: LayoutDashboard,
         },
-        // {
-        //   title: "Priority",
-        //   url: "/",
-        //   icon:IconChessQueen  ,
-        // },
         {
           title: "Archived",
           url: "/messaging/archived",
@@ -62,17 +57,7 @@ function MessageSideBar() {
                 })
              }
           </div>
-          <div>
-                  <div className=" flex m-2 justify-center  items-center flex-wrap w-auto  mt-[100%] border  rounded-md  gap-4">
-                      <div className=" flex gap-1 cursor-pointer p-2  rounded-md   ">
-                         <KeyRound/> Invite
-                      </div>
-                      <div className=" flex gap-1 cursor-pointer border p-2  rounded-md ">
-                         <MessageCircleQuestion/> Support
-                      </div>
-                  </div>
-             
-          </div>
+        
     </div>
   )
 }

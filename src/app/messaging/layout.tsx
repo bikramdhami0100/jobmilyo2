@@ -16,7 +16,6 @@ export default async function MessageLayout({
 
   return (
     <>
-      
       <div id="messaging" className="w-full h-full">
         {/* Navbar */}
         <div className=" fixed z-30 backdrop-blur-lg  flex justify-end items-end w-full">

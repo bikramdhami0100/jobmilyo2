@@ -6,7 +6,9 @@ import SplashScreen from "./components/SplashScreen";
 import NextSessionProvider from "./Provider";
 import { getServerSession } from "next-auth";
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import { SocketContextProvider } from "./context/SocketContext";
+import SocketProvider from "./providers/SocketProvider";
+import CallNotification from "./messaging/ui/CallNotification";
+
 const lora = Lora({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -24,7 +26,9 @@ export default async function RootLayout({
   const session = await getServerSession();
   return (
     <html lang="en">
-      <body className={lora.className} id="defaultHome" >
+      <body className={`${lora.className} relative`} id="defaultHome" >
+        {/* <CallNotification/> */}
+       
         <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
           <NextSessionProvider session={session}>
             <ThemeProvider
@@ -38,10 +42,11 @@ export default async function RootLayout({
                 <SplashScreen />
               </div>
               <div>
-                <SocketContextProvider>
+                <SocketProvider>
+                <CallNotification/>
+             {children}
 
-                {children}
-                </SocketContextProvider>
+                </SocketProvider>
               </div>
             </ThemeProvider>
           </NextSessionProvider>

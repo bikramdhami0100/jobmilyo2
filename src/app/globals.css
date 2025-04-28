@@ -79,3 +79,13 @@ body{
   /* #f3f7fb */
   background-color:#f3f7fb ;
 }
+
+/* globals.css or your component's css */
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE 10+ */
+
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}

@@ -2,7 +2,9 @@
 import { createServer } from "node:http";
 import next from "next";
 import { Server } from "socket.io";
-
+import onCall from "./src/app/socket-events/onCall.js"
+import onWebrtcSignal from "./src/app/socket-events/onWebrtcSignal.js"
+import onHangup from "./src/app/socket-events/onHangup.js";
 const dev = process.env.NODE_ENV !== "production";
 const hostname = process.env.HOSTNAME || "localhost";
 const port = parseInt(process.env.PORT || "3000", 10);
@@ -10,7 +12,7 @@ const port = parseInt(process.env.PORT || "3000", 10);
 // Initialize Next.js app
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
-
+export let io;
 app.prepare().then(() => {
   // Create HTTP server
   const httpServer = createServer(handler);
@@ -18,7 +20,7 @@ app.prepare().then(() => {
   const socketIdKeyAndReceiverIdValue=new Map();
   const  receiverIdKeyAndSocketIdValue=new Map();
   // Initialize Socket.IO server
-  const io = new Server(httpServer, {
+   io = new Server(httpServer, {
     cors: {
       origin: "*", // Adjust as needed for security
       methods: ["GET", "POST"],
@@ -47,6 +49,7 @@ app.prepare().then(() => {
       io.to(room).emit("con_message", { sender, message, senderId });
     });
 
+
    socket.on("addNewUsers",({userId,userData})=>{
     console.log(userData)
     userId&&!onlineUsers.some((user)=>user.userId===userId)
@@ -54,21 +57,11 @@ app.prepare().then(() => {
       io.emit("getUsers",onlineUsers);
    })
 
-    socket.on("offer", ({ offer, roomId }) => {
-      socket.to(roomId).emit("offer", offer);
-    });
-
-    socket.on("answer", ({ answer, roomId }) => {
-      socket.to(roomId).emit("answer", answer);
-    });
-  
-    socket.on("ice-candidate", ({ candidate, roomId }) => {
-      socket.to(roomId).emit("ice-candidate", candidate);
-    });
-    socket.on("end-call",({roomId})=>{
-      socket.to(roomId).emit("call-ended")
-    });
-    // Handle user disconnect
+   //CALL USER
+     socket.on("call",onCall);
+     socket.on("webrtcSignal",onWebrtcSignal);
+     socket.on("hangup",onHangup);
+ 
     socket.on("disconnect", () => {
       console.log(`User disconnected: ${socket.id}`);
         onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);

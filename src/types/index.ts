@@ -1,3 +1,5 @@
+import Peer from  "simple-peer"
+
 export interface SocketUser {
     userId:string,
     userData:any,
@@ -12,4 +14,13 @@ export type OngoingCall={
 export type Participants ={
      caller:SocketUser,
      receiver:SocketUser
+}
+
+export type PeerData={
+    peerConnection:Peer.Instance,
+    participantUser:SocketUser,
+    // initiator:boolean,
+    stream:MediaStream|undefined,
+    // trickle:boolean,
+    // config:any
 }

@@ -1,5 +1,5 @@
 "use client";
-import { Circle, Phone, Video } from 'lucide-react';
+import { ChevronDown, Circle, Phone, Video } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,7 +9,6 @@ import { socket } from "@/lib/SocketClient";
 import ChatForm from './_components/ChatFrom';
 import axios from 'axios';
 import { useSearchParams } from 'next/navigation';
-import VideoCall from './_components/VideoCall'; // Import the VideoCall component
 import {
   Sheet,
   SheetContent,
@@ -23,18 +22,13 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Button } from '@/components/ui/button';
 import { userSocket } from '../context/SocketContext';
-
+import VideoCall from './ui/VideoCall';
 function MessageDashboard() {
-  const {onlineUsers}=userSocket();
-  console.log(onlineUsers,"this is online users")
+  const { onlineUsers, handleCall } = userSocket();
+
   const [messages, setMessages] = useState<{ sender: string; message: string, senderId: string }[]>([]);
   const [senderData, setSenderData] = useState<any>();
   const [roomId, setRoomId] = useState<string>("");
@@ -45,13 +39,14 @@ function MessageDashboard() {
   const [searchItem, setSearchItem] = useState<any>("");
   const [checkMessage, setCheckMessage] = useState<any>("");
   const [defaultData, setDefaultData] = useState<any>([]);
-  const [isVideoCallOpen, setIsVideoCallOpen] = useState(false); // Track video call state
+  const [openDialogThreeDot, setOpenDialotThreeDot] = useState<boolean>(false);
+  const [itemSelectOption, setItemSelectOption] = useState<string>("");
   const [incomingCall, setIncomingCall] = useState<boolean>(false);
   const [acceptCall, setAcceptCall] = useState<boolean>(false);
   const param = useSearchParams();
   const receiverId = param.get("id");
   const audioRef = useRef<HTMLAudioElement>(null);
-
+  const { ongoingCall, handleJoinCall, isVideoCallOpen, setIsVideoCallOpen } = userSocket();
   // Fetch receiver data
   const handlerReceiver = async (id: any) => {
     const receiver = (await axios.get("/api/user/user_type", { params: { id } })).data;
@@ -72,32 +67,6 @@ function MessageDashboard() {
       senderId && handlerSenderData(senderId);
       senderId && handlerReceiver(senderId);
     }
-    socket.on("incomming_call", (data) => {
-      console.log("Incoming call:", data);
-      //handle audio play for incomming call
-      // if(data?.receiverId!=senderData?._id){
-      //   audioRef.current?.play();
-      //   setIncomingCall(true);
-
-      // }
-
-      socket.emit("accept_video_call", { roomId: data.roomId, senderId: data.senderId, receiverId: data.receiverId });
-      // setIsVideoCallOpen(true);
-    });
-    socket.on("user_join_for_video", (data) => {
-      console.log("User joined for video:", data);
-      audioRef.current?.pause();
-      setIsVideoCallOpen(true);
-    });
-
-    socket.on("call_declined", (data) => {
-      console.log("Call declined:", data);
-      audioRef.current?.pause();
-      setIncomingCall(false);
-      setIsVideoCallOpen(false);
-      // navigator.mediaDevices.getDisplayMedia({video:false,audio:false});
-      // navigator.mediaDevices.getUserMedia({video:false,audio:false});
-    });
   }, [socket]);
 
   const saveInitailUserMessage = async (roomId: any, sender: any, receiver: any, message: any) => {
@@ -167,57 +136,68 @@ function MessageDashboard() {
 
   }, [checkMessage]);
 
+  const handlerUserArchived = async (userId: any) => {
+    const send = (await axios.get("/api/messaging/archived", { params: { id: userId } })).data;
+    console.log(send, "archive chat");
+
+  }
+
+  const handlerUserArchivedActivate = async (userId: any) => {
+    const send = (await axios.put("/api/messaging/archived", { userId, archive: true })).data;
+  }
+
+  useEffect(() => {
+    if (receiverData?.length > 0) {
+      handlerUserArchived(receiverData[0]?._id); // Pass the userId from results or another appropriate source
+    };
+
+    if (itemSelectOption == "archive" && receiverData?.length > 0) {
+      handlerUserArchivedActivate(receiverData[0]?._id);
+    }
+
+  }, [selectItem, itemSelectOption]);
   return (
     <div>
-      <audio loop={incomingCall} ref={audioRef} src="/message/incommingCall.mp3" />
-      <AlertDialog open={incomingCall}>
+      <AlertDialog open={openDialogThreeDot} onOpenChange={setOpenDialotThreeDot}>
         <AlertDialogTrigger asChild>
-          {/* You can place a hidden button or trigger logic here */}
-          <button className="hidden" />
+          {/* Your trigger button/icon here (if any) */}
         </AlertDialogTrigger>
 
-        <AlertDialogContent className="max-w-md bg-white rounded-2xl shadow-2xl p-6 border border-gray-200">
-          <AlertDialogHeader className="mb-4">
-            <AlertDialogTitle className="text-lg font-semibold text-gray-900">
-              Incoming Video Call
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-sm text-gray-600 mt-2">
-              Are you sure you want to accept this video call?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
+        <AlertDialogContent className="max-w-sm w-[90%] flex flex-col gap-6 justify-center items-center bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 border dark:border-gray-700">
 
-          <div className="flex justify-end gap-4 mt-6">
-            <Button
-              variant="ghost"
-              onClick={() => {
-                setIncomingCall(false);
-                audioRef.current?.pause();
-                setAcceptCall(false);
-                socket.emit("decline_call", { roomId, senderId: senderData?._id, receiverId: selectItem?._id });
-              }}
-              className="px-4 py-2 text-red-600 hover:bg-red-100"
+          {/* Title */}
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-white text-center">Choose an Action</h2>
+
+          {/* Select Box */}
+          <div className="relative w-full">
+            <select
+              id="select"
+              defaultValue=""
+              onChange={(e) => setItemSelectOption(e.target.value)}
+              className="block w-full appearance-none rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-3 px-4 pr-10 text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
             >
-              Decline
-            </Button>
-            <Button
-              onClick={() => {
-                setIncomingCall(false);
-                setIsVideoCallOpen(true);
-                audioRef.current?.pause();
-                setAcceptCall(true);
-                // socket.emit("accept_video_call", { roomId, senderId: senderData?._id, receiverId: selectItem?._id });
+              <option value="" hidden disabled>Select an option</option>
+              <option value="archive">Archived</option>
+              <option value="delete">Delete</option>
+              <option value="block">Block</option>
+            </select>
 
-              }}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white"
-            >
-              Accept
-
-            </Button>
+            {/* Chevron icon */}
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+              <ChevronDown className="w-5 h-5 text-gray-400 dark:text-gray-300" />
+            </div>
           </div>
+
+          {/* Cancel Button */}
+          <AlertDialogCancel
+            onClick={() => setOpenDialotThreeDot(false)}
+            className="mt-4 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg py-2 px-6 font-medium transition"
+          >
+            Cancel
+          </AlertDialogCancel>
+
         </AlertDialogContent>
       </AlertDialog>
-
-
       <div className='flex-col py-2'>
         {/* Search Section */}
         <div className=' flex  max-h-screen'>
@@ -236,18 +216,31 @@ function MessageDashboard() {
                     </div>
                     <div className=''>
                       <div>{selectItem?.fullName}</div>
-                      <div>{onlineUsers?.some((item:any)=>item?.userId===selectItem?._id) ? "Online" : "Offline"}</div>
+                      <div>{onlineUsers?.some((item: any) => item?.userId === selectItem?._id) ? "Online" : "Offline"}</div>
                     </div>
                   </div>
                 </div>
 
                 <div className='flex gap-2 items-center'>
                   <Video className='cursor-pointer' onClick={() => {
-                    setIsVideoCallOpen(!isVideoCallOpen);
+                    // setIsVideoCallOpen(!isVideoCallOpen);
+                    console.log(onlineUsers, "vidoe section")
+
+                    onlineUsers && onlineUsers.map((item: any) => {
+                      console.log(item, "this is pure receiver")
+                      if (item?.userData?._id == selectReceiverId) {
+                        setIsVideoCallOpen(true);
+                        handleCall(item);
+                      }
+
+
+                    });
                     // alert("Allow video Calling ...")
                   }} /> {/* Video call button */}
                   <Phone className='cursor-pointer' />
-                  <div className='flex gap-[1px]'>
+                  <div onClick={() => {
+                    setOpenDialotThreeDot(!openDialogThreeDot);
+                  }} className='flex gap-[1px] cursor-pointer '>
                     <Circle fill='gray' size={12} />
                     <Circle fill='gray' size={12} />
                     <Circle fill='gray' size={12} />
@@ -307,24 +300,13 @@ function MessageDashboard() {
       </div>
 
       {/* Video Call Component */}
-
       {
         isVideoCallOpen && (
-          <div className='fixed inset-0 flex items-center justify-center z-50 backdrop-blur-2xl'>
-
-            <VideoCall
-              roomId={roomId}
-              setAcceptCall={setAcceptCall}
-              acceptCall={acceptCall}
-              senderId={senderData?._id}
-              receiverId={selectItem?._id}
-              isvideoCallOpen={isVideoCallOpen}
-              setIsVideoCallOpen={setIsVideoCallOpen}
-              onClose={() => setIsVideoCallOpen(false)}
-            />
-
+          <div className=' absolute left-0 inset-0 flex items-center justify-center z-40 bottom-0 backdrop-blur-2xl'>
+            <VideoCall />
           </div>
         )
+
       }
 
     </div>
