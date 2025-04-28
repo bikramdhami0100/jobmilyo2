@@ -12,10 +12,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { MyEmployerLogInContext } from '../../context/EmployerLogInContext';
+import { Loader } from 'lucide-react';
 function PostAJob() {
   const { theme } = useTheme();
   const router=useRouter()
-  const [rating, setRating] = useState(0)
+  const [rating, setRating] = useState(0);
+  const [loader,setLoader]=useState<boolean>(false);
   const [companyLogo, setCompanyLogo] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [employerId,setEmployerId]=useState<any>("");
@@ -80,7 +82,7 @@ function PostAJob() {
   };
   
   const handleSubmit = async (event: any) => {
-
+     setLoader(true);
     event.preventDefault();
     if(employerData){
       try {
@@ -96,8 +98,9 @@ function PostAJob() {
             className:" text-black bg-white border-green-600 ",
             description: "Your job posting has been added.",
           });
+          setLoader(false);
           router.push("/employer/postjobslist");
-          
+           
         } else {
           toast({
             title: "Failed to add job",
@@ -115,6 +118,7 @@ function PostAJob() {
     }else{
       alert("No user login")
     }
+    setLoader(false)
   };
 useEffect(()=>{
  setForm((pre:any)=>({
@@ -255,7 +259,7 @@ if (!mounted) return null;
           </div>
         </div>
         <div className="flex justify-center mt-8">
-          <Button type="submit" className="w-full max-w-md bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition duration-200">Add Job</Button>
+          <Button type="submit" disabled={loader} className="w-full max-w-md bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition duration-200"> {loader&&<Loader className=' mr-2 animate-spin'/>} Add Job</Button>
         </div>
       </form>
     </div>

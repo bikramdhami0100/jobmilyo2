@@ -10,16 +10,12 @@ export async function POST(req: any) {
   await mongodbconn;
 
   // Parse the request body
-  const { targetDate ,userId} = await req.json();
+  const { targetDate } = await req.json();
   console.log("Target Date:", targetDate);
 
   // Parse the target date to a JavaScript Date object
   const parsedTargetDate = moment(targetDate).toDate();
-  console.log(userId,"this is user id");
 
-  if (!userId) {
-    return NextResponse.json({ message: "Invalid token", status: 401 });
-  }
 
   try {
     // Verify the token
