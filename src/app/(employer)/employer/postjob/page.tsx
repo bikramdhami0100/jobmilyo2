@@ -148,13 +148,9 @@ if (!mounted) return null;
                 })
               }
             </select>
-            {/* {formErrors.interestedEmploymentType && <span className=' text-red-600'>{formErrors.interestedEmploymentType}</span>} */}
-
+        
           </div>
-          {/* <div>
-            <label className="block text-sm font-medium ">Number of Posts</label>
-            <Input name="number_of_post" value={form.number_of_post} onChange={handleChange} placeholder="Enter number of posts" />
-          </div> */}
+       
           <div>
             <label className="block text-sm font-medium ">Number of Vacancy</label>
             <Input type="number" name="no_vacancy" value={form.no_vacancy} onChange={handleChange} placeholder="Enter number of posts" />

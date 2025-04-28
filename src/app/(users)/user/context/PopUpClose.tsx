@@ -13,7 +13,6 @@ function PopUpClose({ children }: any) {
        const send=(await axios.get("/api/user/apply",{params:{id:id}})).data
        if(send.status===200){
           setJobSeekerApplyData(send?.data);
-          console.log(send,"this is in pop up")
          toast({title:"Apply successfully",className:"bg-white text-black border-green-600 border-[2px]"})
        }
       
@@ -21,11 +20,9 @@ function PopUpClose({ children }: any) {
    useEffect(() => {
       if (typeof window !== undefined) {
          const id = localStorage.getItem("userId");
-         console.log(id,"this is in pop up")
          setSeekerId(id);
         if(id){
          handlerChatEnable(id);
-         console.log(id,"this is in pop up")
          setOpenPopUp(true)
         }
       }

@@ -82,9 +82,7 @@ export const SocketContextProvider = ({ children }: { children: React.ReactNode 
     console.log(participants,"Incomming call")
       setOngoingCall({participants,isRinging:true})
     },[socket,user,ongoingCall])
-  
 
-  console.log(onlineUsers, "this is online users")
 
   const handlerUser = async () => {
     if (typeof window !== "undefined") {
@@ -220,7 +218,7 @@ const completePeerConnection=useCallback(async(connectionData:{sdp:SignalData,on
         const stream=await getMediaStream();
         if(!stream){
           handleHangup({ ongoingCall: ongoingCall ? ongoingCall : undefined, isEmitHangup: true })
-          console.log("No stream in handleJoinCall")
+
           return;
         };
 
@@ -312,9 +310,7 @@ useEffect(() => {
   }
 }, [socket,isSocketConnected,user,onIncomingCall,completePeerConnection])
 
-  console.log(user, "this is user")
-  console.log(onlineUsers, "this is online users")
-
+  
   useEffect(()=>{
         let timeout:ReturnType<typeof setTimeout>;
         if(isCallEnded){

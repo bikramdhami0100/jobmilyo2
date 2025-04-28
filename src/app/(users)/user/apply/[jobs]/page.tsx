@@ -6,6 +6,14 @@ import { Bookmark, CalendarDays, Clock10, Clock7, DollarSign, Loader, Locate, Ma
 import Image from 'next/image'
 import React, { use, useContext, useEffect, useState } from 'react'
 import axios from "axios"
+
+import { v4 as uuidv4 } from "uuid";
+import { Label } from '@/components/ui/label';
+import { CldUploadButton } from 'next-cloudinary';
+import { toast } from '@/components/ui/use-toast';
+import CountDownTimer from '../../components/CountDownTimer';
+import { MyPopUpContext } from '../../context/PopUpClose';
+import { useRouter } from 'next/navigation';
 interface USERPOSTEDJOB {
   _id: string;
   fullName: string;
@@ -43,25 +51,17 @@ interface USERPOSTEDJOBDETAILS {
   __v: number;
   _id: string;
 }
-import { v4 as uuidv4 } from "uuid";
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { CldUploadButton } from 'next-cloudinary';
-import { toast } from '@/components/ui/use-toast';
-import CountDownTimer from '../../components/CountDownTimer';
-import { MyPopUpContext } from '../../context/PopUpClose';
-import { useRouter } from 'next/navigation';
-
 const handlerParam = async (paramData: any) => {
   return await paramData?.jobs; // This function isn't necessary, but keeping it
 };
 function ApplyForJob({ params }: any) {
+  const unwarppedParams=use(params)
   const [jobdetails, setJobDetails] = useState<USERPOSTEDJOBDETAILS | undefined>()
   const [applyloader,setApplyLoader] = useState<any>()
   const [resume, setResume] = useState<any>();
   const [loadresume, setloadresume] = useState<boolean>(false)
   const [jobId,setjobId]=useState<any>();
-  const {seekerId}:any=useContext(MyPopUpContext);
+  const [seekerId,setSeekerId]=useState<string|null>();
   const router=useRouter();
   const fetchJobDetailsData = (id:string) => {
     const send = axios.get(`/api/user/jobdetails`, { params:{
@@ -77,7 +77,7 @@ function ApplyForJob({ params }: any) {
 
  useEffect(() => {
   const fetchData = async () => {
-    const id = await handlerParam(params);
+    const id = (unwarppedParams as { jobs: string }).jobs;
      setjobId(id);
     if (id) {
       fetchJobDetailsData(id);
@@ -85,7 +85,7 @@ function ApplyForJob({ params }: any) {
   };
 
   fetchData();
-}, [params]);
+}, [unwarppedParams]);
   const createdAt: any = jobdetails?.createdAt; // Assuming this is your createdAt time in UTC
   const createdAtDate = new Date(createdAt);
   const now = Date.now(); // Current timestamp in milliseconds
@@ -138,6 +138,14 @@ function ApplyForJob({ params }: any) {
         }
        }
   }
+
+  useEffect(()=>{
+    if(typeof window!==undefined){
+      const userId=localStorage.getItem("userId");
+      setSeekerId(userId);
+    }
+  },[]);
+
   return (
     <div>
       <div className='flex  flex-wrap gap-4 justify-center'>
@@ -174,35 +182,32 @@ function ApplyForJob({ params }: any) {
               {jobdetails?.description}
             </p>
 
-
-
-
           </div>
         </div>
         <div>
           {/* form submit for apply */}
           <div className="grid w-[100%] max-w-sm items-center gap-1.5">
             <Label htmlFor="picture" className=' text-2xl font-semibold underline' >Your resume</Label>
-            <CldUploadButton
-              className=' w-full text-left border-2 p-1 rounded-md '
-              onSuccess={uploadResume}
-              uploadPreset="wyyzhuyo"
-            />
+              {
+                seekerId ? <CldUploadButton
+                  className=' w-full text-left border-2 p-1 rounded-md '
+                  onSuccess={uploadResume}
+                  uploadPreset="wyyzhuyo"
+                /> : <div>
+                     <Button className=' bg-blue-600 w-full' onClick={()=>{
+                      router.push("/user/login")
+                     }}> Login to apply</Button>
+                  </div>
+              }
             {
               loadresume ? <p className=' text-green-600 text-left'>upload successfully</p> : <p className=' text-red-700 text-left '>please upload your resume (.jpg/.png) </p>
             }
           </div>
-          <div>
-            <h1>Create Resume (implement in upcoming project)</h1>
-            <div className=' border w-full h-[150px] items-center text-center flex justify-center'>
-              <PlusSquare />
-
-            </div>
-          </div>
-          <Button onClick={()=>{
+        
+          <Button disabled={!loadresume}  onClick={()=>{
            handlerJobApply()
-          }} className=' bg-blue-600 w-full  mt-4'>
-          {applyloader&&<Loader className=' mr-2 animate-spin'/>}   Apply Now
+          }} className=' mb-6 bg-blue-600 w-full  mt-4'>
+          {applyloader&&<Loader className=' mr-2 animate-spin '/>}   Apply Now
           </Button>
         </div>
       </div>
