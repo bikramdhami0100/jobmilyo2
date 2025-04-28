@@ -15,9 +15,6 @@ export default async function AdminLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
-  // const session = await getServerSession();
-
   return (
     <>
       {/* <CheckValidAdmin/> */}

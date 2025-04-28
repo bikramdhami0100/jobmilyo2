@@ -17,10 +17,12 @@ function SplashScreen() {
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(()=>{
-    setTimeout(() => {
+  const timeout=  setTimeout(() => {
       setShowSplash(false); // Hide splash screen after 500 milliseconds
     }, 1000);
-  
+     return ()=>{
+      clearTimeout(timeout)
+    }
   },[])
   return (
     <div className=''>

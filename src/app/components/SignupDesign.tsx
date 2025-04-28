@@ -23,7 +23,6 @@ export function SignupFormDemo({ name ,fname,mname,lname,gender,phone,paddres,ca
                 {name ? name : "No content Available"}
             </h1>
 
-
             <form className="my-8" onSubmit={handleSubmit}>
                 <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
                     <LabelInputContainer>

@@ -79,24 +79,9 @@ function AdminNavbar() {
     if (!mounted) return null;
     const HandleLogOut = async () => {
         setLoadingLogout(true)
-        // console.log("log out c")
-        const data = await fetch(`/api/adminlogout`, {
-            method: "get",
-
-        })
-
-        if (data.ok) {
-            const result = await data.json()
-            if (result) {
-                setLoadingLogout(false)
-                toast({
-                    description: result?.message,
-                })
-
-                router.push("/user/login/")
-
-            }
-
+        if(typeof window !==undefined){
+            const id =await localStorage.removeItem("adminId")
+             router.push("/user/login")
         }
     }
 
@@ -104,10 +89,8 @@ function AdminNavbar() {
         <div className={` flex justify-between m-auto  shadow-md p-3 ${navbarBgColor} w-full`}>
             <div className=' flex gap-4 justify-center items-center'>
                 <div className=' visible md:hidden lg:hidden'>
-
                     <Sheet>
-
-                        <SheetTrigger>  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-align-justify"><line x1="3" x2="21" y1="6" y2="6" /><line x1="3" x2="21" y1="12" y2="12" /><line x1="3" x2="21" y1="18" y2="18" /></svg></SheetTrigger>
+                        <SheetTrigger>  <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-align-justify"><line x1="3" x2="21" y1="6" y2="6" /><line x1="3" x2="21" y1="12" y2="12" /><line x1="3" x2="21" y1="18" y2="18" /></svg></SheetTrigger>
                         <SheetContent side={"left"} className={`${navbarBgColor2}  `} >
                             <Image alt='logo' src={"/images/logo.png"} height={100} width={200}></Image>
                             <SheetHeader className=' w-full'>

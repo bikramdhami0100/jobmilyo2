@@ -28,7 +28,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className={`${lora.className} relative`} id="defaultHome" >
         {/* <CallNotification/> */}
-       
+
         <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
           <NextSessionProvider session={session}>
             <ThemeProvider
@@ -43,9 +43,8 @@ export default async function RootLayout({
               </div>
               <div>
                 <SocketProvider>
-                <CallNotification/>
-             {children}
-
+                  <CallNotification />
+                  {children}
                 </SocketProvider>
               </div>
             </ThemeProvider>
