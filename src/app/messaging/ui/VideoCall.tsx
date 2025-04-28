@@ -41,7 +41,7 @@ function VideoCall() {
     if(!localStream &&!peer) return;
     return (
         <div className='w-full h-full  rounded-lg p-4'>
-            <div className=' mt-4 relative h-[500px]'> {/* Added fixed height for container */}
+            <div className=' mt-4 relative  h-[500px]'> {/* Added fixed height for container */}
                 {localStream && <VideoContainer stream={localStream} isLocalStream={true} isOnCall={isOnCall} />}
                 {peer && peer.stream && <VideoContainer stream={peer.stream} isLocalStream={false} isOnCall={isOnCall} />}
             </div>

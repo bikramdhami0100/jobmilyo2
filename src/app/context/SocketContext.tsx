@@ -219,6 +219,7 @@ const completePeerConnection=useCallback(async(connectionData:{sdp:SignalData,on
         });
         const stream=await getMediaStream();
         if(!stream){
+          handleHangup({ ongoingCall: ongoingCall ? ongoingCall : undefined, isEmitHangup: true })
           console.log("No stream in handleJoinCall")
           return;
         };

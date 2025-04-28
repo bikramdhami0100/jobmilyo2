@@ -7,11 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from '@/components/ui/button';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import { useRouter } from 'next/navigation';
-import { useDispatch } from 'react-redux';
-import { userSignUpInfo } from '../../../../Redux/Slice';
 import { Eye, EyeOff } from 'lucide-react';
+import axios from 'axios';
 
 export interface MysignupType {
     fullname: string,
@@ -22,7 +20,7 @@ export interface MysignupType {
 }
 
 function ResetPassword({id}:any) {
-    const dispatch = useDispatch();
+    console.log(id,"this is id in new password")
     const router = useRouter();
 
     const passwordRegex = /^[a-zA-Z\s]/;
@@ -59,15 +57,10 @@ function ResetPassword({id}:any) {
             const userData: any = { password,id };
 
             try {
-                const response = await fetch('/api/login/resetpassword/', {
-                    method: "post",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(userData),
-                });
+               const respone=(await axios.post('/api/resetpassword/update', userData)).data;
 
-                if (response) {
-                    const result = await response.json()
-                    if (result.status == 200) {
+                if (respone) {
+                    if (respone.status == 200) {
                         toast.success('🦄 password reset successfully !', {
                             position: "top-right",
                             autoClose: 5000,

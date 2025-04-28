@@ -7,12 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from '@/components/ui/button';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
-import { userSignUpInfo } from '../../../Redux/Slice';
 import { Eye, EyeOff } from 'lucide-react';
-const bcrypt=require("bcryptjs");
+const bcrypt = require("bcryptjs");
 export interface MysignupType {
     fullname: string,
     dob: string,
@@ -24,29 +22,28 @@ export interface MysignupType {
 function ResetPassword() {
     const dispatch = useDispatch();
     const router = useRouter();
-
     const passwordRegex = /^[a-zA-Z\s]/;
 
     const [password, setPassword] = useState<string>("");
     const [confirm, setConfirm] = useState<string>("");
- 
+
     const [errorPassword, setErrorPassword] = useState(true);
     const [errorConfirmPassword, setErrorConfirmPassword] = useState(true);
     const [showPassword, setShowPassword] = useState(true);
 
     useEffect(() => {
-        if ( password || confirm) {
+        if (password || confirm) {
             setErrorPassword(!(passwordRegex.test(password) && password.length > 4));
             setErrorConfirmPassword(!(password === confirm && confirm.length > 4));
         }
-    }, [ password, confirm]);
+    }, [password, confirm]);
 
     const handleResetPassword = async () => {
 
-        if ( password && confirm && !errorPassword && !errorConfirmPassword) {
+        if (password && confirm && !errorPassword && !errorConfirmPassword) {
             var salt = bcrypt.genSaltSync(10);
             var hash = bcrypt.hashSync("B4c0/\/", salt);
-        
+
             toast.info('🦄 data submit successfully !', {
                 position: "top-right",
                 autoClose: 5000,
@@ -68,8 +65,8 @@ function ResetPassword() {
                 });
 
                 if (response) {
-                    const result=await response.json()
-                    if (result.status==200) {
+                    const result = await response.json()
+                    if (result.status == 200) {
                         toast.success('🦄 password reset successfully !', {
                             position: "top-right",
                             autoClose: 5000,
@@ -93,20 +90,20 @@ function ResetPassword() {
 
     return (
         <div className='flex flex-col w-full md:w-[50%] lg:w-[50%] justify-around items-center md:flex-row md:justify-around lg:justify-around lg:flex-row p-2'>
-<ToastContainer
-position="top-right"
-autoClose={5000}
-hideProgressBar={false}
-newestOnTop={false}
-closeOnClick
-rtl={false}
-pauseOnFocusLoss
-draggable
-pauseOnHover
-theme="light"
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
 
-/>
-            <div className= 'flex flex-col w-full gap-4 shadow-md hover:shadow-lg p-6 justify-center items-center m-4 rounded-md border-[2px]'>
+            />
+            <div className='flex flex-col w-full gap-4 shadow-md hover:shadow-lg p-6 justify-center items-center m-4 rounded-md border-[2px]'>
                 <div className='m-4'>
                     <h1>Reset password</h1>
                     <hr color='gray' className='w-full shadow-md' />
@@ -139,7 +136,7 @@ theme="light"
 
                 <Button onClick={handleResetPassword} className='bg-blue-600 w-[200px] rounded-full self-center'>Continue</Button>
             </div>
-    
+
         </div>
 
     );
